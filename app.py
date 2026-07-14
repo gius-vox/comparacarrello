@@ -118,10 +118,11 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
 </style>
 """, unsafe_allow_html=True)
 
-# 3. Logo ed Header Principale (Collegato direttamente all'URL per evitare errori)
+# 3. Logo ed Header Principale (Ripristinato con il file locale logo.png)
 _, col_logo_centrato, _ = st.columns([5, 2, 5])
 with col_logo_centrato:
-    st.image("https://huggingface.co/spaces/Giusvox/comparacarrello/resolve/main/logo.png", use_container_width=True)
+    if os.path.exists("logo.png"):
+        st.image("logo.png", use_container_width=True)
 
 st.markdown("""
 <div class="header-wrapper">
@@ -219,7 +220,7 @@ if st.session_state.prodotti_scelti:
         prezzi_prodotto = {f: float(row[f]) for f in nomi_farmacie if f in row and pd.notna(row[f]) and float(row[f]) > 0}
         if prezzi_prodotto:
             miglior_farmacia_prodotto = min(prezzi_prodotto, key=prezzi_prodotto.get)
-            carrelli_split[migial_farmacia_prodotto if 'migial_farmacia_prodotto' in locals() else miglior_farmacia_prodotto].append(row["Prodotto"])
+            carrelli_split[miglior_farmacia_prodotto].append(row["Prodotto"])
 
     costo_totale_split = 0.0
     dettagli_assegnazione = {}
