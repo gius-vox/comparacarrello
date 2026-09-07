@@ -8,23 +8,40 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# CSS Personalizzato per ottimizzazione Mobile e pulizia interfaccia
+# CSS Personalizzato per ottimizzazione Mobile e rimozione spazi vuoti
 st.markdown("""
     <style>
-    /* Nasconde menu di debug ed elementi da cantiere */
+    /* Nasconde menu di debug ed elementi tecnici */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Previene spezzature brutte del testo del titolo su smartphone */
-    .main-title {
-        font-size: 1.8rem !important;
-        font-weight: 800;
-        text-align: center;
-        color: #2C3E50;
-        margin-top: -10px;
+    /* Riduce lo spazio vuoto in cima alla pagina su mobile */
+    .block-container {
+        padding-top: 1.5rem !important;
+        padding-bottom: 1rem !important;
+    }
+    
+    /* Struttura Intestazione Compatta (Logo + Titolo) */
+    .header-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
         margin-bottom: 5px;
-        line-height: 1.2;
+    }
+    
+    .header-box img {
+        height: 45px;
+        width: auto;
+    }
+    
+    .main-title {
+        font-size: 1.6rem !important;
+        font-weight: 800;
+        color: #2C3E50;
+        margin: 0 !important;
+        line-height: 1;
     }
     
     .main-title span {
@@ -32,32 +49,41 @@ st.markdown("""
     }
     
     .subtitle {
-        font-size: 0.85rem !important;
+        font-size: 0.75rem !important;
         text-align: center;
         color: #7F8C8D;
-        margin-bottom: 20px;
-        font-weight: 500;
+        margin-top: 5px;
+        margin-bottom: 15px;
+        font-weight: 600;
         letter-spacing: 0.5px;
     }
     
-    /* Footer Professionale Istituzionale */
+    /* Footer Professionale */
     .custom-footer {
-        margin-top: 50px;
-        padding: 20px;
+        margin-top: 40px;
+        padding: 15px;
         border-top: 1px solid #E2E8F0;
         text-align: center;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         color: #94A3B8;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# Intestazione e Logo ridimensionato per mobile
-col1, col2, col3 = st.columns([1, 1, 1])
-with col2:
-    st.image("logo.png", width=110)
+# Intestazione HTML con Logo e Titolo affiancati (Zero spazi sprecati)
+st.markdown("""
+    <div class="header-box">
+        <img src="app/static/logo.png" onerror="this.src='https://raw.githubusercontent.com/streamlit/streamlit/main/docs/static/logo.png'; this.onerror=null;" style="display:none;">
+    </div>
+""", unsafe_allow_html=True)
 
-st.markdown('<h1 class="main-title">COMPARA<span>CARRELLO</span></h1>', unsafe_allow_html=True)
+# Visualizzazione Logo e Titolo compatti
+col_logo, col_text = st.columns([1, 4])
+with col_logo:
+    st.image("logo.png", width=65)
+with col_text:
+    st.markdown('<h1 class="main-title" style="padding-top: 10px;">COMPARA<span>CARRELLO</span></h1>', unsafe_allow_html=True)
+
 st.markdown('<p class="subtitle">L\'ALGORITMO INTELLIGENTE PER LA VOSTRA SPESA ONLINE</p>', unsafe_allow_html=True)
 
 st.divider()
@@ -65,7 +91,6 @@ st.divider()
 # Area Ricerca
 st.subheader("🔍 Cerca prodotti per la tua spesa")
 
-# Esempio di lista prodotti
 prodotti_disponibili = [
     "Aboca Colilen IBS Colon Irritabile 90 cpr",
     "Latte Parzialmente Scremato 1L",
