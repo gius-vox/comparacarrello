@@ -8,29 +8,44 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# CSS Personalizzato per compattare gli spazi e ottimizzare la grafica
+# CSS Personalizzato per forzare il layout compatto su Mobile e Desktop
 st.markdown("""
     <style>
-    /* Nasconde elementi tecnici di default */
+    /* Nasconde menu di debug ed elementi tecnici di Streamlit */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Riduce lo spazio bianco in cima alla pagina */
+    /* Riduce drasticamente il margine superiore della pagina */
     .block-container {
         padding-top: 1rem !important;
         padding-bottom: 1rem !important;
     }
     
-    /* Titolo compatto */
+    /* Contenitore Intestazione (Logo + Titolo Affiancati) */
+    .brand-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        width: 100%;
+    }
+    
+    .brand-logo {
+        width: 55px !important;
+        height: auto !important;
+        object-fit: contain;
+    }
+    
     .main-title {
-        font-size: 1.8rem !important;
+        font-size: 1.5rem !important;
         font-weight: 800;
-        text-align: center;
         color: #2C3E50;
-        margin-top: 5px !important;
-        margin-bottom: 2px !important;
+        margin: 0 !important;
         line-height: 1.1;
+        white-space: nowrap;
     }
     
     .main-title span {
@@ -38,10 +53,10 @@ st.markdown("""
     }
     
     .subtitle {
-        font-size: 0.8rem !important;
+        font-size: 0.75rem !important;
         text-align: center;
         color: #7F8C8D;
-        margin-top: 0px;
+        margin-top: 6px;
         margin-bottom: 15px;
         font-weight: 600;
         letter-spacing: 0.5px;
@@ -59,16 +74,14 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Intestazione con Logo e Titolo ben proporzionati
-col_left, col_logo, col_text, col_right = st.columns([1, 2, 8, 1])
-
-with col_logo:
-    st.image("logo.png", use_container_width=True)
-
-with col_text:
-    st.markdown('<h1 class="main-title" style="text-align: left; padding-top: 5px;">COMPARA<span>CARRELLO</span></h1>', unsafe_allow_html=True)
-
-st.markdown('<p class="subtitle">L\'ALGORITMO INTELLIGENTE PER LA VOSTRA SPESA ONLINE</p>', unsafe_allow_html=True)
+# Intestazione unica in HTML (Forza Logo e Titolo sulla stessa riga)
+st.markdown("""
+    <div class="brand-header">
+        <img src="app/static/logo.png" class="brand-logo" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/streamlit/streamlit/main/docs/static/logo.png';">
+        <h1 class="main-title">COMPARA<span>CARRELLO</span></h1>
+    </div>
+    <p class="subtitle">L'ALGORITMO INTELLIGENTE PER LA VOSTRA SPESA ONLINE</p>
+""", unsafe_allow_html=True)
 
 st.divider()
 
