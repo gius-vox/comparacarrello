@@ -8,7 +8,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# CSS Personalizzato pulito e compatto con centratura assoluta del logo
+# CSS Personalizzato pulito e compatto
 st.markdown("""
     <style>
     /* Nasconde elementi tecnici */
@@ -20,20 +20,6 @@ st.markdown("""
     .block-container {
         padding-top: 1rem !important;
         padding-bottom: 1rem !important;
-    }
-    
-    /* Centra l'immagine del logo in modo assoluto */
-    [data-testid="stImage"] {
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        width: 100% !important;
-        margin: 0 auto -5px auto !important;
-    }
-    [data-testid="stImage"] > img {
-        display: block !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
     }
     
     .main-title {
@@ -72,8 +58,10 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Logo ben visibile e perfettamente centrato
-st.image("logo.png", width=135)
+# Centratura perfetta del logo tramite colonne trasparenti
+col_left, col_center, col_right = st.columns([1, 2, 1])
+with col_center:
+    st.image("logo.png", use_container_width=True)
 
 # Titolo e Sottotitolo
 st.markdown('<h1 class="main-title">COMPARA<span>CARRELLO</span></h1>', unsafe_allow_html=True)
