@@ -50,7 +50,7 @@ st.markdown("""
     [data-testid="stImage"] {
         display: flex;
         justify-content: center;
-        margin-bottom: -10px;
+        margin-bottom: -5px;
     }
     
     /* Footer Istituzionale */
@@ -65,8 +65,8 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Logo fisso ben proporzionato
-st.image("logo.png", width=80)
+# Logo ben visibile e nitido
+st.image("logo.png", width=135)
 
 # Titolo e Sottotitolo
 st.markdown('<h1 class="main-title">COMPARA<span>CARRELLO</span></h1>', unsafe_allow_html=True)
