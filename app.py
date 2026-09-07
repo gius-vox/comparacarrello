@@ -8,44 +8,28 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# CSS Personalizzato per forzare il layout compatto su Mobile e Desktop
+# CSS Personalizzato pulito e compatto
 st.markdown("""
     <style>
-    /* Nasconde menu di debug ed elementi tecnici di Streamlit */
+    /* Nasconde elementi tecnici */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Riduce drasticamente il margine superiore della pagina */
+    /* Riduce gli spazi vuoti in alto */
     .block-container {
         padding-top: 1rem !important;
         padding-bottom: 1rem !important;
     }
     
-    /* Contenitore Intestazione (Logo + Titolo Affiancati) */
-    .brand-header {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 15px;
-        margin-top: 5px;
-        margin-bottom: 5px;
-        width: 100%;
-    }
-    
-    .brand-logo {
-        width: 55px !important;
-        height: auto !important;
-        object-fit: contain;
-    }
-    
     .main-title {
-        font-size: 1.5rem !important;
+        font-size: 1.8rem !important;
         font-weight: 800;
+        text-align: center;
         color: #2C3E50;
-        margin: 0 !important;
+        margin-top: 0px !important;
+        margin-bottom: 2px !important;
         line-height: 1.1;
-        white-space: nowrap;
     }
     
     .main-title span {
@@ -53,13 +37,20 @@ st.markdown("""
     }
     
     .subtitle {
-        font-size: 0.75rem !important;
+        font-size: 0.8rem !important;
         text-align: center;
         color: #7F8C8D;
-        margin-top: 6px;
+        margin-top: 2px;
         margin-bottom: 15px;
         font-weight: 600;
         letter-spacing: 0.5px;
+    }
+    
+    /* Centra l'immagine del logo */
+    [data-testid="stImage"] {
+        display: flex;
+        justify-content: center;
+        margin-bottom: -10px;
     }
     
     /* Footer Istituzionale */
@@ -74,14 +65,12 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Intestazione unica in HTML (Forza Logo e Titolo sulla stessa riga)
-st.markdown("""
-    <div class="brand-header">
-        <img src="app/static/logo.png" class="brand-logo" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/streamlit/streamlit/main/docs/static/logo.png';">
-        <h1 class="main-title">COMPARA<span>CARRELLO</span></h1>
-    </div>
-    <p class="subtitle">L'ALGORITMO INTELLIGENTE PER LA VOSTRA SPESA ONLINE</p>
-""", unsafe_allow_html=True)
+# Logo fisso ben proporzionato
+st.image("logo.png", width=80)
+
+# Titolo e Sottotitolo
+st.markdown('<h1 class="main-title">COMPARA<span>CARRELLO</span></h1>', unsafe_allow_html=True)
+st.markdown('<p class="subtitle">L\'ALGORITMO INTELLIGENTE PER LA VOSTRA SPESA ONLINE</p>', unsafe_allow_html=True)
 
 st.divider()
 
