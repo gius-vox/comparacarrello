@@ -22,7 +22,7 @@ st.markdown("""
         font-weight: 800;
         text-align: center;
         color: #2C3E50;
-        margin-top: -20px;
+        margin-top: -10px;
         margin-bottom: 5px;
         line-height: 1.2;
     }
@@ -32,20 +32,12 @@ st.markdown("""
     }
     
     .subtitle {
-        font-size: 0.9rem !important;
+        font-size: 0.85rem !important;
         text-align: center;
         color: #7F8C8D;
-        margin-bottom: 25px;
+        margin-bottom: 20px;
         font-weight: 500;
         letter-spacing: 0.5px;
-    }
-    
-    /* Riconfigura il contenitore del logo */
-    .logo-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 10px;
     }
     
     /* Footer Professionale Istituzionale */
@@ -60,11 +52,10 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Intestazione e Logo
-col1, col2, col3 = st.columns([1, 2, 1])
+# Intestazione e Logo ridimensionato per mobile
+col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
-    # Mostra il logo con dimensione controllata
-    st.image("logo.png", use_container_width=True)
+    st.image("logo.png", width=110)
 
 st.markdown('<h1 class="main-title">COMPARA<span>CARRELLO</span></h1>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">L\'ALGORITMO INTELLIGENTE PER LA VOSTRA SPESA ONLINE</p>', unsafe_allow_html=True)
@@ -74,7 +65,7 @@ st.divider()
 # Area Ricerca
 st.subheader("🔍 Cerca prodotti per la tua spesa")
 
-# Esempio di lista prodotti (sostituisci o collega al tuo database/funzione esistente)
+# Esempio di lista prodotti
 prodotti_disponibili = [
     "Aboca Colilen IBS Colon Irritabile 90 cpr",
     "Latte Parzialmente Scremato 1L",
