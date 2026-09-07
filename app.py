@@ -8,40 +8,29 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# CSS Personalizzato per ottimizzazione Mobile e rimozione spazi vuoti
+# CSS Personalizzato per compattare gli spazi e ottimizzare la grafica
 st.markdown("""
     <style>
-    /* Nasconde menu di debug ed elementi tecnici */
+    /* Nasconde elementi tecnici di default */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Riduce lo spazio vuoto in cima alla pagina su mobile */
+    /* Riduce lo spazio bianco in cima alla pagina */
     .block-container {
-        padding-top: 1.5rem !important;
+        padding-top: 1rem !important;
         padding-bottom: 1rem !important;
     }
     
-    /* Struttura Intestazione Compatta (Logo + Titolo) */
-    .header-box {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        margin-bottom: 5px;
-    }
-    
-    .header-box img {
-        height: 45px;
-        width: auto;
-    }
-    
+    /* Titolo compatto */
     .main-title {
-        font-size: 1.6rem !important;
+        font-size: 1.8rem !important;
         font-weight: 800;
+        text-align: center;
         color: #2C3E50;
-        margin: 0 !important;
-        line-height: 1;
+        margin-top: 5px !important;
+        margin-bottom: 2px !important;
+        line-height: 1.1;
     }
     
     .main-title span {
@@ -49,18 +38,18 @@ st.markdown("""
     }
     
     .subtitle {
-        font-size: 0.75rem !important;
+        font-size: 0.8rem !important;
         text-align: center;
         color: #7F8C8D;
-        margin-top: 5px;
+        margin-top: 0px;
         margin-bottom: 15px;
         font-weight: 600;
         letter-spacing: 0.5px;
     }
     
-    /* Footer Professionale */
+    /* Footer Istituzionale */
     .custom-footer {
-        margin-top: 40px;
+        margin-top: 30px;
         padding: 15px;
         border-top: 1px solid #E2E8F0;
         text-align: center;
@@ -70,19 +59,14 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Intestazione HTML con Logo e Titolo affiancati (Zero spazi sprecati)
-st.markdown("""
-    <div class="header-box">
-        <img src="app/static/logo.png" onerror="this.src='https://raw.githubusercontent.com/streamlit/streamlit/main/docs/static/logo.png'; this.onerror=null;" style="display:none;">
-    </div>
-""", unsafe_allow_html=True)
+# Intestazione con Logo e Titolo ben proporzionati
+col_left, col_logo, col_text, col_right = st.columns([1, 2, 8, 1])
 
-# Visualizzazione Logo e Titolo compatti
-col_logo, col_text = st.columns([1, 4])
 with col_logo:
-    st.image("logo.png", width=65)
+    st.image("logo.png", use_container_width=True)
+
 with col_text:
-    st.markdown('<h1 class="main-title" style="padding-top: 10px;">COMPARA<span>CARRELLO</span></h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="main-title" style="text-align: left; padding-top: 5px;">COMPARA<span>CARRELLO</span></h1>', unsafe_allow_html=True)
 
 st.markdown('<p class="subtitle">L\'ALGORITMO INTELLIGENTE PER LA VOSTRA SPESA ONLINE</p>', unsafe_allow_html=True)
 
@@ -113,7 +97,7 @@ if selezione:
 # Footer Istituzionale
 st.markdown("""
     <div class="custom-footer">
-        <p><b>Comparacarrello.it</b> — Progetto dimostrativo & Technology Showcase</p>
+        <p><b>Comparacarrello.it</b> — Progetto dimostrativo & Vetrina Tecnologica</p>
         <p>© 2026 Tutti i diritti riservati — Contatti Partner: info@comparacarrello.it</p>
     </div>
 """, unsafe_allow_html=True)
