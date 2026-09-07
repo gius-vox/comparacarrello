@@ -8,7 +8,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# CSS Personalizzato pulito e compatto
+# CSS Personalizzato pulito e compatto con centratura assoluta del logo
 st.markdown("""
     <style>
     /* Nasconde elementi tecnici */
@@ -20,6 +20,20 @@ st.markdown("""
     .block-container {
         padding-top: 1rem !important;
         padding-bottom: 1rem !important;
+    }
+    
+    /* Centra l'immagine del logo in modo assoluto */
+    [data-testid="stImage"] {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100% !important;
+        margin: 0 auto -5px auto !important;
+    }
+    [data-testid="stImage"] > img {
+        display: block !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
     }
     
     .main-title {
@@ -46,13 +60,6 @@ st.markdown("""
         letter-spacing: 0.5px;
     }
     
-    /* Centra l'immagine del logo */
-    [data-testid="stImage"] {
-        display: flex;
-        justify-content: center;
-        margin-bottom: -5px;
-    }
-    
     /* Footer Istituzionale */
     .custom-footer {
         margin-top: 30px;
@@ -65,7 +72,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Logo ben visibile e nitido
+# Logo ben visibile e perfettamente centrato
 st.image("logo.png", width=135)
 
 # Titolo e Sottotitolo
