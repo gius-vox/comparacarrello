@@ -43,7 +43,7 @@ st.markdown("""
         letter-spacing: 0.5px;
     }
     
-    /* Scheda singolo prodotto selezionato */
+    /* Styling Prodotto Selezionato */
     .product-row-card {
         background-color: #FFFFFF;
         border: 1px solid #E2E8F0;
@@ -57,21 +57,24 @@ st.markdown("""
         font-weight: 700;
         color: #1E293B;
         font-size: 1rem;
+        line-height: 2.2;
     }
     
     .price-tag {
-        font-size: 0.9rem;
+        font-size: 0.88rem;
         font-weight: 600;
-        color: #334155;
+        color: #475569;
+        line-height: 2.2;
     }
     
     .price-tag-best {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         font-weight: 800;
         color: #16A34A;
         background-color: #DCFCE7;
-        padding: 2px 8px;
+        padding: 4px 10px;
         border-radius: 6px;
+        display: inline-block;
     }
 
     /* Styling Card Farmacie */
@@ -161,36 +164,63 @@ st.divider()
 def load_data():
     return pd.read_csv("prodotti.csv")
 
+# Inizializzazione carrello in Session State
+if "carrello" not in st.session_state:
+    st.session_state.carrello = []
+
 try:
     df = load_data()
     farmacie = ["Farmacia Igea", "Farmacia Loreto", "Farmacie Raven", "Dr. Max"]
 
-    st.subheader("🛒 Costruisci il tuo Carrello")
-    scelti = st.multiselect(
-        "Cerca e aggiungi i farmaci o gli integratori:",
-        options=df["Prodotto"].tolist(),
-        placeholder="Digita il nome del prodotto (es. Tachipirina, Multicentrum)..."
-    )
+    st.subheader("🛒 Catalogo Prodotti — Clicca per Aggiungere al Carrello")
+    
+    # Ricerca rapida per filtrare la griglia
+    search_query = st.text_input("🔍 Filtra il catalogo per nome:", placeholder="Es. Multicentrum, Armolipid, Polase...")
+    
+    df_mostrati = df.copy()
+    if search_query:
+        df_mostrati = df_mostrati[df_mostrati["Prodotto"].str.contains(search_query, case=False, na=False)]
+
+    # Layout a Griglia di Pulsanti/Card per la Selezione
+    cols_prod = st.columns(3)
+    for idx, row in df_mostrati.iterrows():
+        prod_name = row["Prodotto"]
+        is_in_cart = prod_name in st.session_state.carrello
+        
+        col_target = cols_prod[idx % 3]
+        with col_target:
+            btn_label = f"➖ Rimuovi: {prod_name}" if is_in_cart else f"➕ Aggiungi: {prod_name}"
+            btn_type = "secondary" if is_in_cart else "primary"
+            
+            if st.button(btn_label, key=f"btn_{idx}", use_container_width=True, type=btn_type):
+                if is_in_cart:
+                    st.session_state.carrello.remove(prod_name)
+                else:
+                    st.session_state.carrello.append(prod_name)
+                st.rerun()
+
+    scelti = st.session_state.carrello
 
     if scelti:
+        st.divider()
+        st.markdown("#### 📦 Prodotti Selezionati nel Carrello")
         df_c = df[df["Prodotto"].isin(scelti)].copy()
 
-        st.markdown("#### 📦 Prodotti Selezionati nel Carrello")
-        
-        # Sostituzione della griglia con schede e-commerce pulite per ogni prodotto
+        # Icona SVG Neutra Pharma (in sostituzione delle immagini non idonee)
+        pharma_icon = """<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>"""
+
         for _, row in df_c.iterrows():
             prezzi_prod = {f: row[f] for f in farmacie}
             min_p = min(prezzi_prod.values())
             
-            c_img, c_info, c_p1, c_p2, c_p3, c_p4 = st.columns([0.8, 3, 1.8, 1.8, 1.8, 1.8])
+            c_icon, c_info, c_p1, c_p2, c_p3, c_p4 = st.columns([0.5, 3, 1.8, 1.8, 1.8, 1.8])
             
-            with c_img:
-                st.image(row["Immagine"], width=42)
+            with c_icon:
+                st.markdown(pharma_icon, unsafe_allow_html=True)
             with c_info:
                 st.markdown(f"<div class='product-name'>{row['Prodotto']}</div>", unsafe_allow_html=True)
             
-            # Prezzi per ogni farmacia affiancati
-            for idx, (col, f) in enumerate(zip([c_p1, c_p2, c_p3, c_p4], farmacie)):
+            for col, f in zip([c_p1, c_p2, c_p3, c_p4], farmacie):
                 val = row[f]
                 with col:
                     if val == min_p:
@@ -198,12 +228,11 @@ try:
                     else:
                         st.markdown(f"<div class='price-tag'>{f}: {val:.2f}€</div>", unsafe_allow_html=True)
             
-            st.markdown("<hr style='margin: 8px 0; border-top: 1px solid #F1F5F9;'>", unsafe_allow_html=True)
+            st.markdown("<hr style='margin: 6px 0; border-top: 1px solid #F1F5F9;'>", unsafe_allow_html=True)
 
         st.divider()
         st.markdown("#### 🚚 Risultato Finale: Analisi Carrello & Spedizioni")
 
-        # Regole e Soglie Spedizione
         soglie = {
             "Farmacia Igea": {"soglia": 49.00, "costo": 4.90},
             "Farmacia Loreto": {"soglia": 39.90, "costo": 4.50},
@@ -264,7 +293,7 @@ try:
         st.success(f"🏆 Il carrello più conveniente è su **{migliore}** con un risparmio reale di **{risparmio:.2f}€** rispetto alla scelta più cara!")
 
     else:
-        st.info("Aggiungi i prodotti sopra per sbloccare l'analisi del carrello.")
+        st.info("👆 Clicca su uno o più prodotti nel catalogo in alto per aggiungerli al carrello e confrontare le farmacie.")
 
 except Exception as e:
     st.error(f"Errore nel caricamento del file prodotti.csv: {e}")
