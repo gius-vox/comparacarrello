@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# CSS Personalizzato per Card e Interfaccia Moderna
+# CSS Personalizzato
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
@@ -43,6 +43,37 @@ st.markdown("""
         letter-spacing: 0.5px;
     }
     
+    /* Scheda singolo prodotto selezionato */
+    .product-row-card {
+        background-color: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    
+    .product-name {
+        font-weight: 700;
+        color: #1E293B;
+        font-size: 1rem;
+    }
+    
+    .price-tag {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #334155;
+    }
+    
+    .price-tag-best {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: #16A34A;
+        background-color: #DCFCE7;
+        padding: 2px 8px;
+        border-radius: 6px;
+    }
+
     /* Styling Card Farmacie */
     .pharmacy-card {
         background-color: #FFFFFF;
@@ -134,21 +165,43 @@ try:
     df = load_data()
     farmacie = ["Farmacia Igea", "Farmacia Loreto", "Farmacie Raven", "Dr. Max"]
 
-    st.subheader("💊 Cerca prodotti per la tua spesa pharma")
+    st.subheader("🛒 Costruisci il tuo Carrello")
     scelti = st.multiselect(
-        "Seleziona i farmaci o gli integratori da confrontare:",
+        "Cerca e aggiungi i farmaci o gli integratori:",
         options=df["Prodotto"].tolist(),
-        placeholder="Scegli i prodotti..."
+        placeholder="Digita il nome del prodotto (es. Tachipirina, Multicentrum)..."
     )
 
     if scelti:
         df_c = df[df["Prodotto"].isin(scelti)].copy()
 
-        st.markdown("#### 📊 Dettaglio Prezzi Singoli")
-        st.dataframe(df_c[["Prodotto"] + farmacie], hide_index=True, use_container_width=True)
+        st.markdown("#### 📦 Prodotti Selezionati nel Carrello")
+        
+        # Sostituzione della griglia con schede e-commerce pulite per ogni prodotto
+        for _, row in df_c.iterrows():
+            prezzi_prod = {f: row[f] for f in farmacie}
+            min_p = min(prezzi_prod.values())
+            
+            c_img, c_info, c_p1, c_p2, c_p3, c_p4 = st.columns([0.8, 3, 1.8, 1.8, 1.8, 1.8])
+            
+            with c_img:
+                st.image(row["Immagine"], width=42)
+            with c_info:
+                st.markdown(f"<div class='product-name'>{row['Prodotto']}</div>", unsafe_allow_html=True)
+            
+            # Prezzi per ogni farmacia affiancati
+            for idx, (col, f) in enumerate(zip([c_p1, c_p2, c_p3, c_p4], farmacie)):
+                val = row[f]
+                with col:
+                    if val == min_p:
+                        st.markdown(f"<div class='price-tag-best'>{f}: {val:.2f}€</div>", unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"<div class='price-tag'>{f}: {val:.2f}€</div>", unsafe_allow_html=True)
+            
+            st.markdown("<hr style='margin: 8px 0; border-top: 1px solid #F1F5F9;'>", unsafe_allow_html=True)
 
         st.divider()
-        st.markdown("#### 🚚 Confronto Carrelli & Spedizioni")
+        st.markdown("#### 🚚 Risultato Finale: Analisi Carrello & Spedizioni")
 
         # Regole e Soglie Spedizione
         soglie = {
@@ -158,9 +211,8 @@ try:
             "Dr. Max": {"soglia": 29.90, "costo": 3.90}
         }
 
-        # Calcolo Totali
-        dati_calcolati = {}
         totali_finali = {}
+        dati_calcolati = {}
 
         for f in farmacie:
             tot_prod = df_c[f].sum()
@@ -173,7 +225,7 @@ try:
             else:
                 spes = costo_f
                 mancanti = soglia_f - tot_prod
-                txt_spes = f"<b>+{costo_f:.2f}€</b> <br><small style='color:#DC2626;'>(mancano {mancanti:.2f}€ per la sped. gratis)</small>"
+                txt_spes = f"<b>+{costo_f:.2f}€</b> <br><small style='color:#DC2626;'>(mancano {mancanti:.2f}€ per la gratis)</small>"
             
             tot_finale = tot_prod + spes
             totali_finali[f] = tot_finale
@@ -188,7 +240,6 @@ try:
         peggiore = max(totali_finali, key=totali_finali.get)
         risparmio = totali_finali[peggiore] - totali_finali[migliore]
 
-        # Rendering Card Grafiche
         cols = st.columns(len(farmacie))
 
         for idx, f in enumerate(farmacie):
@@ -213,7 +264,7 @@ try:
         st.success(f"🏆 Il carrello più conveniente è su **{migliore}** con un risparmio reale di **{risparmio:.2f}€** rispetto alla scelta più cara!")
 
     else:
-        st.info("Seleziona uno o più prodotti per sbloccare il confronto dinamico.")
+        st.info("Aggiungi i prodotti sopra per sbloccare l'analisi del carrello.")
 
 except Exception as e:
     st.error(f"Errore nel caricamento del file prodotti.csv: {e}")
