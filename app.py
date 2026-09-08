@@ -88,7 +88,7 @@ try:
         st.divider()
         st.markdown("#### 🚚 Analisi Totali e Spese di Spedizione")
 
-        # Regole e Soglie Spedizione
+        # Regole e Soglie Spedizione Reali
         soglie = {
             "Farmacia Igea": {"soglia": 49.00, "costo": 4.90},
             "Farmacia Loreto": {"soglia": 39.90, "costo": 4.50},
@@ -114,11 +114,12 @@ try:
                 st.write(f"Prodotti: **{tot_prod:.2f}€**")
                 
                 if spes == 0:
-                    st.write("Spedizione: **GRATIS** 🎉")
+                    st.write(f"Spedizione: **GRATIS 🎉** *(gratis da {soglia_f:.2f}€)*")
                 else:
-                    st.write(f"Spedizione: **+{spes:.2f}€** *(gratis da {soglia_f:.2f}€)*")
+                    mancanti = soglia_f - tot_prod
+                    st.write(f"Spedizione: **+{costo_f:.2f}€ 🎉** *(gratis da {soglia_f:.2f}€ — manca {mancanti:.2f}€)*")
                 
-                st.markdown(f"### TOT: {tot_finale:.2f}€")
+                st.markdown(f"### TOTALE: {tot_finale:.2f}€")
 
         # Verdetto
         migliore = min(totali_finali, key=totali_finali.get)
