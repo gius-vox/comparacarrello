@@ -43,6 +43,39 @@ st.markdown("""
         letter-spacing: 0.5px;
     }
     
+    /* Customizzazione Pulsante Verde Pharma */
+    div.stButton > button[kind="primary"] {
+        background-color: #22C55E !important;
+        color: white !important;
+        border: none !important;
+        font-weight: 700 !important;
+        font-size: 1rem !important;
+        border-radius: 8px !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    div.stButton > button[kind="primary"]:hover {
+        background-color: #16A34A !important;
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3) !important;
+    }
+
+    /* Ingrandimento freccia e controlli del Selectbox */
+    div[data-baseweb="select"] {
+        border-radius: 8px !important;
+        border: 2px solid #CBD5E1 !important;
+    }
+    
+    div[data-baseweb="select"]:hover {
+        border-color: #22C55E !important;
+    }
+    
+    /* Ingrandimento icona freccia */
+    div[data-baseweb="select"] svg {
+        width: 24px !important;
+        height: 24px !important;
+        fill: #22C55E !important;
+    }
+
     /* Styling Prodotto Selezionato */
     .product-row-card {
         background-color: #FFFFFF;
