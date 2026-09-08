@@ -5,14 +5,13 @@ import pandas as pd
 st.set_page_config(
     page_title="ComparaCarrello - Il comparatore per la tua Farmacia Online",
     page_icon="💊",
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 # CSS Personalizzato
 st.markdown("""
     <style>
-    /* Nasconde elementi tecnici di Streamlit */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
@@ -23,13 +22,12 @@ st.markdown("""
     }
     
     .main-title {
-        font-size: 1.8rem !important;
+        font-size: 2rem !important;
         font-weight: 800;
         text-align: center;
         color: #2C3E50;
         margin-top: 0px !important;
         margin-bottom: 2px !important;
-        line-height: 1.1;
     }
     
     .main-title span {
@@ -37,13 +35,11 @@ st.markdown("""
     }
     
     .subtitle {
-        font-size: 0.8rem !important;
+        font-size: 0.85rem !important;
         text-align: center;
         color: #7F8C8D;
-        margin-top: 2px;
-        margin-bottom: 15px;
+        margin-bottom: 20px;
         font-weight: 600;
-        letter-spacing: 0.5px;
     }
     
     .custom-footer {
@@ -57,12 +53,11 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Logo centrato
-col_left, col_center, col_right = st.columns([1, 2, 1])
-with col_center:
+# Logo e Titolo
+col_l, col_c, col_r = st.columns([1, 2, 1])
+with col_c:
     st.image("logo.png", use_container_width=True)
 
-# Titolo e Sottotitolo
 st.markdown('<h1 class="main-title">COMPARA<span>CARRELLO</span></h1>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">L\'ALGORITMO INTELLIGENTE PER FARMACIE E PARAFARMACIE ONLINE</p>', unsafe_allow_html=True)
 
@@ -77,10 +72,9 @@ try:
     df = load_data()
     farmacie = ["Farmacia Igea", "Farmacia Loreto", "Farmacie Raven", "Dr. Max"]
 
-    # Selezione Prodotti
     st.subheader("💊 Cerca prodotti per la tua spesa pharma")
     scelti = st.multiselect(
-        "Seleziona i farmaci o integratori da confrontare:",
+        "Seleziona i farmaci o gli integratori da confrontare:",
         options=df["Prodotto"].tolist(),
         placeholder="Scegli i prodotti..."
     )
@@ -89,18 +83,17 @@ try:
         df_c = df[df["Prodotto"].isin(scelti)].copy()
 
         st.markdown("#### 📊 Dettaglio Prezzi Singoli")
-        # Mostra tabella senza la colonna URL dell'immagine
         st.dataframe(df_c[["Prodotto"] + farmacie], hide_index=True, use_container_width=True)
 
         st.divider()
         st.markdown("#### 🚚 Analisi Totali e Spese di Spedizione")
 
-        # Soglie spedizione gratuita per ciascuna farmacia (esempi reali)
+        # Regole e Soglie Spedizione
         soglie = {
-            "Farmacia Igea": {"soglia": 29.90, "costo": 4.50},
-            "Farmacia Loreto": {"soglia": 39.90, "costo": 4.90},
-            "Farmacie Raven": {"soglia": 29.00, "costo": 3.90},
-            "Dr. Max": {"soglia": 19.90, "costo": 3.90}
+            "Farmacia Igea": {"soglia": 49.00, "costo": 4.90},
+            "Farmacia Loreto": {"soglia": 39.90, "costo": 4.50},
+            "Farmacie Raven": {"soglia": 59.00, "costo": 5.90},
+            "Dr. Max": {"soglia": 29.90, "costo": 3.90}
         }
 
         totali_finali = {}
@@ -108,17 +101,26 @@ try:
 
         for idx, f in enumerate(farmacie):
             tot_prod = df_c[f].sum()
-            spes = 0.0 if tot_prod >= soglie[f]["soglia"] else soglie[f]["costo"]
+            soglia_f = soglie[f]["soglia"]
+            costo_f = soglie[f]["costo"]
+            
+            # Calcolo spedizione
+            spes = 0.0 if tot_prod >= soglia_f else costo_f
             tot_finale = tot_prod + spes
             totali_finali[f] = tot_finale
 
             with cols[idx]:
-                st.markdown(f"**{f}**")
-                st.write(f"Prodotti: {tot_prod:.2f}€")
-                st.write(f"Spedizione: {spes:.2f}€")
-                st.markdown(f"**TOT: {tot_finale:.2f}€**")
+                st.markdown(f"### {f}")
+                st.write(f"Prodotti: **{tot_prod:.2f}€**")
+                
+                if spes == 0:
+                    st.write("Spedizione: **GRATIS** 🎉")
+                else:
+                    st.write(f"Spedizione: **+{spes:.2f}€** *(gratis da {soglia_f:.2f}€)*")
+                
+                st.markdown(f"### TOT: {tot_finale:.2f}€")
 
-        # Determinazione della farmacia più conveniente
+        # Verdetto
         migliore = min(totali_finali, key=totali_finali.get)
         peggiore = max(totali_finali, key=totali_finali.get)
         risparmio = totali_finali[peggiore] - totali_finali[migliore]
@@ -131,7 +133,7 @@ try:
 except Exception as e:
     st.error(f"Errore nel caricamento del file prodotti.csv: {e}")
 
-# Footer Istituzionale
+# Footer
 st.markdown("""
     <div class="custom-footer">
         <p><b>Comparacarrello.it</b> — Progetto dimostrativo & Vetrina Tecnologica Pharma</p>
