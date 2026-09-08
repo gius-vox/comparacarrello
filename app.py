@@ -172,31 +172,25 @@ try:
     df = load_data()
     farmacie = ["Farmacia Igea", "Farmacia Loreto", "Farmacie Raven", "Dr. Max"]
 
-    st.subheader("🛒 Catalogo Prodotti — Clicca per Aggiungere al Carrello")
+    st.subheader("🛒 Cerca e Aggiungi Prodotti al Carrello")
     
-    # Ricerca rapida per filtrare la griglia
-    search_query = st.text_input("🔍 Filtra il catalogo per nome:", placeholder="Es. Multicentrum, Armolipid, Polase...")
+    # Campo di selezione pulito con pulsante
+    prodotti_disponibili = [p for p in df["Prodotto"].tolist() if p not in st.session_state.carrello]
     
-    df_mostrati = df.copy()
-    if search_query:
-        df_mostrati = df_mostrati[df_mostrati["Prodotto"].str.contains(search_query, case=False, na=False)]
-
-    # Layout a Griglia di Pulsanti/Card per la Selezione
-    cols_prod = st.columns(3)
-    for idx, row in df_mostrati.iterrows():
-        prod_name = row["Prodotto"]
-        is_in_cart = prod_name in st.session_state.carrello
-        
-        col_target = cols_prod[idx % 3]
-        with col_target:
-            btn_label = f"➖ Rimuovi: {prod_name}" if is_in_cart else f"➕ Aggiungi: {prod_name}"
-            btn_type = "secondary" if is_in_cart else "primary"
-            
-            if st.button(btn_label, key=f"btn_{idx}", use_container_width=True, type=btn_type):
-                if is_in_cart:
-                    st.session_state.carrello.remove(prod_name)
-                else:
-                    st.session_state.carrello.append(prod_name)
+    col_sel, col_btn = st.columns([3, 1])
+    with col_sel:
+        prodotto_scelto = st.selectbox(
+            "Cerca un prodotto nel catalogo:",
+            options=prodotti_disponibili,
+            index=None,
+            placeholder="Scrivi o seleziona un farmaco (es. Multicentrum, Armolipid)...",
+            label_visibility="collapsed"
+        )
+    
+    with col_btn:
+        if st.button("➕ Aggiungi al Carrello", type="primary", use_container_width=True):
+            if prodotto_scelto and prodotto_scelto not in st.session_state.carrello:
+                st.session_state.carrello.append(prodotto_scelto)
                 st.rerun()
 
     scelti = st.session_state.carrello
@@ -206,19 +200,20 @@ try:
         st.markdown("#### 📦 Prodotti Selezionati nel Carrello")
         df_c = df[df["Prodotto"].isin(scelti)].copy()
 
-        # Icona SVG Neutra Pharma (in sostituzione delle immagini non idonee)
-        pharma_icon = """<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>"""
+        # Icona SVG Neutra Pharma
+        pharma_icon = """<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>"""
 
         for _, row in df_c.iterrows():
+            prod_name = row["Prodotto"]
             prezzi_prod = {f: row[f] for f in farmacie}
             min_p = min(prezzi_prod.values())
             
-            c_icon, c_info, c_p1, c_p2, c_p3, c_p4 = st.columns([0.5, 3, 1.8, 1.8, 1.8, 1.8])
+            c_icon, c_info, c_p1, c_p2, c_p3, c_p4, c_del = st.columns([0.5, 2.5, 1.5, 1.5, 1.5, 1.5, 0.8])
             
             with c_icon:
                 st.markdown(pharma_icon, unsafe_allow_html=True)
             with c_info:
-                st.markdown(f"<div class='product-name'>{row['Prodotto']}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='product-name'>{prod_name}</div>", unsafe_allow_html=True)
             
             for col, f in zip([c_p1, c_p2, c_p3, c_p4], farmacie):
                 val = row[f]
@@ -227,6 +222,11 @@ try:
                         st.markdown(f"<div class='price-tag-best'>{f}: {val:.2f}€</div>", unsafe_allow_html=True)
                     else:
                         st.markdown(f"<div class='price-tag'>{f}: {val:.2f}€</div>", unsafe_allow_html=True)
+            
+            with c_del:
+                if st.button("🗑️", key=f"del_{prod_name}", help="Rimuovi dal carrello"):
+                    st.session_state.carrello.remove(prod_name)
+                    st.rerun()
             
             st.markdown("<hr style='margin: 6px 0; border-top: 1px solid #F1F5F9;'>", unsafe_allow_html=True)
 
@@ -293,7 +293,7 @@ try:
         st.success(f"🏆 Il carrello più conveniente è su **{migliore}** con un risparmio reale di **{risparmio:.2f}€** rispetto alla scelta più cara!")
 
     else:
-        st.info("👆 Clicca su uno o più prodotti nel catalogo in alto per aggiungerli al carrello e confrontare le farmacie.")
+        st.info("👆 Cerca un prodotto nel campo in alto e clicca su '➕ Aggiungi al Carrello' per iniziare il confronto.")
 
 except Exception as e:
     st.error(f"Errore nel caricamento del file prodotti.csv: {e}")
