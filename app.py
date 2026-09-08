@@ -1,22 +1,22 @@
 import streamlit as st
+import pandas as pd
 
 # Configurazione della pagina
 st.set_page_config(
-    page_title="ComparaCarrello - L'algoritmo intelligente per la tua spesa",
-    page_icon="🛒",
+    page_title="ComparaCarrello - Il comparatore per la tua Farmacia Online",
+    page_icon="💊",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# CSS Personalizzato pulito e compatto
+# CSS Personalizzato
 st.markdown("""
     <style>
-    /* Nasconde elementi tecnici */
+    /* Nasconde elementi tecnici di Streamlit */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Riduce gli spazi vuoti in alto */
     .block-container {
         padding-top: 1rem !important;
         padding-bottom: 1rem !important;
@@ -46,9 +46,8 @@ st.markdown("""
         letter-spacing: 0.5px;
     }
     
-    /* Footer Istituzionale */
     .custom-footer {
-        margin-top: 30px;
+        margin-top: 40px;
         padding: 15px;
         border-top: 1px solid #E2E8F0;
         text-align: center;
@@ -58,43 +57,84 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Centratura perfetta del logo tramite colonne trasparenti
+# Logo centrato
 col_left, col_center, col_right = st.columns([1, 2, 1])
 with col_center:
     st.image("logo.png", use_container_width=True)
 
 # Titolo e Sottotitolo
 st.markdown('<h1 class="main-title">COMPARA<span>CARRELLO</span></h1>', unsafe_allow_html=True)
-st.markdown('<p class="subtitle">L\'ALGORITMO INTELLIGENTE PER LA VOSTRA SPESA ONLINE</p>', unsafe_allow_html=True)
+st.markdown('<p class="subtitle">L\'ALGORITMO INTELLIGENTE PER FARMACIE E PARAFARMACIE ONLINE</p>', unsafe_allow_html=True)
 
 st.divider()
 
-# Area Ricerca
-st.subheader("🔍 Cerca prodotti per la tua spesa")
+# Caricamento del database prodotti.csv
+@st.cache_data
+def load_data():
+    return pd.read_csv("prodotti.csv")
 
-prodotti_disponibili = [
-    "Aboca Colilen IBS Colon Irritabile 90 cpr",
-    "Latte Parzialmente Scremato 1L",
-    "Pasta Barilla Spaghetti n.5 500g",
-    "Olio Extravergine d'Oliva 1L",
-    "Caffè Lavazza Qualità Rossa 250g"
-]
+try:
+    df = load_data()
+    farmacie = ["Farmacia Igea", "Farmacia Loreto", "Farmacie Raven", "Dr. Max"]
 
-selezione = st.multiselect(
-    "Seleziona o digita i prodotti da confrontare:",
-    options=prodotti_disponibili,
-    placeholder="Scegli i prodotti..."
-)
+    # Selezione Prodotti
+    st.subheader("💊 Cerca prodotti per la tua spesa pharma")
+    scelti = st.multiselect(
+        "Seleziona i farmaci o integratori da confrontare:",
+        options=df["Prodotto"].tolist(),
+        placeholder="Scegli i prodotti..."
+    )
 
-if selezione:
-    st.success(f"Hai selezionato {len(selezione)} prodotto/i. Elaborazione confronto in corso...")
-    for prod in selezione:
-        st.write(f"• **{prod}**")
+    if scelti:
+        df_c = df[df["Prodotto"].isin(scelti)].copy()
+
+        st.markdown("#### 📊 Dettaglio Prezzi Singoli")
+        # Mostra tabella senza la colonna URL dell'immagine
+        st.dataframe(df_c[["Prodotto"] + farmacie], hide_index=True, use_container_width=True)
+
+        st.divider()
+        st.markdown("#### 🚚 Analisi Totali e Spese di Spedizione")
+
+        # Soglie spedizione gratuita per ciascuna farmacia (esempi reali)
+        soglie = {
+            "Farmacia Igea": {"soglia": 29.90, "costo": 4.50},
+            "Farmacia Loreto": {"soglia": 39.90, "costo": 4.90},
+            "Farmacie Raven": {"soglia": 29.00, "costo": 3.90},
+            "Dr. Max": {"soglia": 19.90, "costo": 3.90}
+        }
+
+        totali_finali = {}
+        cols = st.columns(len(farmacie))
+
+        for idx, f in enumerate(farmacie):
+            tot_prod = df_c[f].sum()
+            spes = 0.0 if tot_prod >= soglie[f]["soglia"] else soglie[f]["costo"]
+            tot_finale = tot_prod + spes
+            totali_finali[f] = tot_finale
+
+            with cols[idx]:
+                st.markdown(f"**{f}**")
+                st.write(f"Prodotti: {tot_prod:.2f}€")
+                st.write(f"Spedizione: {spes:.2f}€")
+                st.markdown(f"**TOT: {tot_finale:.2f}€**")
+
+        # Determinazione della farmacia più conveniente
+        migliore = min(totali_finali, key=totali_finali.get)
+        peggiore = max(totali_finali, key=totali_finali.get)
+        risparmio = totali_finali[peggiore] - totali_finali[migliore]
+
+        st.success(f"🏆 Il carrello più conveniente è su **{migliore}** con un risparmio reale di **{risparmio:.2f}€**!")
+
+    else:
+        st.info("Seleziona uno o più prodotti per sbloccare il confronto dinamico.")
+
+except Exception as e:
+    st.error(f"Errore nel caricamento del file prodotti.csv: {e}")
 
 # Footer Istituzionale
 st.markdown("""
     <div class="custom-footer">
-        <p><b>Comparacarrello.it</b> — Progetto dimostrativo & Vetrina Tecnologica</p>
+        <p><b>Comparacarrello.it</b> — Progetto dimostrativo & Vetrina Tecnologica Pharma</p>
         <p>© 2026 Tutti i diritti riservati — Contatti Partner: info@comparacarrello.it</p>
     </div>
 """, unsafe_allow_html=True)
