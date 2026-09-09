@@ -104,7 +104,7 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3) !important;
     }
 
-    /* Controlli del Selectbox */
+    /* Controlli del Selectbox e NumberInput */
     div[data-baseweb="select"] {
         border-radius: 8px !important;
         border: 2px solid #CBD5E1 !important;
@@ -113,19 +113,17 @@ st.markdown("""
     div[data-baseweb="select"]:hover {
         border-color: #22C55E !important;
     }
-    
-    div[data-baseweb="select"] svg {
-        width: 24px !important;
-        height: 24px !important;
-        fill: #22C55E !important;
+
+    div[data-baseweb="input"] {
+        border-radius: 8px !important;
     }
 
     /* Card Prodotto */
     .product-name {
         font-weight: 700;
         color: #1E293B;
-        font-size: 1rem;
-        line-height: 2.2;
+        font-size: 0.95rem;
+        line-height: 1.3;
     }
     
     .price-tag {
@@ -154,6 +152,9 @@ st.markdown("""
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         text-align: center;
         margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
     
     .pharmacy-card-best {
@@ -204,6 +205,33 @@ st.markdown("""
         font-weight: 800;
         color: #0F172A;
         margin-top: 10px;
+        margin-bottom: 12px;
+    }
+
+    .shop-btn {
+        display: inline-block;
+        width: 100%;
+        background-color: #0284C7;
+        color: white !important;
+        font-weight: 700;
+        padding: 8px 0;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        transition: all 0.2s;
+    }
+
+    .shop-btn-best {
+        display: inline-block;
+        width: 100%;
+        background-color: #22C55E;
+        color: white !important;
+        font-weight: 700;
+        padding: 10px 0;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 8px rgba(34, 197, 94, 0.25);
     }
     
     .wa-button {
@@ -243,7 +271,7 @@ st.markdown("""
         <div class="algo-title">💡 Come funziona il calcolo del risparmio?</div>
         <ul class="algo-list">
             <li><b>🔍 Trova Prezzi Singolo Prodotto:</b> individua subito la farmacia che offre il miglior prezzo per ogni singolo articolo selezionato.</li>
-            <li><b>🛒 Analisi Carrello Completo:</b> somma i prezzi di tutti i prodotti per ciascun e-commerce.</li>
+            <li><b>🛒 Analisi Carrello Completo:</b> somma i prezzi dei prodotti e le relative quantità scelte.</li>
             <li><b>🚚 Calcolo Spedizione e Soglie:</b> applica la spedizione GRATIS se superi la soglia, oppure ti mostra quanti Euro mancano per azzerarla.</li>
             <li><b>🏆 Miglior Prezzo Finale:</b> confronta il totale "tutto incluso" e ti mostra la scelta davvero più conveniente.</li>
         </ul>
@@ -259,12 +287,21 @@ def load_data():
         df["Categoria"] = "Farmaci e Integratori"
     return df
 
-if "carrello" not in st.session_state:
-    st.session_state.carrello = []
+# Inizializzazione Session State per il Carrello (Dizionario: {prodotto: quantita})
+if "carrello_dict" not in st.session_state:
+    st.session_state.carrello_dict = {}
 
 try:
     df = load_data()
     farmacie = ["Farmacia Igea", "Farmacia Loreto", "Farmacie Raven", "Dr. Max"]
+    
+    # URL di destinazione e-commerce
+    farmacie_urls = {
+        "Farmacia Igea": "https://www.farmaciaigea.com",
+        "Farmacia Loreto": "https://www.farmae.it",
+        "Farmacie Raven": "https://www.farmacieraven.it",
+        "Dr. Max": "https://www.drmax.it"
+    }
 
     st.subheader("🛒 Cerca e Aggiungi Prodotti al Carrello")
     
@@ -276,7 +313,7 @@ try:
         cat_scelta = st.selectbox("Filtra Categoria:", options=categorie, label_visibility="collapsed")
     
     df_filtrato = df if cat_scelta == "Tutte le categorie" else df[df["Categoria"] == cat_scelta]
-    prodotti_disponibili = [p for p in df_filtrato["Prodotto"].tolist() if p not in st.session_state.carrello]
+    prodotti_disponibili = [p for p in df_filtrato["Prodotto"].tolist() if p not in st.session_state.carrello_dict]
     
     with col_sel:
         prodotto_scelto = st.selectbox(
@@ -289,30 +326,34 @@ try:
     
     with col_btn:
         if st.button("➕ Aggiungi al Carrello", type="primary", use_container_width=True):
-            if prodotto_scelto and prodotto_scelto not in st.session_state.carrello:
-                st.session_state.carrello.append(prodotto_scelto)
+            if prodotto_scelto and prodotto_scelto not in st.session_state.carrello_dict:
+                st.session_state.carrello_dict[prodotto_scelto] = 1
                 st.rerun()
 
-    scelti = st.session_state.carrello
+    scelti = list(st.session_state.carrello_dict.keys())
 
     if scelti:
         st.divider()
         st.markdown("#### 📦 Prodotti Selezionati nel Carrello")
         df_c = df[df["Prodotto"].isin(scelti)].copy()
 
-        pharma_icon = """<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>"""
+        pharma_icon = """<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>"""
 
         for _, row in df_c.iterrows():
             prod_name = row["Prodotto"]
             prezzi_prod = {f: row[f] for f in farmacie}
             min_p = min(prezzi_prod.values())
             
-            c_icon, c_info, c_p1, c_p2, c_p3, c_p4, c_del = st.columns([0.5, 2.5, 1.5, 1.5, 1.5, 1.5, 0.8])
+            c_icon, c_info, c_qty, c_p1, c_p2, c_p3, c_p4, c_del = st.columns([0.4, 2.2, 1.0, 1.3, 1.3, 1.3, 1.3, 0.6])
             
             with c_icon:
                 st.markdown(pharma_icon, unsafe_allow_html=True)
             with c_info:
                 st.markdown(f"<div class='product-name'>{prod_name}</div>", unsafe_allow_html=True)
+            
+            with c_qty:
+                q_val = st.number_input("Qtà", min_value=1, max_value=10, value=st.session_state.carrello_dict[prod_name], key=f"qty_{prod_name}", label_visibility="collapsed")
+                st.session_state.carrello_dict[prod_name] = q_val
             
             for col, f in zip([c_p1, c_p2, c_p3, c_p4], farmacie):
                 val = row[f]
@@ -324,7 +365,7 @@ try:
             
             with c_del:
                 if st.button("🗑️", key=f"del_{prod_name}", help="Rimuovi dal carrello"):
-                    st.session_state.carrello.remove(prod_name)
+                    del st.session_state.carrello_dict[prod_name]
                     st.rerun()
             
             st.markdown("<hr style='margin: 6px 0; border-top: 1px solid #F1F5F9;'>", unsafe_allow_html=True)
@@ -343,7 +384,9 @@ try:
         dati_calcolati = {}
 
         for f in farmacie:
-            tot_prod = df_c[f].sum()
+            # Calcolo somma totale considerando le quantità scelte per ogni prodotto
+            tot_prod = sum(df_c[df_c["Prodotto"] == p][f].values[0] * st.session_state.carrello_dict[p] for p in scelti)
+            
             soglia_f = soglie[f]["soglia"]
             costo_f = soglie[f]["costo"]
             
@@ -376,6 +419,7 @@ try:
             
             card_class = "pharmacy-card-best" if is_best else "pharmacy-card"
             badge_html = '<div class="badge-best">🏆 Più Conveniente</div>' if is_best else '<div style="height:21px;"></div>'
+            btn_class = "shop-btn-best" if is_best else "shop-btn"
 
             with cols[idx]:
                 st.markdown(f"""
@@ -385,6 +429,7 @@ try:
                         <div class="card-price-label">Prodotti: <b>{d['tot_prod']:.2f}€</b></div>
                         <div class="card-shipping">{d['txt_spes']}</div>
                         <div class="card-total">TOTALE: {d['tot_finale']:.2f}€</div>
+                        <a href="{farmacie_urls[f]}" target="_blank" class="{btn_class}">🛒 Vai all'Offerta</a>
                     </div>
                 """, unsafe_allow_html=True)
 
