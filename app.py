@@ -13,7 +13,6 @@ st.set_page_config(
 )
 
 # --- GOOGLE ANALYTICS INTEGRATION ---
-# Sostituisci 'G-XXXXXXXXXX' con il tuo vero ID di Google Analytics quando lo avrai creato
 GA_ID = "G-XXXXXXXXXX"
 ga_code = f"""
     <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -59,6 +58,34 @@ st.markdown("""
         margin-bottom: 25px;
         font-weight: 600;
         letter-spacing: 0.5px;
+    }
+
+    /* Box In Evidenza - Come Funziona L'Algoritmo */
+    .algo-box {
+        background-color: #F0FDF4;
+        border: 2px solid #22C55E;
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 10px rgba(34, 197, 94, 0.08);
+    }
+    
+    .algo-title {
+        color: #15803D;
+        font-weight: 800;
+        font-size: 1.05rem;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .algo-list {
+        margin: 0;
+        padding-left: 20px;
+        color: #1E293B;
+        font-size: 0.9rem;
+        line-height: 1.6;
     }
     
     /* Customizzazione Pulsante Verde Pharma */
@@ -210,13 +237,17 @@ with col_c:
 st.markdown('<h1 class="main-title">COMPARA<span>CARRELLO</span></h1>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">L\'ALGORITMO INTELLIGENTE PER FARMACIE E PARAFARMACIE ONLINE</p>', unsafe_allow_html=True)
 
-# Section: Spiegazione Algoritmo (Versione Immediata e Chiara)
-with st.expander("💡 Come funziona il calcolo del risparmio?"):
-    st.markdown("""
-    * **🛒 Somma i prezzi dei prodotti** selezionati per ciascuna farmacia.
-    * **🚚 Gestisce la spedizione:** se superi la soglia la rende GRATIS, altrimenti calcola esattamente quanto manca per azzerarla.
-    * **🏆 Ti mostra il vincitore:** individua subito l'e-commerce con il prezzo finale più basso, "tutto incluso".
-    """)
+# Box Spiegazione Algoritmo Sempre Visibile e In Evidenza
+st.markdown("""
+    <div class="algo-box">
+        <div class="algo-title">💡 Come funziona il calcolo del risparmio?</div>
+        <ul class="algo-list">
+            <li><b>🛒 Somma i prezzi dei prodotti</b> selezionati per ciascuna farmacia.</li>
+            <li><b>🚚 Gestisce la spedizione:</b> se superi la soglia la rende GRATIS, altrimenti calcola esattamente quanto manca per azzerarla.</li>
+            <li><b>🏆 Ti mostra il vincitore:</b> individua subito l'e-commerce con il prezzo finale più basso, "tutto incluso".</li>
+        </ul>
+    </div>
+""", unsafe_allow_html=True)
 
 st.divider()
 
@@ -236,7 +267,6 @@ try:
 
     st.subheader("🛒 Cerca e Aggiungi Prodotti al Carrello")
     
-    # Filtro Categoria facoltativo + Selezione Prodotto
     col_cat, col_sel, col_btn = st.columns([1.5, 2.5, 1.2])
     
     categorie = ["Tutte le categorie"] + list(df["Categoria"].unique())
@@ -372,7 +402,6 @@ try:
             st.markdown(f'<a href="{wa_url}" target="_blank" class="wa-button">📲 Invia il tuo Risparmio su WhatsApp</a>', unsafe_allow_html=True)
             
         with col_qr:
-            # Generazione QR Code dinamico per l'App
             img_qr = qrcode.make("https://www.comparacarrello.it")
             buf = BytesIO()
             img_qr.save(buf)
