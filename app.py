@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import qrcode
+import re
 from io import BytesIO
 import urllib.parse
 
@@ -60,7 +61,6 @@ st.markdown("""
         letter-spacing: 0.5px;
     }
 
-    /* Box In Evidenza - Come Funziona L'Algoritmo */
     .algo-box {
         background-color: #F0FDF4;
         border: 2px solid #22C55E;
@@ -88,7 +88,6 @@ st.markdown("""
         line-height: 1.6;
     }
     
-    /* Customizzazione Pulsante Verde Pharma */
     div.stButton > button[kind="primary"] {
         background-color: #22C55E !important;
         color: white !important;
@@ -109,7 +108,6 @@ st.markdown("""
         border: 2px solid #CBD5E1 !important;
     }
 
-    /* Card Prodotto */
     .product-name {
         font-weight: 700;
         color: #1E293B;
@@ -134,7 +132,6 @@ st.markdown("""
         display: inline-block;
     }
 
-    /* Styling Card Farmacie */
     .pharmacy-card {
         background-color: #FFFFFF;
         border-radius: 12px;
@@ -267,11 +264,27 @@ st.markdown("""
 
 st.divider()
 
+# Funzione per pulire qualsiasi carattere strano/cinese dal testo
+def clean_text_str(val):
+    if not isinstance(val, str):
+        return val
+    cleaned = re.sub(r'[\u4e00-\u9fff]+', '', val)
+    cleaned = re.sub(r'\s+', ' ', cleaned).strip()
+    return cleaned
+
 @st.cache_data
 def load_data():
     df = pd.read_csv("prodotti.csv")
+    
+    # Pulizia automatica immediata all'avvio
+    if "Prodotto" in df.columns:
+        df["Prodotto"] = df["Prodotto"].astype(str).apply(clean_text_str)
+    
     if "Categoria" not in df.columns:
         df["Categoria"] = "Farmaci e Integratori"
+    else:
+        df["Categoria"] = df["Categoria"].astype(str).apply(clean_text_str)
+        
     return df
 
 if "carrello_dict" not in st.session_state:
