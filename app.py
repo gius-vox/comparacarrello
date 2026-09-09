@@ -290,7 +290,7 @@ try:
 
     st.subheader("🛒 Cerca e Aggiungi Prodotti al Carrello")
     
-    col_cat, col_search, col_sel, col_btn = st.columns([1.2, 1.3, 2.0, 1.0])
+    col_cat, col_sel, col_btn = st.columns([1.2, 3.2, 1.0])
     
     categorie = ["Tutte le categorie"] + sorted(list(df["Categoria"].dropna().unique()))
     
@@ -298,21 +298,15 @@ try:
         cat_scelta = st.selectbox("Categoria:", options=categorie, label_visibility="collapsed")
     
     df_filtrato = df if cat_scelta == "Tutte le categorie" else df[df["Categoria"] == cat_scelta]
-    
-    with col_search:
-        testo_ricerca = st.text_input("Filtra nome:", placeholder="🔍 Scrivi per filtrare...", label_visibility="collapsed")
-    
-    if testo_ricerca:
-        df_filtrato = df_filtrato[df_filtrato["Prodotto"].str.contains(testo_ricerca, case=False, na=False)]
         
     prodotti_disponibili = [p for p in df_filtrato["Prodotto"].tolist() if p not in st.session_state.carrello_dict]
     
     with col_sel:
         prodotto_scelto = st.selectbox(
-            "Seleziona Prodotto:",
+            "Cerca Prodotto:",
             options=prodotti_disponibili,
             index=None,
-            placeholder="Seleziona farmaco...",
+            placeholder="🔍 Digita qui il nome del farmaco o prodotto...",
             label_visibility="collapsed"
         )
     
