@@ -1,5 +1,8 @@
 import streamlit as st
 import pandas as pd
+import qrcode
+from io import BytesIO
+import urllib.parse
 
 # Configurazione della pagina
 st.set_page_config(
@@ -8,6 +11,21 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
+
+# --- GOOGLE ANALYTICS INTEGRATION ---
+# Sostituisci 'G-XXXXXXXXXX' con il tuo vero ID di Google Analytics quando lo avrai creato
+GA_ID = "G-XXXXXXXXXX"
+ga_code = f"""
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){{dataLayer.push(arguments);}}
+      gtag('js', new Date());
+      gtag('config', '{GA_ID}');
+    </script>
+"""
+st.markdown(ga_code, unsafe_allow_html=True)
 
 # CSS Personalizzato
 st.markdown("""
@@ -59,7 +77,7 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3) !important;
     }
 
-    /* Ingrandimento freccia e controlli del Selectbox */
+    /* Controlli del Selectbox */
     div[data-baseweb="select"] {
         border-radius: 8px !important;
         border: 2px solid #CBD5E1 !important;
@@ -69,23 +87,13 @@ st.markdown("""
         border-color: #22C55E !important;
     }
     
-    /* Ingrandimento icona freccia */
     div[data-baseweb="select"] svg {
         width: 24px !important;
         height: 24px !important;
         fill: #22C55E !important;
     }
 
-    /* Styling Prodotto Selezionato */
-    .product-row-card {
-        background-color: #FFFFFF;
-        border: 1px solid #E2E8F0;
-        border-radius: 10px;
-        padding: 12px 16px;
-        margin-bottom: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    }
-    
+    /* Card Prodotto */
     .product-name {
         font-weight: 700;
         color: #1E293B;
@@ -171,6 +179,18 @@ st.markdown("""
         margin-top: 10px;
     }
     
+    .wa-button {
+        display: inline-block;
+        background-color: #25D366;
+        color: white !important;
+        font-weight: bold;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        text-align: center;
+        margin-top: 10px;
+    }
+    
     .custom-footer {
         margin-top: 40px;
         padding: 15px;
@@ -190,14 +210,24 @@ with col_c:
 st.markdown('<h1 class="main-title">COMPARA<span>CARRELLO</span></h1>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">L\'ALGORITMO INTELLIGENTE PER FARMACIE E PARAFARMACIE ONLINE</p>', unsafe_allow_html=True)
 
+# Section: Spiegazione Algoritmo
+with st.expander("ℹ️ Come funziona il calcolo dell'Algoritmo?"):
+    st.markdown("""
+    **Il nostro algoritmo analizza in tempo reale tre fattori chiave:**
+    1. **Prezzo dei Singoli Prodotti:** Confronta il listino aggiornato per ciascuna farmacia selezionata.
+    2. **Soglia Spedizione Gratuita:** Verificando se la somma dei prodotti supera la soglia per l'invio gratuito specificata dal singolo e-commerce.
+    3. **Totale Reale Fuori Tutto:** Aggiunge il costo di consegna solo quando il carrello è al di sotto della soglia, indicando esattamente quanti Euro mancano per azzerarlo.
+    """)
+
 st.divider()
 
-# Caricamento del database prodotti.csv
 @st.cache_data
 def load_data():
-    return pd.read_csv("prodotti.csv")
+    df = pd.read_csv("prodotti.csv")
+    if "Categoria" not in df.columns:
+        df["Categoria"] = "Farmaci e Integratori"
+    return df
 
-# Inizializzazione carrello in Session State
 if "carrello" not in st.session_state:
     st.session_state.carrello = []
 
@@ -207,16 +237,23 @@ try:
 
     st.subheader("🛒 Cerca e Aggiungi Prodotti al Carrello")
     
-    # Campo di selezione pulito con pulsante
-    prodotti_disponibili = [p for p in df["Prodotto"].tolist() if p not in st.session_state.carrello]
+    # Filtro Categoria facoltativo + Selezione Prodotto
+    col_cat, col_sel, col_btn = st.columns([1.5, 2.5, 1.2])
     
-    col_sel, col_btn = st.columns([3, 1])
+    categorie = ["Tutte le categorie"] + list(df["Categoria"].unique())
+    
+    with col_cat:
+        cat_scelta = st.selectbox("Filtra Categoria:", options=categorie, label_visibility="collapsed")
+    
+    df_filtrato = df if cat_scelta == "Tutte le categorie" else df[df["Categoria"] == cat_scelta]
+    prodotti_disponibili = [p for p in df_filtrato["Prodotto"].tolist() if p not in st.session_state.carrello]
+    
     with col_sel:
         prodotto_scelto = st.selectbox(
-            "Cerca un prodotto nel catalogo:",
+            "Cerca un prodotto:",
             options=prodotti_disponibili,
             index=None,
-            placeholder="Scrivi o seleziona un farmaco (es. Multicentrum, Armolipid)...",
+            placeholder="Scrivi o seleziona un farmaco...",
             label_visibility="collapsed"
         )
     
@@ -233,7 +270,6 @@ try:
         st.markdown("#### 📦 Prodotti Selezionati nel Carrello")
         df_c = df[df["Prodotto"].isin(scelti)].copy()
 
-        # Icona SVG Neutra Pharma
         pharma_icon = """<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>"""
 
         for _, row in df_c.iterrows():
@@ -324,6 +360,24 @@ try:
 
         st.markdown("<br>", unsafe_allow_html=True)
         st.success(f"🏆 Il carrello più conveniente è su **{migliore}** con un risparmio reale di **{risparmio:.2f}€** rispetto alla scelta più cara!")
+
+        # --- SEZIONE CONDIVISIONE WHATSAPP ---
+        st.divider()
+        msg_wa = f"Ho appena confrontato la mia spesa farmaceutica su ComparaCarrello.it! Il carrello più conveniente è su {migliore} e risparmio {risparmio:.2f}€! Provaci anche tu: https://www.comparacarrello.it"
+        encoded_msg = urllib.parse.quote(msg_wa)
+        wa_url = f"https://api.whatsapp.com/send?text={encoded_msg}"
+        
+        col_wa, col_qr = st.columns([2, 1])
+        with col_wa:
+            st.markdown("##### 📲 Condividi il tuo risultato con i tuoi amici")
+            st.markdown(f'<a href="{wa_url}" target="_blank" class="wa-button">📲 Invia il tuo Risparmio su WhatsApp</a>', unsafe_allow_html=True)
+            
+        with col_qr:
+            # Generazione QR Code dinamico per l'App
+            img_qr = qrcode.make("https://www.comparacarrello.it")
+            buf = BytesIO()
+            img_qr.save(buf)
+            st.image(buf.getvalue(), caption="Inquadra il QR Code per aprire la Web App", width=130)
 
     else:
         st.info("👆 Cerca un prodotto nel campo in alto e clicca su '➕ Aggiungi al Carrello' per iniziare il confronto.")
