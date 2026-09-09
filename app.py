@@ -210,13 +210,12 @@ with col_c:
 st.markdown('<h1 class="main-title">COMPARA<span>CARRELLO</span></h1>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">L\'ALGORITMO INTELLIGENTE PER FARMACIE E PARAFARMACIE ONLINE</p>', unsafe_allow_html=True)
 
-# Section: Spiegazione Algoritmo
-with st.expander("ℹ️ Come funziona il calcolo dell'Algoritmo?"):
+# Section: Spiegazione Algoritmo (Versione Immediata e Chiara)
+with st.expander("💡 Come funziona il calcolo del risparmio?"):
     st.markdown("""
-    **Il nostro algoritmo analizza in tempo reale tre fattori chiave:**
-    1. **Prezzo dei Singoli Prodotti:** Confronta il listino aggiornato per ciascuna farmacia selezionata.
-    2. **Soglia Spedizione Gratuita:** Verificando se la somma dei prodotti supera la soglia per l'invio gratuito specificata dal singolo e-commerce.
-    3. **Totale Reale Fuori Tutto:** Aggiunge il costo di consegna solo quando il carrello è al di sotto della soglia, indicando esattamente quanti Euro mancano per azzerarlo.
+    * **🛒 Somma i prezzi dei prodotti** selezionati per ciascuna farmacia.
+    * **🚚 Gestisce la spedizione:** se superi la soglia la rende GRATIS, altrimenti calcola esattamente quanto manca per azzerarla.
+    * **🏆 Ti mostra il vincitore:** individua subito l'e-commerce con il prezzo finale più basso, "tutto incluso".
     """)
 
 st.divider()
