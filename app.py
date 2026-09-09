@@ -104,18 +104,9 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3) !important;
     }
 
-    /* Controlli del Selectbox e NumberInput */
     div[data-baseweb="select"] {
         border-radius: 8px !important;
         border: 2px solid #CBD5E1 !important;
-    }
-    
-    div[data-baseweb="select"]:hover {
-        border-color: #22C55E !important;
-    }
-
-    div[data-baseweb="input"] {
-        border-radius: 8px !important;
     }
 
     /* Card Prodotto */
@@ -152,9 +143,6 @@ st.markdown("""
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         text-align: center;
         margin-bottom: 10px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
     }
     
     .pharmacy-card-best {
@@ -218,7 +206,6 @@ st.markdown("""
         border-radius: 6px;
         text-decoration: none;
         font-size: 0.85rem;
-        transition: all 0.2s;
     }
 
     .shop-btn-best {
@@ -265,7 +252,7 @@ with col_c:
 st.markdown('<h1 class="main-title">COMPARA<span>CARRELLO</span></h1>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">L\'ALGORITMO INTELLIGENTE PER FARMACIE E PARAFARMACIE ONLINE</p>', unsafe_allow_html=True)
 
-# Box Spiegazione Algoritmo - Con Focus Trova Prezzi
+# Box Spiegazione Algoritmo
 st.markdown("""
     <div class="algo-box">
         <div class="algo-title">💡 Come funziona il calcolo del risparmio?</div>
@@ -287,7 +274,6 @@ def load_data():
         df["Categoria"] = "Farmaci e Integratori"
     return df
 
-# Inizializzazione Session State per il Carrello (Dizionario: {prodotto: quantita})
 if "carrello_dict" not in st.session_state:
     st.session_state.carrello_dict = {}
 
@@ -295,7 +281,6 @@ try:
     df = load_data()
     farmacie = ["Farmacia Igea", "Farmacia Loreto", "Farmacie Raven", "Dr. Max"]
     
-    # URL di destinazione e-commerce
     farmacie_urls = {
         "Farmacia Igea": "https://www.farmaciaigea.com",
         "Farmacia Loreto": "https://www.farmae.it",
@@ -305,27 +290,34 @@ try:
 
     st.subheader("🛒 Cerca e Aggiungi Prodotti al Carrello")
     
-    col_cat, col_sel, col_btn = st.columns([1.5, 2.5, 1.2])
+    col_cat, col_search, col_sel, col_btn = st.columns([1.2, 1.3, 2.0, 1.0])
     
-    categorie = ["Tutte le categorie"] + list(df["Categoria"].unique())
+    categorie = ["Tutte le categorie"] + sorted(list(df["Categoria"].dropna().unique()))
     
     with col_cat:
-        cat_scelta = st.selectbox("Filtra Categoria:", options=categorie, label_visibility="collapsed")
+        cat_scelta = st.selectbox("Categoria:", options=categorie, label_visibility="collapsed")
     
     df_filtrato = df if cat_scelta == "Tutte le categorie" else df[df["Categoria"] == cat_scelta]
+    
+    with col_search:
+        testo_ricerca = st.text_input("Filtra nome:", placeholder="🔍 Scrivi per filtrare...", label_visibility="collapsed")
+    
+    if testo_ricerca:
+        df_filtrato = df_filtrato[df_filtrato["Prodotto"].str.contains(testo_ricerca, case=False, na=False)]
+        
     prodotti_disponibili = [p for p in df_filtrato["Prodotto"].tolist() if p not in st.session_state.carrello_dict]
     
     with col_sel:
         prodotto_scelto = st.selectbox(
-            "Cerca un prodotto:",
+            "Seleziona Prodotto:",
             options=prodotti_disponibili,
             index=None,
-            placeholder="Scrivi o seleziona un farmaco...",
+            placeholder="Seleziona farmaco...",
             label_visibility="collapsed"
         )
     
     with col_btn:
-        if st.button("➕ Aggiungi al Carrello", type="primary", use_container_width=True):
+        if st.button("➕ Aggiungi", type="primary", use_container_width=True):
             if prodotto_scelto and prodotto_scelto not in st.session_state.carrello_dict:
                 st.session_state.carrello_dict[prodotto_scelto] = 1
                 st.rerun()
@@ -384,9 +376,7 @@ try:
         dati_calcolati = {}
 
         for f in farmacie:
-            # Calcolo somma totale considerando le quantità scelte per ogni prodotto
             tot_prod = sum(df_c[df_c["Prodotto"] == p][f].values[0] * st.session_state.carrello_dict[p] for p in scelti)
-            
             soglia_f = soglie[f]["soglia"]
             costo_f = soglie[f]["costo"]
             
@@ -454,7 +444,7 @@ try:
             st.image(buf.getvalue(), caption="Inquadra il QR Code per aprire la Web App", width=130)
 
     else:
-        st.info("👆 Cerca un prodotto nel campo in alto e clicca su '➕ Aggiungi al Carrello' per iniziare il confronto.")
+        st.info("👆 Cerca un prodotto nel campo in alto e clicca su '➕ Aggiungi' per iniziare il confronto.")
 
 except Exception as e:
     st.error(f"Errore nel caricamento del file prodotti.csv: {e}")
