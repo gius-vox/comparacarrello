@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import os
 import urllib.parse
 import qrcode
 from io import BytesIO
@@ -13,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# CSS Avanzato per UI Mobile & Condivisione Social
+# CSS con Stili Personalizzati per Loghi e Card
 st.markdown("""
     <style>
     .main { background-color: #f8f9fa; }
@@ -29,32 +28,41 @@ st.markdown("""
         font-size: 1rem;
         color: #5a6578;
         text-align: center;
-        margin-bottom: 15px;
+        margin-bottom: 20px;
     }
 
+    /* Badge con Loghi in Header */
     .pharmacy-badge-container {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 8px;
+        gap: 10px;
         margin-bottom: 25px;
     }
     .pharm-pill {
         background-color: #ffffff;
-        border: 1px solid #cbd5e1;
-        color: #475569;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.82rem;
+        border: 1px solid #e2e8f0;
+        color: #334155;
+        padding: 6px 14px;
+        border-radius: 30px;
+        font-size: 0.85rem;
         font-weight: 600;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .pharm-pill img {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
     }
 
     /* Card Farmacie */
     .pharmacy-card {
         background: #ffffff;
         border-radius: 14px;
-        padding: 16px;
+        padding: 18px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         border: 2px solid #edf2f7;
         margin-bottom: 15px;
@@ -77,14 +85,25 @@ st.markdown("""
     .badge-rank.bronze { background-color: #fbeee6; color: #dc7633; border: 1px solid #edbb99; }
     .badge-rank.standard { background-color: #ebedef; color: #5d6d7e; }
 
-    .pharm-name { font-size: 1.2rem; font-weight: 700; color: #2c3e50; margin: 4px 0; }
-    .pharm-price { font-size: 1.7rem; font-weight: 800; color: #2e7d32; }
+    .pharm-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 6px 0;
+    }
+    .pharm-header img {
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+    }
+    .pharm-name { font-size: 1.2rem; font-weight: 700; color: #2c3e50; }
+    .pharm-price { font-size: 1.7rem; font-weight: 800; color: #2e7d32; margin-top: 4px; }
     
     .ship-box {
         background: #f8fafc;
         border-radius: 8px;
         padding: 8px 10px;
-        margin-top: 8px;
+        margin-top: 10px;
         border: 1px solid #e2e8f0;
     }
     .ship-free { color: #16a34a; font-weight: 700; font-size: 0.85rem; }
@@ -125,11 +144,10 @@ st.markdown("""
         padding: 10px 12px;
         border-radius: 8px;
         text-decoration: none;
-        margin-top: 10px;
+        margin-top: 12px;
         font-size: 0.9rem;
     }
 
-    /* Pulsanti Social Share */
     .social-btn {
         display: inline-block;
         padding: 8px 14px;
@@ -148,7 +166,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Mappatura rigorosa per nomi farmacie
+# Normalizzazione nomi farmacie
 CLEAN_PHARMACY_NAMES = {
     'Farmacia Igea': 'Farmacia Igea', 'FarmaciaIgea': 'Farmacia Igea', 'igea': 'Farmacia Igea',
     'Farmae': 'Farmaè', 'Farmaè': 'Farmaè', 'farmae': 'Farmaè',
@@ -156,8 +174,7 @@ CLEAN_PHARMACY_NAMES = {
     'RedCare': 'RedCare', 'redcare': 'RedCare',
     'Farmacia Loreto': 'Farmacia Loreto', 'loreto': 'Farmacia Loreto',
     '1000Farmacie': '1000Farmacie', '1000farmacie': '1000Farmacie',
-    'Top Farmacia': 'Top Farmacia', 'TopFarmacia': 'Top Farmacia', 'topfarmacia': 'Top Farmacia',
-    'Farmacia di alto livello': 'Top Farmacia', 'Ristoranti di alto livello': 'Top Farmacia',
+    'Top Farmacia': 'Top Farmacia', 'TopFarmacia': 'Top Farmacia', 'topfarmacia': 'Top Farmacia', 'Farmacia Top': 'Top Farmacia',
     'eFarma': 'eFarma', 'efarma': 'eFarma'
 }
 
@@ -172,11 +189,38 @@ SHIPPING_RULES = {
     'eFarma': {'free_threshold': 19.90, 'cost': 3.90}
 }
 
+PHARMACY_URLS = {
+    'Farmacia Igea': 'https://www.farmaciaigea.com',
+    'Farmaè': 'https://www.farmae.it',
+    'Dr. Max': 'https://www.drmax.it',
+    'RedCare': 'https://www.redcare.it',
+    'Farmacia Loreto': 'https://www.farmacialoreto.it',
+    '1000Farmacie': 'https://www.1000farmacie.it',
+    'Top Farmacia': 'https://www.topfarmacia.it',
+    'eFarma': 'https://www.efarma.com'
+}
+
+PHARMACY_LOGOS = {
+    'Farmacia Igea': 'https://www.google.com/s2/favicons?domain=farmaciaigea.com&sz=64',
+    'Farmaè': 'https://www.google.com/s2/favicons?domain=farmae.it&sz=64',
+    'Dr. Max': 'https://www.google.com/s2/favicons?domain=drmax.it&sz=64',
+    'RedCare': 'https://www.google.com/s2/favicons?domain=redcare.it&sz=64',
+    'Farmacia Loreto': 'https://www.google.com/s2/favicons?domain=farmacialoreto.it&sz=64',
+    '1000Farmacie': 'https://www.google.com/s2/favicons?domain=1000farmacie.it&sz=64',
+    'Top Farmacia': 'https://www.google.com/s2/favicons?domain=topfarmacia.it&sz=64',
+    'eFarma': 'https://www.google.com/s2/favicons?domain=efarma.com&sz=64'
+}
+
 @st.cache_data(ttl=60)
 def load_data():
     try:
         df = pd.read_csv("prodotti.csv", dtype={'MINSAN': str})
-        new_cols = [CLEAN_PHARMACY_NAMES.get(col.strip(), col.strip()) for col in df.columns]
+        
+        # Mappatura sicura delle colonne CSV
+        new_cols = []
+        for col in df.columns:
+            clean_col = col.strip()
+            new_cols.append(CLEAN_PHARMACY_NAMES.get(clean_col, clean_col))
         df.columns = new_cols
 
         fixed_cols = ['MINSAN', 'Prodotto', 'Categoria', 'Immagine']
@@ -192,9 +236,15 @@ df_prodotti, farmacie_disponibili = load_data()
 st.markdown("<h1 class='main-title'>💊 ComparaCarrello.it</h1>", unsafe_allow_html=True)
 st.markdown("<p class='sub-title'>Trova la farmacia online più conveniente per il tuo carrello</p>", unsafe_allow_html=True)
 
+# Generazione Pillole con Loghi Ufficiali
 if farmacie_disponibili:
-    badges_html = "".join([f'<span class="pharm-pill">🏥 {f}</span>' for f in farmacie_disponibili])
-    st.markdown(f'<div class="pharmacy-badge-container">{badges_html}</div>', unsafe_allow_html=True)
+    badges_list = []
+    for f in farmacie_disponibili:
+        logo_url = PHARMACY_LOGOS.get(f, '')
+        logo_img = f'<img src="{logo_url}">' if logo_url else '🏥'
+        badges_list.append(f'<div class="pharm-pill">{logo_img} <span>{f}</span></div>')
+    
+    st.markdown(f'<div class="pharmacy-badge-container">{"".join(badges_list)}</div>', unsafe_allow_html=True)
 
 if df_prodotti.empty:
     st.warning("Database in caricamento...")
@@ -304,6 +354,8 @@ if st.session_state.cart_indices:
             ship_val = spese_spedizione[pharm_name]
             miss_val = mancanti_spedizione[pharm_name]
             thresh_val = soglie_spedizione[pharm_name]
+            pharm_url = PHARMACY_URLS.get(pharm_name, '#')
+            logo_url = PHARMACY_LOGOS.get(pharm_name, '')
             
             card_class = "pharmacy-card winner" if i == 0 else "pharmacy-card"
             
@@ -332,16 +384,21 @@ if st.session_state.cart_indices:
                     </div>
                 """
 
+            logo_img_html = f'<img src="{logo_url}">' if logo_url else ''
+
             col_idx = i % 3
             with cols_cards[col_idx]:
                 st.markdown(f"""
                     <div class="{card_class}">
                         {badge_html}
-                        <div class="pharm-name">{pharm_name}</div>
+                        <div class="pharm-header">
+                            {logo_img_html}
+                            <div class="pharm-name">{pharm_name}</div>
+                        </div>
                         <div class="pharm-price">{tot_val:.2f} €</div>
                         <div style="font-size:0.85rem; color:#64748b;">Prodotti: {prod_val:.2f} €</div>
                         {ship_html}
-                        <a href="https://www.google.com/search?q={urllib.parse.quote(pharm_name)}+farmacia+online" target="_blank" class="btn-buy">🛒 Vai alla Farmacia</a>
+                        <a href="{pharm_url}" target="_blank" class="btn-buy">🛒 Vai alla Farmacia</a>
                     </div>
                 """, unsafe_allow_html=True)
 
@@ -352,12 +409,10 @@ if st.session_state.cart_indices:
         st.markdown("---")
         st.subheader("📲 Condividi il tuo Carrello o Apri su Mobile")
         
-        # Generazione Testo di Condivisione
         elenco_prodotti_txt = ", ".join(df_carrello['Prodotto'].tolist())
         share_text = f"Ho confrontato il mio carrello su ComparaCarrello.it! 🛒\n\nProdotti: {elenco_prodotti_txt}\n\n🏆 La più conveniente è {miglior_farmacia} a soli {miglior_prezzo:.2f} €!"
         share_encoded = urllib.parse.quote(share_text)
         
-        # Social Share Links
         wa_url = f"https://api.whatsapp.com/send?text={share_encoded}"
         tg_url = f"https://t.me/share/url?url=https://comparacarrello.it&text={share_encoded}"
         fb_url = f"https://www.facebook.com/sharer/sharer.php?u=https://comparacarrello.it&quote={share_encoded}"
@@ -375,6 +430,9 @@ if st.session_state.cart_indices:
                 <a href="{tw_url}" target="_blank" class="social-btn btn-tw">𝕏 X / Twitter</a>
                 <a href="{mail_url}" class="social-btn btn-mail">✉️ Email</a>
             """, unsafe_allow_html=True)
+            
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.text_area("📋 Copia il riepilogo del carrello:", value=share_text, height=100)
             
         with col_sh2:
             st.markdown("##### Scansiona con Smartphone:")
