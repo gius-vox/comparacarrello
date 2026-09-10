@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import os
 
 # Configurazione della pagina
 st.set_page_config(
@@ -13,29 +14,21 @@ st.set_page_config(
 st.markdown("""
     <style>
     .main-header {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
         color: #0E1117;
         text-align: center;
         margin-bottom: 0.5rem;
     }
     .sub-header {
-        font-size: 1.1rem;
+        font-size: 1.0rem;
         color: #4F4F4F;
         text-align: center;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
     }
     .stMetric {
         background-color: #F0F2F6;
         padding: 15px;
         border-radius: 10px;
-    }
-    .badge-minsan {
-        background-color: #E1F5FE;
-        color: #0288D1;
-        padding: 3px 8px;
-        border-radius: 5px;
-        font-size: 0.85rem;
-        font-weight: bold;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -44,7 +37,6 @@ st.markdown("""
 def load_data():
     try:
         df = pd.read_csv("prodotti.csv", dtype={'MINSAN': str})
-        # Pulizia colonne farmacie
         fixed_cols = ['MINSAN', 'Prodotto', 'Immagine', 'Categoria']
         pharmacy_cols = [c for c in df.columns if c not in fixed_cols]
         return df, pharmacy_cols
@@ -53,6 +45,12 @@ def load_data():
         return pd.DataFrame(), []
 
 df_prodotti, farmacie_disponibili = load_data()
+
+# Mostra il logo se presente nel repository
+if os.path.exists("logo.png"):
+    col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
+    with col_l2:
+        st.image("logo.png", use_container_width=True)
 
 # Header Principale
 st.markdown("<h1 class='main-header'>💊 ComparaCarrello.it</h1>", unsafe_allow_html=True)
@@ -64,7 +62,7 @@ if df_prodotti.empty:
 
 # Sidebar per filtri e informazioni
 with st.sidebar:
-    st.header("🔍 Opzioni e Filtri")
+    st.header("🔍 Filtri")
     
     categorie = ["Tutte"] + list(df_prodotti['Categoria'].dropna().unique())
     cat_selezionata = st.selectbox("Filtra per Categoria", categorie)
@@ -75,7 +73,7 @@ with st.sidebar:
         st.markdown(f"- **{f}**")
     
     st.markdown("---")
-    st.caption("I prezzi vengono sincronizzati automaticamente tramite codice MINSAN/PARAF ufficiale.")
+    st.caption("Prezzi aggiornati automaticamente tramite codice MINSAN/PARAF ufficiale.")
 
 # Filtraggio dati per categoria
 if cat_selezionata != "Tutte":
@@ -86,7 +84,6 @@ else:
 # Selezione Prodotti per il Carrello
 st.subheader("🛒 Crea il tuo carrello di confronto")
 
-# Formattazione per la ricerca multi-prodotto (Nome + MINSAN)
 def format_func(idx):
     row = df_filtrato.loc[idx]
     minsan_str = f" [MINSAN: {row['MINSAN']}]" if pd.notna(row['MINSAN']) and str(row['MINSAN']).strip() != '' else ""
@@ -105,7 +102,6 @@ if prodotti_selezionati_idx:
     st.markdown("---")
     st.subheader("📋 Prodotti nel Carrello")
     
-    # Visualizzazione prodotti selezionati
     cols_display = ['MINSAN', 'Prodotto', 'Categoria']
     st.dataframe(
         df_carrello[cols_display],
@@ -113,20 +109,17 @@ if prodotti_selezionati_idx:
         hide_index=True
     )
     
-    # Calcolo totale per ogni farmacia
     st.markdown("---")
     st.subheader("📊 Confronto Risparmio Carrello")
     
     totali_farmacie = {}
     for f in farmacie_disponibili:
-        # Converte i prezzi in numerico ed effettua la somma
         prezzi = pd.to_numeric(df_carrello[f], errors='coerce')
         if prezzi.notna().all():
             totali_farmacie[f] = prezzi.sum()
         else:
             totali_farmacie[f] = np.nan
 
-    # Rimozione farmacie con prodotti mancanti
     totali_validi = {k: v for k, v in totali_farmacie.items() if not np.isnan(v)}
     
     if totali_validi:
@@ -135,7 +128,6 @@ if prodotti_selezionati_idx:
         prezzo_max = max(totali_validi.values())
         risparmio_max = prezzo_max - prezzo_min
 
-        # Dashboard Metriche Principali
         m1, m2, m3 = st.columns(3)
         with m1:
             st.metric("🥇 Miglior Farmacia", farmacia_migliore)
@@ -146,7 +138,6 @@ if prodotti_selezionati_idx:
 
         st.markdown("### 🏆 Classifica Farmacie per questo Carrello")
         
-        # Creazione DF Classifica
         df_classifica = pd.DataFrame(list(totali_validi.items()), columns=['Farmacia', 'Totale Carrello (€)'])
         df_classifica = df_classifica.sort_values(by='Totale Carrello (€)').reset_index(drop=True)
         df_classifica['Totale Carrello (€)'] = df_classifica['Totale Carrello (€)'].map('{:.2f} €'.format)
@@ -156,7 +147,6 @@ if prodotti_selezionati_idx:
     else:
         st.warning("Alcuni prodotti selezionati non sono disponibili contemporaneamente in tutte le farmacie. Consulta la tabella sottostante per i dettagli sui singoli prezzi.")
         
-    # Tabella dettagliata per singolo prodotto
     with st.expander("🔍 Mostra dettaglio prezzi per singolo prodotto"):
         st.dataframe(
             df_carrello[['Prodotto'] + farmacie_disponibili],
