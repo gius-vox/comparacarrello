@@ -1,468 +1,392 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
-import urllib.parse
-import qrcode
-from io import BytesIO
 
+# ---------------------------------------------------------
+# 1. CONFIGURAZIONE PAGINA
+# ---------------------------------------------------------
 st.set_page_config(
-    page_title="ComparaCarrello.it - Il tuo risparmio in farmacia",
+    page_title="ComparaCarrello.it - Il tuo risparmio",
     page_icon="💊",
-    layout="wide",
-    initial_sidebar_state="collapsed"
+    layout="wide"
 )
 
-# CSS con Stili Personalizzati
+# ---------------------------------------------------------
+# 2. STILI CSS PERSONALIZZATI
+# ---------------------------------------------------------
 st.markdown("""
-    <style>
-    .main { background-color: #f8f9fa; }
-    
-    .brand-header {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        margin-top: -10px;
-        margin-bottom: 5px;
-    }
-    .brand-logo {
-        font-size: 2.8rem;
-    }
+<style>
+    /* Stili generali */
     .main-title {
-        font-size: 2.3rem;
+        text-align: center;
+        font-size: 2.5rem;
         font-weight: 800;
-        color: #1a252f;
-        margin: 0;
+        color: #1e293b;
+        margin-bottom: 0px;
     }
     .sub-title {
-        font-size: 1rem;
-        color: #5a6578;
         text-align: center;
-        margin-bottom: 20px;
-    }
-
-    /* Badge con Loghi */
-    .pharmacy-badge-container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
+        font-size: 1.1rem;
+        color: #64748b;
         margin-bottom: 25px;
     }
-    .pharm-pill {
+    
+    /* Loghi Top Farmacie */
+    .farm-badge {
+        display: inline-flex;
+        align-items: center;
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 5px 15px;
+        margin: 4px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #334155;
+    }
+    .farm-badge img {
+        width: 22px;
+        height: 22px;
+        object-fit: contain;
+        margin-right: 8px;
+    }
+
+    /* Cards Classifica */
+    .card-container {
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         background-color: #ffffff;
         border: 1px solid #e2e8f0;
-        color: #334155;
-        padding: 6px 14px;
-        border-radius: 30px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.04);
-        display: flex;
-        align-items: center;
-        gap: 8px;
+        text-align: center;
     }
-    .pharm-pill img {
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
+    .card-best {
+        border: 2px solid #22c55e !important;
+        background-color: #f0fdf4 !important;
     }
-
-    /* Card Farmacie */
-    .pharmacy-card {
-        background: #ffffff;
-        border-radius: 14px;
-        padding: 18px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        border: 2px solid #edf2f7;
-        margin-bottom: 15px;
-    }
-    .pharmacy-card.winner {
-        border: 2.5px solid #2ecc71;
-        background: linear-gradient(180deg, #ffffff 0%, #f0fff4 100%);
-        box-shadow: 0 6px 20px rgba(46, 204, 113, 0.15);
-    }
-    .badge-rank {
-        display: inline-block;
-        font-weight: 700;
-        font-size: 0.8rem;
-        padding: 4px 10px;
-        border-radius: 20px;
-        margin-bottom: 8px;
-    }
-    .badge-rank.gold { background-color: #fef9e7; color: #d4ac0d; border: 1px solid #f9e79f; }
-    .badge-rank.silver { background-color: #f2f4f4; color: #7f8c8d; border: 1px solid #d5dbdb; }
-    .badge-rank.bronze { background-color: #fbeee6; color: #dc7633; border: 1px solid #edbb99; }
-    .badge-rank.standard { background-color: #ebedef; color: #5d6d7e; }
-
     .pharm-header {
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: 10px;
-        margin: 6px 0;
-    }
-    .pharm-header img {
-        width: 24px;
-        height: 24px;
-        border-radius: 4px;
-    }
-    .pharm-name { font-size: 1.2rem; font-weight: 700; color: #2c3e50; }
-    .pharm-price { font-size: 1.7rem; font-weight: 800; color: #2e7d32; margin-top: 4px; }
-    
-    .ship-box {
-        background: #f8fafc;
-        border-radius: 8px;
-        padding: 8px 10px;
-        margin-top: 10px;
-        border: 1px solid #e2e8f0;
-    }
-    .ship-free { color: #16a34a; font-weight: 700; font-size: 0.85rem; }
-    .ship-pay { color: #dc2626; font-size: 0.85rem; font-weight: 600; }
-    .ship-detail { color: #64748b; font-size: 0.78rem; margin-top: 2px; }
-    .ship-missing { color: #d97706; font-weight: 700; font-size: 0.8rem; margin-top: 2px; }
-
-    .metric-box {
-        background: #ffffff;
-        border-radius: 12px;
-        padding: 15px;
-        text-align: center;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         margin-bottom: 10px;
     }
-    .metric-title { font-size: 0.8rem; color: #64748b; font-weight: 600; text-transform: uppercase; }
-    .metric-val { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-top: 4px; }
-    .metric-val.green { color: #16a34a; }
-    .metric-val.orange { color: #ea580c; }
-
-    .prod-item-row {
-        background: #ffffff;
-        border-radius: 10px;
-        padding: 10px 14px;
-        margin-bottom: 8px;
-        border-left: 4px solid #3b82f6;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    .pharm-header img {
+        height: 28px;
+        width: auto;
+        max-width: 100px;
+        object-fit: contain;
+    }
+    .pharm-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+    .pharm-price {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #15803d;
+        margin: 8px 0;
     }
     
+    /* Pulsante Acquista */
     .btn-buy {
         display: block;
         width: 100%;
-        text-align: center;
         background-color: #2563eb;
         color: white !important;
-        font-weight: 700;
-        padding: 10px 12px;
+        text-align: center;
+        padding: 10px 0;
         border-radius: 8px;
-        text-decoration: none;
-        margin-top: 12px;
-        font-size: 0.9rem;
-    }
-
-    .social-btn {
-        display: inline-block;
-        padding: 8px 14px;
-        border-radius: 8px;
-        color: white !important;
         font-weight: 600;
-        font-size: 0.85rem;
-        text-decoration: none;
-        margin: 4px;
+        text-decoration: none !important;
+        margin-top: 15px;
+        transition: background-color 0.2s;
     }
-    .btn-wa { background-color: #25D366; }
-    .btn-tg { background-color: #0088cc; }
-    .btn-fb { background-color: #1877F2; }
-    .btn-tw { background-color: #000000; }
-    .btn-mail { background-color: #64748b; }
-    </style>
-""", unsafe_allow_html=True)
-
-# Normalizzazione nomi farmacie (inclusi Dottor Max e rimozione Ristoranti)
-CLEAN_PHARMACY_NAMES = {
-    'Farmacia Igea': 'Farmacia Igea', 'FarmaciaIgea': 'Farmacia Igea', 'igea': 'Farmacia Igea',
-    'Farmae': 'Farmaè', 'Farmaè': 'Farmaè', 'farmae': 'Farmaè',
-    'Dr Max': 'Dr. Max', 'Dr. Max': 'Dr. Max', 'DrMax': 'Dr. Max', 'Dott. Max': 'Dr. Max', 'Dottor Max': 'Dr. Max', 'drmax': 'Dr. Max',
-    'RedCare': 'RedCare', 'redcare': 'RedCare',
-    'Farmacia Loreto': 'Farmacia Loreto', 'loreto': 'Farmacia Loreto',
-    '1000Farmacie': '1000Farmacie', '1000farmacie': '1000Farmacie',
-    'Top Farmacia': 'Top Farmacia', 'TopFarmacia': 'Top Farmacia', 'topfarmacia': 'Top Farmacia', 'Farmacia Top': 'Top Farmacia',
-    'eFarma': 'eFarma', 'efarma': 'eFarma'
-}
-
-SHIPPING_RULES = {
-    'Farmacia Igea': {'free_threshold': 29.90, 'cost': 4.50},
-    'Farmaè': {'free_threshold': 19.90, 'cost': 3.90},
-    'Dr. Max': {'free_threshold': 19.90, 'cost': 3.90},
-    'RedCare': {'free_threshold': 18.00, 'cost': 3.99},
-    'Farmacia Loreto': {'free_threshold': 29.90, 'cost': 4.90},
-    '1000Farmacie': {'free_threshold': 29.00, 'cost': 4.20},
-    'Top Farmacia': {'free_threshold': 29.90, 'cost': 4.50},
-    'eFarma': {'free_threshold': 19.90, 'cost': 3.90}
-}
-
-PHARMACY_URLS = {
-    'Farmacia Igea': 'https://www.farmaciaigea.com',
-    'Farmaè': 'https://www.farmae.it',
-    'Dr. Max': 'https://www.drmax.it',
-    'RedCare': 'https://www.redcare.it',
-    'Farmacia Loreto': 'https://www.farmacialoreto.it',
-    '1000Farmacie': 'https://www.1000farmacie.it',
-    'Top Farmacia': 'https://www.topfarmacia.it',
-    'eFarma': 'https://www.efarma.com'
-}
-
-PHARMACY_LOGOS = {
-    'Farmacia Igea': 'https://www.google.com/s2/favicons?domain=farmaciaigea.com&sz=64',
-    'Farmaè': 'https://www.google.com/s2/favicons?domain=farmae.it&sz=64',
-    'Dr. Max': 'https://www.google.com/s2/favicons?domain=drmax.it&sz=64',
-    'RedCare': 'https://www.google.com/s2/favicons?domain=redcare.it&sz=64',
-    'Farmacia Loreto': 'https://www.google.com/s2/favicons?domain=farmacialoreto.it&sz=64',
-    '1000Farmacie': 'https://www.google.com/s2/favicons?domain=1000farmacie.it&sz=64',
-    'Top Farmacia': 'https://www.google.com/s2/favicons?domain=topfarmacia.it&sz=64',
-    'eFarma': 'https://www.google.com/s2/favicons?domain=efarma.com&sz=64'
-}
-
-@st.cache_data(ttl=60)
-def load_data():
-    try:
-        df = pd.read_csv("prodotti.csv", dtype={'MINSAN': str})
-        
-        # Mappatura e pulizia colonne CSV
-        new_cols = []
-        for col in df.columns:
-            clean_col = col.strip()
-            new_cols.append(CLEAN_PHARMACY_NAMES.get(clean_col, clean_col))
-        df.columns = new_cols
-
-        fixed_cols = ['MINSAN', 'Prodotto', 'Categoria', 'Immagine']
-        # Esclude qualsiasi colonna non mappata (come 'Ristoranti di alto livello')
-        pharmacy_cols = [c for c in df.columns if c in SHIPPING_RULES]
-        df['MINSAN'] = df['MINSAN'].astype(str).str.zfill(9)
-        return df, pharmacy_cols
-    except Exception as e:
-        st.error(f"Errore nel caricamento: {e}")
-        return pd.DataFrame(), []
-
-df_prodotti, farmacie_disponibili = load_data()
-
-# Logo e Titolo Principale
-st.markdown("""
-    <div class="brand-header">
-        <span class="brand-logo">💊</span>
-        <h1 class="main-title">ComparaCarrello.it</h1>
-    </div>
-""", unsafe_allow_html=True)
-st.markdown("<p class='sub-title'>Trova la farmacia online più conveniente per il tuo carrello</p>", unsafe_allow_html=True)
-
-# Badge con Loghi Farmacie
-if farmacie_disponibili:
-    badges_list = []
-    for f in farmacie_disponibili:
-        logo_url = PHARMACY_LOGOS.get(f, '')
-        logo_img = f'<img src="{logo_url}">' if logo_url else '🏥'
-        badges_list.append(f'<div class="pharm-pill">{logo_img} <span>{f}</span></div>')
+    .btn-buy:hover {
+        background-color: #1d4ed8;
+    }
     
-    st.markdown(f'<div class="pharmacy-badge-container">{"".join(badges_list)}</div>', unsafe_allow_html=True)
+    /* Box Info Spedizione */
+    .shipping-box {
+        background-color: #f8fafc;
+        border-radius: 6px;
+        padding: 8px;
+        margin-top: 10px;
+        font-size: 0.85rem;
+        text-align: left;
+    }
+    .shipping-box p {
+        margin: 2px 0;
+    }
+</style>
+""", unsafe_allow_html=True)
 
-if df_prodotti.empty:
-    st.warning("Database in caricamento...")
-    st.stop()
+# ---------------------------------------------------------
+# 3. DATABASE FARMACIE E LOGHI
+# ---------------------------------------------------------
+FARMACIE_INFO = {
+    "Farmacia Igea": {
+        "logo": "https://www.farmaciaigea.com/img/logo-1.jpg",
+        "url": "https://www.farmaciaigea.com",
+        "soglia_gratis": 29.90,
+        "costo_sped": 4.90
+    },
+    "Farmaè": {
+        "logo": "https://www.farmae.it/static/version1700000000/frontend/Farmae/default/it_IT/images/logo.svg",
+        "url": "https://www.farmae.it",
+        "soglia_gratis": 19.90,
+        "costo_sped": 3.90
+    },
+    "Dr. Max": {
+        "logo": "https://www.drmax.it/media/logo/default/logo_drmax_1.png",
+        "url": "https://www.drmax.it",
+        "soglia_gratis": 19.90,
+        "costo_sped": 3.90
+    },
+    "RedCare": {
+        "logo": "https://www.redcare.it/images/logo-redcare.svg",
+        "url": "https://www.redcare.it",
+        "soglia_gratis": 18.00,
+        "costo_sped": 3.99
+    },
+    "Farmacia Loreto": {
+        "logo": "https://farmacialoreto.it/image/catalog/logo.png",
+        "url": "https://farmacialoreto.it",
+        "soglia_gratis": 29.90,
+        "costo_sped": 4.90
+    },
+    "1000Farmacie": {
+        "logo": "https://www.1000farmacie.it/static/images/logo.svg",
+        "url": "https://www.1000farmacie.it",
+        "soglia_gratis": 29.00,
+        "costo_sped": 4.90
+    },
+    "Top Farmacia": {
+        "logo": "https://www.topfarmacia.it/images/logo.png",
+        "url": "https://www.topfarmacia.it",
+        "soglia_gratis": 29.90,
+        "costo_sped": 4.50
+    },
+    "eFarma": {
+        "logo": "https://www.efarma.com/static/version1700000000/frontend/Atida/efarma/it_IT/images/logo.svg",
+        "url": "https://www.efarma.com",
+        "soglia_gratis": 19.90,
+        "costo_sped": 3.90
+    }
+}
 
-categorie = ["Tutte le Categorie"] + sorted([str(c) for c in df_prodotti['Categoria'].dropna().unique() if str(c).strip() != ""])
-c_cat1, c_cat2, c_cat3 = st.columns([1, 2, 1])
-with c_cat2:
-    cat_selezionata = st.selectbox("📁 Filtra per Categoria:", categorie)
+# ---------------------------------------------------------
+# 4. CARICAMENTO DATI / PRODOTTI MOCK
+# ---------------------------------------------------------
+@st.cache_data
+def load_data():
+    # Sostituisci questo mock con il tuo vero caricamento CSV se presente
+    data = [
+        {
+            "id": "MINSAN: 900000001",
+            "nome": "Magnesio Supremo 150g",
+            "categoria": "Integratori",
+            "prezzi": {
+                "Farmaè": 15.50,
+                "Dr. Max": 15.50,
+                "eFarma": 15.50,
+                "Farmacia Igea": 16.90,
+                "RedCare": 17.20,
+                "1000Farmacie": 16.50,
+                "Farmacia Loreto": 18.00,
+                "Top Farmacia": 17.90
+            }
+        },
+        {
+            "id": "MINSAN: 029007044",
+            "nome": "Tachipirina 500mg 20 Compresse",
+            "categoria": "Farmaci da Banco",
+            "prezzi": {
+                "Farmaè": 5.20,
+                "Dr. Max": 4.90,
+                "eFarma": 5.10,
+                "Farmacia Igea": 5.50,
+                "RedCare": 5.30,
+                "1000Farmacie": 5.00,
+                "Farmacia Loreto": 5.60,
+                "Top Farmacia": 5.40
+            }
+        }
+    ]
+    return data
 
-df_filtrato = df_prodotti if cat_selezionata == "Tutte le Categorie" else df_prodotti[df_prodotti['Categoria'] == cat_selezionata]
+products_db = load_data()
 
-if 'cart_indices' not in st.session_state:
-    st.session_state.cart_indices = []
+# ---------------------------------------------------------
+# 5. HEADER & BADGE TOP FARMACIE
+# ---------------------------------------------------------
+st.markdown('<div class="main-title">💊 ComparaCarrello.it</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-title">Trova la farmacia online più conveniente per il tuo carrello</div>', unsafe_allow_html=True)
+
+# Generazione badge farmacie con icone
+badges_html = '<div style="text-align: center; margin-bottom: 20px;">'
+for name, info in FARMACIE_INFO.items():
+    badges_html += f'''
+        <div class="farm-badge">
+            <img src="{info['logo']}" alt="{name}" onerror="this.style.display='none'">
+            <span>{name}</span>
+        </div>
+    '''
+badges_html += '</div>'
+st.markdown(badges_html, unsafe_allow_html=True)
+
+# Filtro Categoria
+col_cat1, col_cat2, col_cat3 = st.columns([1, 2, 1])
+with col_cat2:
+    categorie = ["Tutte le Categorie"] + sorted(list(set(p["categoria"] for p in products_db)))
+    cat_selected = st.selectbox("📁 Filtra per Categoria:", categorie)
+
+# ---------------------------------------------------------
+# 6. CARRELLO ED INTERFACCIA
+# ---------------------------------------------------------
+if "carrello" not in st.session_state:
+    st.session_state.carrello = []
 
 st.markdown("---")
 st.subheader("🔍 Cerca e Aggiungi Prodotti")
 
-def format_prod(idx):
-    row = df_filtrato.loc[idx]
-    return f"{row['Prodotto']} — [MINSAN: {row['MINSAN']}]"
+# Filtra prodotti per categoria
+prodotti_filtrati = products_db
+if cat_selected != "Tutte le Categorie":
+    prodotti_filtrati = [p for p in products_db if p["categoria"] == cat_selected]
 
-selected_to_add = st.selectbox("Seleziona o digita un prodotto:", options=[None] + df_filtrato.index.tolist(), format_func=lambda x: "— Seleziona un prodotto —" if x is None else format_prod(x))
+options_map = {f"{p['nome']} — [{p['id']}]": p for p in prodotti_filtrati}
 
-col_b1, col_b2 = st.columns([1.5, 3.5])
-with col_b1:
-    if st.button("➕ Aggiungi al Carrello", type="primary", use_container_width=True):
-        if selected_to_add is not None and selected_to_add not in st.session_state.cart_indices:
-            st.session_state.cart_indices.append(selected_to_add)
-            st.rerun()
+col_search, col_btn1, col_btn2 = st.columns([3, 1, 1])
 
-with col_b2:
-    if st.session_state.cart_indices and st.button("🗑️ Svuota Carrello"):
-        st.session_state.cart_indices = []
+with col_search:
+    selected_option = st.selectbox(
+        "Seleziona o digita un prodotto:",
+        options=list(options_map.keys()),
+        label_visibility="collapsed"
+    )
+
+with col_btn1:
+    if st.button("➕ Aggiungi al Carrello", use_container_width=True, type="primary"):
+        prod_obj = options_map[selected_option]
+        st.session_state.carrello.append(prod_obj)
         st.rerun()
 
-if st.session_state.cart_indices:
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("### 🛒 Prodotti nel Carrello")
-    df_carrello = df_prodotti.loc[st.session_state.cart_indices].copy()
-    
-    for idx, row in df_carrello.iterrows():
-        c_p1, c_p2 = st.columns([4, 1.5])
-        with c_p1:
-            st.markdown(f"""
-                <div class="prod-item-row">
-                    <span style="font-weight:600;">{row['Prodotto']}</span>
-                    <span style="font-size:0.8rem; color:#2563eb; margin-left:8px;">MINSAN: {row['MINSAN']}</span>
-                </div>
-            """, unsafe_allow_html=True)
-        with c_p2:
-            if st.button("❌ Rimuovi", key=f"rem_{idx}", use_container_width=True):
-                st.session_state.cart_indices.remove(idx)
+with col_btn2:
+    if st.button("🗑️ Svuota Carrello", use_container_width=True):
+        st.session_state.carrello = []
+        st.rerun()
+
+# Display Prodotti nel Carrello
+if st.session_state.carrello:
+    st.subheader("🛒 Prodotti nel Carrello")
+    for idx, item in enumerate(st.session_state.carrello):
+        c1, c2 = st.columns([4, 1])
+        with c1:
+            st.info(f"**{item['nome']}** &nbsp;&nbsp; `<small>{item['id']}</small>`", icon="📦")
+        with c2:
+            if st.button("❌ Rimuovi", key=f"del_{idx}"):
+                st.session_state.carrello.pop(idx)
                 st.rerun()
 
+# ---------------------------------------------------------
+# 7. CALCOLO E RISULTATI CLASSIFICA
+# ---------------------------------------------------------
+if st.session_state.carrello:
     st.markdown("---")
     st.subheader("📊 Classifica Risparmio Carrello Completo")
 
-    totali_prodotti = {}
-    totali_finali = {}
-    spese_spedizione = {}
-    mancanti_spedizione = {}
-    soglie_spedizione = {}
+    # Calcolo totale per farmacia
+    totals_products = {farm: 0.0 for farm in FARMACIE_INFO.keys()}
+    for prod in st.session_state.carrello:
+        for farm in FARMACIE_INFO.keys():
+            prezzo = prod["prezzi"].get(farm, 0.0)
+            totals_products[farm] += prezzo
 
-    for f in farmacie_disponibili:
-        prezzi = pd.to_numeric(df_carrello[f], errors='coerce')
-        if prezzi.notna().all():
-            sum_prod = prezzi.sum()
-            totali_prodotti[f] = sum_prod
-            
-            rules = SHIPPING_RULES.get(f, {'free_threshold': 29.90, 'cost': 4.50})
-            thresh = rules['free_threshold']
-            soglie_spedizione[f] = thresh
-            
-            if sum_prod >= thresh:
-                ship_cost = 0.0
-                missing = 0.0
-            else:
-                ship_cost = rules['cost']
-                missing = thresh - sum_prod
-                
-            spese_spedizione[f] = ship_cost
-            mancanti_spedizione[f] = missing
-            totali_finali[f] = sum_prod + ship_cost
+    # Calcolo spedizione e totale finale
+    totals_final = {}
+    shipping_details = {}
 
-    if totali_finali:
-        sorted_pharmacies = sorted(totali_finali.items(), key=lambda x: x[1])
-        miglior_farmacia, miglior_prezzo = sorted_pharmacies[0]
-        peggior_prezzo = sorted_pharmacies[-1][1]
-        risparmio_max = peggior_prezzo - miglior_prezzo
+    for farm, prod_tot in totals_products.items():
+        info = FARMACIE_INFO[farm]
+        if prod_tot >= info["soglia_gratis"]:
+            costo_sped = 0.0
+            mancanti = 0.0
+        else:
+            costo_sped = info["costo_sped"]
+            mancanti = info["soglia_gratis"] - prod_tot
 
-        m1, m2, m3 = st.columns(3)
-        with m1:
-            st.markdown(f'<div class="metric-box"><div class="metric-title">🥇 Più Conveniente</div><div class="metric-val green">{miglior_farmacia}</div></div>', unsafe_allow_html=True)
-        with m2:
-            st.markdown(f'<div class="metric-box"><div class="metric-title">💰 Totale (Sped. Inclusa)</div><div class="metric-val">{miglior_prezzo:.2f} €</div></div>', unsafe_allow_html=True)
-        with m3:
-            st.markdown(f'<div class="metric-box"><div class="metric-title">🔥 Risparmio Massimo</div><div class="metric-val orange">{risparmio_max:.2f} €</div></div>', unsafe_allow_html=True)
+        totals_final[farm] = prod_tot + costo_sped
+        shipping_details[farm] = {
+            "costo_sped": costo_sped,
+            "mancanti": mancanti,
+            "soglia": info["soglia_gratis"]
+        }
 
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("### 🏆 Classifica Farmacie")
+    # Ordinamento farmacie dalla più economica
+    sorted_pharmacies = sorted(totals_final.items(), key=lambda x: x[1])
+    best_farm, best_price = sorted_pharmacies[0]
+    worst_farm, worst_price = sorted_pharmacies[-1]
+    max_risparmio = worst_price - best_price
 
-        cols_cards = st.columns(min(3, len(sorted_pharmacies)))
+    # Metric Banner
+    m1, m2, m3 = st.columns(3)
+    m1.metric("🥇 PIÙ CONVENIENTE", best_farm)
+    m2.metric("💰 TOTALE (SPED. INCLUSA)", f"{best_price:.2f} €")
+    m3.metric("🔥 RISPARMIO MASSIMO", f"{max_risparmio:.2f} €")
+
+    st.markdown("### 🏆 Classifica Farmacie")
+
+    # Layout a Griglia per le Cards (3 per riga)
+    cols_cards = st.columns(3)
+
+    for i, (pharm_name, tot_val) in enumerate(sorted_pharmacies):
+        info = FARMACIE_INFO[pharm_name]
+        ship_info = shipping_details[pharm_name]
+        prod_val = totals_products[pharm_name]
         
-        for i, (pharm_name, tot_val) in enumerate(sorted_pharmacies):
-            prod_val = totali_prodotti[pharm_name]
-            ship_val = spese_spedizione[pharm_name]
-            miss_val = mancanti_spedizione[pharm_name]
-            thresh_val = soglie_spedizione[pharm_name]
-            pharm_url = PHARMACY_URLS.get(pharm_name, '#')
-            logo_url = PHARMACY_LOGOS.get(pharm_name, '')
-            
-            card_class = "pharmacy-card winner" if i == 0 else "pharmacy-card"
-            
-            if i == 0:
-                badge_html = '<span class="badge-rank gold">🥇 1° Posto</span>'
-            elif i == 1:
-                badge_html = '<span class="badge-rank silver">🥈 2° Posto</span>'
-            elif i == 2:
-                badge_html = '<span class="badge-rank bronze">🥉 3° Posto</span>'
-            else:
-                badge_html = f'<span class="badge-rank standard">{i+1}° Posto</span>'
-                
-            if ship_val == 0:
-                ship_html = f"""
-                    <div class="ship-box">
-                        <div class="ship-free">🚚 Spedizione Gratuita</div>
-                        <div class="ship-detail">Soglia raggiunta (oltre {thresh_val:.2f} €)</div>
-                    </div>
-                """
-            else:
-                ship_html = f"""
-                    <div class="ship-box">
-                        <div class="ship-pay">🚚 Spedizione: +{ship_val:.2f} €</div>
-                        <div class="ship-detail">Soglia gratuita: {thresh_val:.2f} €</div>
-                        <div class="ship-missing">⚠️ Mancano {miss_val:.2f} €</div>
-                    </div>
-                """
+        # Badge posizione
+        if i == 0:
+            badge_html = '<span style="background:#dcfce7; color:#15803d; padding:3px 10px; border-radius:12px; font-weight:700; font-size:0.8rem;">🥇 1° Posto</span>'
+            card_class = "card-container card-best"
+        elif i == 1:
+            badge_html = '<span style="background:#f1f5f9; color:#475569; padding:3px 10px; border-radius:12px; font-weight:700; font-size:0.8rem;">🥈 2° Posto</span>'
+            card_class = "card-container"
+        elif i == 2:
+            badge_html = '<span style="background:#fef3c7; color:#b45309; padding:3px 10px; border-radius:12px; font-weight:700; font-size:0.8rem;">🥉 3° Posto</span>'
+            card_class = "card-container"
+        else:
+            badge_html = f'<span style="background:#f8fafc; color:#64748b; padding:3px 10px; border-radius:12px; font-weight:600; font-size:0.8rem;">#{i+1} Posizione</span>'
+            card_class = "card-container"
 
-            logo_img_html = f'<img src="{logo_url}">' if logo_url else ''
+        # HTML Spedizione
+        if ship_info["costo_sped"] == 0:
+            ship_html = f'<div class="shipping-box" style="color:#15803d;"><b>🚚 Spedizione GRATUITA!</b></div>'
+        else:
+            ship_html = f'''
+            <div class="shipping-box">
+                <p style="color:#b91c1c;"><b>🚚 Spedizione: +{ship_info["costo_sped"]:.2f} €</b></p>
+                <p style="color:#64748b;">Soglia gratuita: {ship_info["soglia"]:.2f} €</p>
+                <p style="color:#d97706;"><b>⚠️ Mancano {ship_info["mancanti"]:.2f} €</b></p>
+            </div>
+            '''
 
-            col_idx = i % 3
-            with cols_cards[col_idx]:
-                st.markdown(f"""
-                    <div class="{card_class}">
-                        {badge_html}
-                        <div class="pharm-header">
-                            {logo_img_html}
-                            <div class="pharm-name">{pharm_name}</div>
-                        </div>
-                        <div class="pharm-price">{tot_val:.2f} €</div>
-                        <div style="font-size:0.85rem; color:#64748b;">Prodotti: {prod_val:.2f} €</div>
-                        {ship_html}
-                        <a href="{pharm_url}" target="_blank" class="btn-buy">🛒 Vai alla Farmacia</a>
-                    </div>
-                """, unsafe_allow_html=True)
+        logo_html = f'<img src="{info["logo"]}" alt="{pharm_name}" onerror="this.style.display=\'none\'">'
 
-        with st.expander("🔍 Mostra Matrice Dettagliata Prezzi Singoli"):
-            st.dataframe(df_carrello[['Prodotto', 'MINSAN'] + farmacie_disponibili], use_container_width=True, hide_index=True)
-
-        # CONDIVISIONE E QR CODE
-        st.markdown("---")
-        st.subheader("📲 Condividi il tuo Carrello o Apri su Mobile")
-        
-        elenco_prodotti_txt = ", ".join(df_carrello['Prodotto'].tolist())
-        share_text = f"Ho confrontato il mio carrello su ComparaCarrello.it! 🛒\n\nProdotti: {elenco_prodotti_txt}\n\n🏆 La più conveniente è {miglior_farmacia} a soli {miglior_prezzo:.2f} €!"
-        share_encoded = urllib.parse.quote(share_text)
-        
-        wa_url = f"https://api.whatsapp.com/send?text={share_encoded}"
-        tg_url = f"https://t.me/share/url?url=https://comparacarrello.it&text={share_encoded}"
-        fb_url = f"https://www.facebook.com/sharer/sharer.php?u=https://comparacarrello.it&quote={share_encoded}"
-        tw_url = f"https://twitter.com/intent/tweet?text={share_encoded}"
-        mail_url = f"mailto:?subject=Confronto Carrello Farmacia&body={share_encoded}"
-
-        col_sh1, col_sh2 = st.columns([2, 1])
-        
-        with col_sh1:
-            st.markdown("##### Scegli il canale di condivisione:")
+        # Rendering Card
+        col_idx = i % 3
+        with cols_cards[col_idx]:
             st.markdown(f"""
-                <a href="{wa_url}" target="_blank" class="social-btn btn-wa">💬 WhatsApp</a>
-                <a href="{tg_url}" target="_blank" class="social-btn btn-tg">✈️ Telegram</a>
-                <a href="{fb_url}" target="_blank" class="social-btn btn-fb">📘 Facebook</a>
-                <a href="{tw_url}" target="_blank" class="social-btn btn-tw">𝕏 X / Twitter</a>
-                <a href="{mail_url}" class="social-btn btn-mail">✉️ Email</a>
+                <div class="{card_class}">
+                    <div style="text-align:left; margin-bottom:10px;">{badge_html}</div>
+                    <div class="pharm-header">
+                        {logo_html}
+                        <div class="pharm-name">{pharm_name}</div>
+                    </div>
+                    <div class="pharm-price">{tot_val:.2f} €</div>
+                    <div style="font-size:0.85rem; color:#64748b;">Prodotti: {prod_val:.2f} €</div>
+                    {ship_html}
+                    <a href="{info['url']}" target="_blank" class="btn-buy">🛒 Vai alla Farmacia</a>
+                </div>
             """, unsafe_allow_html=True)
-            
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.text_area("📋 Copia il riepilogo del carrello:", value=share_text, height=100)
-            
-        with col_sh2:
-            st.markdown("##### Scansiona con Smartphone:")
-            qr = qrcode.QRCode(version=1, box_size=4, border=2)
-            qr.add_data(f"https://api.whatsapp.com/send?text={share_encoded}")
-            qr.make(fit=True)
-            img = qr.make_image(fill_color="black", back_color="white")
-            
-            buf = BytesIO()
-            img.save(buf, format="PNG")
-            st.image(buf.getvalue(), width=130)
-
-    else:
-        st.warning("I prodotti selezionati non sono presenti contemporaneamente in tutte le farmacie.")
-else:
-    st.info("💡 Usa la barra di ricerca qui sopra e clicca su **'➕ Aggiungi al Carrello'** per iniziare!")
