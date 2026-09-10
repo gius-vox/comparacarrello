@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Style CSS Avanzato per UI Moderna (Card, Badge, Pulsanti, Spedizioni, Tabelle Eleganti)
+# Style CSS Avanzato per UI Moderna
 st.markdown("""
     <style>
     .main {
@@ -143,7 +143,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Mappatura per nomi puliti delle farmacie
+# Mappatura per pulizia nomi farmacie
 CLEAN_PHARMACY_NAMES = {
     'Farmacia Igea': 'Farmacia Igea',
     'FarmaciaIgea': 'Farmacia Igea',
@@ -153,6 +153,7 @@ CLEAN_PHARMACY_NAMES = {
     'farmae': 'Farmaè',
     'Dr Max': 'Dr. Max',
     'DrMax': 'Dr. Max',
+    'Dott. Max': 'Dr. Max',
     'Dottor Max': 'Dr. Max',
     'drmax': 'Dr. Max',
     'RedCare': 'RedCare',
@@ -170,7 +171,7 @@ CLEAN_PHARMACY_NAMES = {
     'efarma': 'eFarma'
 }
 
-# Spese di Spedizione Standard
+# Spese di Spedizioni Standard
 SHIPPING_RULES = {
     'Farmacia Igea': {'free_threshold': 29.90, 'cost': 4.50},
     'Farmaè': {'free_threshold': 19.90, 'cost': 3.90},
@@ -187,16 +188,15 @@ def load_data():
     try:
         df = pd.read_csv("prodotti.csv", dtype={'MINSAN': str})
         
+        # Sostituisce le intestazioni di colonna errate
+        new_cols = []
+        for col in df.columns:
+            clean_col = col.strip()
+            new_cols.append(CLEAN_PHARMACY_NAMES.get(clean_col, clean_col))
+        df.columns = new_cols
+
         fixed_cols = ['MINSAN', 'Prodotto', 'Categoria', 'Immagine']
-        raw_pharm_cols = [c for c in df.columns if c not in fixed_cols]
-        
-        rename_dict = {}
-        for c in raw_pharm_cols:
-            cleaned_c = c.strip()
-            rename_dict[c] = CLEAN_PHARMACY_NAMES.get(cleaned_c, cleaned_c)
-                
-        df = df.rename(columns=rename_dict)
-        pharmacy_cols = [rename_dict.get(c, c) for c in raw_pharm_cols]
+        pharmacy_cols = [c for c in df.columns if c not in fixed_cols]
         
         df['MINSAN'] = df['MINSAN'].astype(str).str.zfill(9)
         return df, pharmacy_cols
@@ -229,8 +229,7 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("### 🏥 Farmacie Monitorate")
     for f in farmacie_disponibili:
-        display_name = CLEAN_PHARMACY_NAMES.get(f, f)
-        st.markdown(f"• **{display_name}**")
+        st.markdown(f"• **{f}**")
         
     st.markdown("---")
     st.caption("🔒 Prezzi sincronizzati via codice MINSAN ufficiale.")
@@ -263,13 +262,13 @@ with col_b1:
         if selected_to_add is not None:
             if selected_to_add not in st.session_state.cart_indices:
                 st.session_state.cart_indices.append(selected_to_add)
-                st.experimental_rerun()
+                st.rerun()
 
 with col_b2:
     if st.session_state.cart_indices:
         if st.button("🗑️ Svuota Carrello"):
             st.session_state.cart_indices = []
-            st.experimental_rerun()
+            st.rerun()
 
 # CARRELLO PRODOTTI
 if st.session_state.cart_indices:
@@ -293,7 +292,7 @@ if st.session_state.cart_indices:
         with c_p2:
             if st.button("❌ Rimuovi", key=f"rem_{idx}", use_container_width=True):
                 st.session_state.cart_indices.remove(idx)
-                st.experimental_rerun()
+                st.rerun()
 
     # CLASSIFICA FARMACIE CON CARD E SPEDIZIONE
     st.markdown("---")
@@ -304,18 +303,17 @@ if st.session_state.cart_indices:
     spese_spedizione = {}
 
     for f in farmacie_disponibili:
-        display_name = CLEAN_PHARMACY_NAMES.get(f, f)
         prezzi = pd.to_numeric(df_carrello[f], errors='coerce')
         
         if prezzi.notna().all():
             sum_prod = prezzi.sum()
-            totali_prodotti[display_name] = sum_prod
+            totali_prodotti[f] = sum_prod
             
-            rules = SHIPPING_RULES.get(display_name, {'free_threshold': 29.90, 'cost': 4.50})
+            rules = SHIPPING_RULES.get(f, {'free_threshold': 29.90, 'cost': 4.50})
             ship_cost = 0.0 if sum_prod >= rules['free_threshold'] else rules['cost']
                 
-            spese_spedizione[display_name] = ship_cost
-            totali_finali[display_name] = sum_prod + ship_cost
+            spese_spedizione[f] = ship_cost
+            totali_finali[f] = sum_prod + ship_cost
 
     if totali_finali:
         sorted_pharmacies = sorted(totali_finali.items(), key=lambda x: x[1])
