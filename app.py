@@ -3,15 +3,17 @@ import pandas as pd
 import numpy as np
 import os
 import urllib.parse
+import qrcode
+from io import BytesIO
 
 st.set_page_config(
     page_title="ComparaCarrello.it - Il tuo risparmio in farmacia",
     page_icon="💊",
     layout="wide",
-    initial_sidebar_state="collapsed" # Mantiene la barra compressa di default
+    initial_sidebar_state="collapsed"
 )
 
-# Style CSS Avanzato con Full Width & Layout Mobile Smart
+# CSS Avanzato per UI Mobile & Condivisione Social
 st.markdown("""
     <style>
     .main { background-color: #f8f9fa; }
@@ -30,7 +32,6 @@ st.markdown("""
         margin-bottom: 15px;
     }
 
-    /* Badges Farmacie Monitorate in Header */
     .pharmacy-badge-container {
         display: flex;
         flex-wrap: wrap;
@@ -49,7 +50,7 @@ st.markdown("""
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
-    /* Cards Classifica */
+    /* Card Farmacie */
     .pharmacy-card {
         background: #ffffff;
         border-radius: 14px;
@@ -79,11 +80,18 @@ st.markdown("""
     .pharm-name { font-size: 1.2rem; font-weight: 700; color: #2c3e50; margin: 4px 0; }
     .pharm-price { font-size: 1.7rem; font-weight: 800; color: #2e7d32; }
     
-    .ship-free { color: #16a34a; font-weight: 700; font-size: 0.85rem; margin-top: 5px; }
-    .ship-pay { color: #dc2626; font-size: 0.85rem; margin-top: 5px; }
-    .ship-missing { color: #d97706; font-weight: 600; font-size: 0.8rem; }
+    .ship-box {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 8px 10px;
+        margin-top: 8px;
+        border: 1px solid #e2e8f0;
+    }
+    .ship-free { color: #16a34a; font-weight: 700; font-size: 0.85rem; }
+    .ship-pay { color: #dc2626; font-size: 0.85rem; font-weight: 600; }
+    .ship-detail { color: #64748b; font-size: 0.78rem; margin-top: 2px; }
+    .ship-missing { color: #d97706; font-weight: 700; font-size: 0.8rem; margin-top: 2px; }
 
-    /* Metrics Box Top */
     .metric-box {
         background: #ffffff;
         border-radius: 12px;
@@ -121,17 +129,30 @@ st.markdown("""
         font-size: 0.9rem;
     }
 
-    @media (max-width: 768px) {
-        .main-title { font-size: 1.7rem; }
-        .pharmacy-card { padding: 12px; }
+    /* Pulsanti Social Share */
+    .social-btn {
+        display: inline-block;
+        padding: 8px 14px;
+        border-radius: 8px;
+        color: white !important;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-decoration: none;
+        margin: 4px;
     }
+    .btn-wa { background-color: #25D366; }
+    .btn-tg { background-color: #0088cc; }
+    .btn-fb { background-color: #1877F2; }
+    .btn-tw { background-color: #000000; }
+    .btn-mail { background-color: #64748b; }
     </style>
 """, unsafe_allow_html=True)
 
+# Mappatura rigorosa per nomi farmacie
 CLEAN_PHARMACY_NAMES = {
     'Farmacia Igea': 'Farmacia Igea', 'FarmaciaIgea': 'Farmacia Igea', 'igea': 'Farmacia Igea',
     'Farmae': 'Farmaè', 'Farmaè': 'Farmaè', 'farmae': 'Farmaè',
-    'Dr Max': 'Dr. Max', 'DrMax': 'Dr. Max', 'Dott. Max': 'Dr. Max', 'Dottor Max': 'Dr. Max', 'drmax': 'Dr. Max',
+    'Dr Max': 'Dr. Max', 'Dr. Max': 'Dr. Max', 'DrMax': 'Dr. Max', 'Dott. Max': 'Dr. Max', 'Dottor Max': 'Dr. Max', 'drmax': 'Dr. Max',
     'RedCare': 'RedCare', 'redcare': 'RedCare',
     'Farmacia Loreto': 'Farmacia Loreto', 'loreto': 'Farmacia Loreto',
     '1000Farmacie': '1000Farmacie', '1000farmacie': '1000Farmacie',
@@ -171,7 +192,6 @@ df_prodotti, farmacie_disponibili = load_data()
 st.markdown("<h1 class='main-title'>💊 ComparaCarrello.it</h1>", unsafe_allow_html=True)
 st.markdown("<p class='sub-title'>Trova la farmacia online più conveniente per il tuo carrello</p>", unsafe_allow_html=True)
 
-# Farmacie Monitorate in formato Badge Orizzontali
 if farmacie_disponibili:
     badges_html = "".join([f'<span class="pharm-pill">🏥 {f}</span>' for f in farmacie_disponibili])
     st.markdown(f'<div class="pharmacy-badge-container">{badges_html}</div>', unsafe_allow_html=True)
@@ -180,7 +200,6 @@ if df_prodotti.empty:
     st.warning("Database in caricamento...")
     st.stop()
 
-# Filtro per categoria posizionato al centro in alto
 categorie = ["Tutte le Categorie"] + sorted([str(c) for c in df_prodotti['Categoria'].dropna().unique() if str(c).strip() != ""])
 c_cat1, c_cat2, c_cat3 = st.columns([1, 2, 1])
 with c_cat2:
@@ -238,6 +257,7 @@ if st.session_state.cart_indices:
     totali_finali = {}
     spese_spedizione = {}
     mancanti_spedizione = {}
+    soglie_spedizione = {}
 
     for f in farmacie_disponibili:
         prezzi = pd.to_numeric(df_carrello[f], errors='coerce')
@@ -247,6 +267,7 @@ if st.session_state.cart_indices:
             
             rules = SHIPPING_RULES.get(f, {'free_threshold': 29.90, 'cost': 4.50})
             thresh = rules['free_threshold']
+            soglie_spedizione[f] = thresh
             
             if sum_prod >= thresh:
                 ship_cost = 0.0
@@ -282,6 +303,7 @@ if st.session_state.cart_indices:
             prod_val = totali_prodotti[pharm_name]
             ship_val = spese_spedizione[pharm_name]
             miss_val = mancanti_spedizione[pharm_name]
+            thresh_val = soglie_spedizione[pharm_name]
             
             card_class = "pharmacy-card winner" if i == 0 else "pharmacy-card"
             
@@ -295,9 +317,20 @@ if st.session_state.cart_indices:
                 badge_html = f'<span class="badge-rank standard">{i+1}° Posto</span>'
                 
             if ship_val == 0:
-                ship_html = '<div class="ship-free">🚚 Spedizione Gratuita</div>'
+                ship_html = f"""
+                    <div class="ship-box">
+                        <div class="ship-free">🚚 Spedizione Gratuita</div>
+                        <div class="ship-detail">Soglia raggiunta (oltre {thresh_val:.2f} €)</div>
+                    </div>
+                """
             else:
-                ship_html = f'<div class="ship-pay">🚚 Spedizione: +{ship_val:.2f} €</div><div class="ship-missing">(mancano {miss_val:.2f} € per la gratuita)</div>'
+                ship_html = f"""
+                    <div class="ship-box">
+                        <div class="ship-pay">🚚 Spedizione: +{ship_val:.2f} €</div>
+                        <div class="ship-detail">Soglia gratuita: {thresh_val:.2f} €</div>
+                        <div class="ship-missing">⚠️ Mancano {miss_val:.2f} €</div>
+                    </div>
+                """
 
             col_idx = i % 3
             with cols_cards[col_idx]:
@@ -314,6 +347,46 @@ if st.session_state.cart_indices:
 
         with st.expander("🔍 Mostra Matrice Dettagliata Prezzi Singoli"):
             st.dataframe(df_carrello[['Prodotto', 'MINSAN'] + farmacie_disponibili], use_container_width=True, hide_index=True)
+
+        # SEZIONE CONDIVISIONE MULTI-SOCIAL E QR CODE
+        st.markdown("---")
+        st.subheader("📲 Condividi il tuo Carrello o Apri su Mobile")
+        
+        # Generazione Testo di Condivisione
+        elenco_prodotti_txt = ", ".join(df_carrello['Prodotto'].tolist())
+        share_text = f"Ho confrontato il mio carrello su ComparaCarrello.it! 🛒\n\nProdotti: {elenco_prodotti_txt}\n\n🏆 La più conveniente è {miglior_farmacia} a soli {miglior_prezzo:.2f} €!"
+        share_encoded = urllib.parse.quote(share_text)
+        
+        # Social Share Links
+        wa_url = f"https://api.whatsapp.com/send?text={share_encoded}"
+        tg_url = f"https://t.me/share/url?url=https://comparacarrello.it&text={share_encoded}"
+        fb_url = f"https://www.facebook.com/sharer/sharer.php?u=https://comparacarrello.it&quote={share_encoded}"
+        tw_url = f"https://twitter.com/intent/tweet?text={share_encoded}"
+        mail_url = f"mailto:?subject=Confronto Carrello Farmacia&body={share_encoded}"
+
+        col_sh1, col_sh2 = st.columns([2, 1])
+        
+        with col_sh1:
+            st.markdown("##### Scegli il canale di condivisione:")
+            st.markdown(f"""
+                <a href="{wa_url}" target="_blank" class="social-btn btn-wa">💬 WhatsApp</a>
+                <a href="{tg_url}" target="_blank" class="social-btn btn-tg">✈️ Telegram</a>
+                <a href="{fb_url}" target="_blank" class="social-btn btn-fb">📘 Facebook</a>
+                <a href="{tw_url}" target="_blank" class="social-btn btn-tw">𝕏 X / Twitter</a>
+                <a href="{mail_url}" class="social-btn btn-mail">✉️ Email</a>
+            """, unsafe_allow_html=True)
+            
+        with col_sh2:
+            st.markdown("##### Scansiona con Smartphone:")
+            qr = qrcode.QRCode(version=1, box_size=4, border=2)
+            qr.add_data(f"https://api.whatsapp.com/send?text={share_encoded}")
+            qr.make(fit=True)
+            img = qr.make_image(fill_color="black", back_color="white")
+            
+            buf = BytesIO()
+            img.save(buf, format="PNG")
+            st.image(buf.getvalue(), width=130)
+
     else:
         st.warning("I prodotti selezionati non sono presenti contemporaneamente in tutte le farmacie.")
 else:
