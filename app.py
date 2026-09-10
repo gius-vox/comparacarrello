@@ -12,17 +12,27 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# CSS con Stili Personalizzati per Loghi e Card
+# CSS con Stili Personalizzati
 st.markdown("""
     <style>
     .main { background-color: #f8f9fa; }
+    
+    .brand-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-top: -10px;
+        margin-bottom: 5px;
+    }
+    .brand-logo {
+        font-size: 2.8rem;
+    }
     .main-title {
         font-size: 2.3rem;
         font-weight: 800;
         color: #1a252f;
-        text-align: center;
-        margin-top: -10px;
-        margin-bottom: 5px;
+        margin: 0;
     }
     .sub-title {
         font-size: 1rem;
@@ -31,7 +41,7 @@ st.markdown("""
         margin-bottom: 20px;
     }
 
-    /* Badge con Loghi in Header */
+    /* Badge con Loghi */
     .pharmacy-badge-container {
         display: flex;
         flex-wrap: wrap;
@@ -166,7 +176,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Normalizzazione nomi farmacie
+# Normalizzazione nomi farmacie (inclusi Dottor Max e rimozione Ristoranti)
 CLEAN_PHARMACY_NAMES = {
     'Farmacia Igea': 'Farmacia Igea', 'FarmaciaIgea': 'Farmacia Igea', 'igea': 'Farmacia Igea',
     'Farmae': 'Farmaè', 'Farmaè': 'Farmaè', 'farmae': 'Farmaè',
@@ -216,7 +226,7 @@ def load_data():
     try:
         df = pd.read_csv("prodotti.csv", dtype={'MINSAN': str})
         
-        # Mappatura sicura delle colonne CSV
+        # Mappatura e pulizia colonne CSV
         new_cols = []
         for col in df.columns:
             clean_col = col.strip()
@@ -224,7 +234,8 @@ def load_data():
         df.columns = new_cols
 
         fixed_cols = ['MINSAN', 'Prodotto', 'Categoria', 'Immagine']
-        pharmacy_cols = [c for c in df.columns if c not in fixed_cols]
+        # Esclude qualsiasi colonna non mappata (come 'Ristoranti di alto livello')
+        pharmacy_cols = [c for c in df.columns if c in SHIPPING_RULES]
         df['MINSAN'] = df['MINSAN'].astype(str).str.zfill(9)
         return df, pharmacy_cols
     except Exception as e:
@@ -233,10 +244,16 @@ def load_data():
 
 df_prodotti, farmacie_disponibili = load_data()
 
-st.markdown("<h1 class='main-title'>💊 ComparaCarrello.it</h1>", unsafe_allow_html=True)
+# Logo e Titolo Principale
+st.markdown("""
+    <div class="brand-header">
+        <span class="brand-logo">💊</span>
+        <h1 class="main-title">ComparaCarrello.it</h1>
+    </div>
+""", unsafe_allow_html=True)
 st.markdown("<p class='sub-title'>Trova la farmacia online più conveniente per il tuo carrello</p>", unsafe_allow_html=True)
 
-# Generazione Pillole con Loghi Ufficiali
+# Badge con Loghi Farmacie
 if farmacie_disponibili:
     badges_list = []
     for f in farmacie_disponibili:
@@ -405,7 +422,7 @@ if st.session_state.cart_indices:
         with st.expander("🔍 Mostra Matrice Dettagliata Prezzi Singoli"):
             st.dataframe(df_carrello[['Prodotto', 'MINSAN'] + farmacie_disponibili], use_container_width=True, hide_index=True)
 
-        # SEZIONE CONDIVISIONE MULTI-SOCIAL E QR CODE
+        # CONDIVISIONE E QR CODE
         st.markdown("---")
         st.subheader("📲 Condividi il tuo Carrello o Apri su Mobile")
         
