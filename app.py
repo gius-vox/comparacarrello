@@ -1,5 +1,4 @@
 import streamlit as st
-import pandas as pd
 
 # ---------------------------------------------------------
 # 1. CONFIGURAZIONE PAGINA
@@ -15,7 +14,6 @@ st.set_page_config(
 # ---------------------------------------------------------
 st.markdown("""
 <style>
-    /* Stili generali */
     .main-title {
         text-align: center;
         font-size: 2.5rem;
@@ -30,28 +28,32 @@ st.markdown("""
         margin-bottom: 25px;
     }
     
-    /* Loghi Top Farmacie */
+    .farm-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 20px;
+    }
     .farm-badge {
         display: inline-flex;
         align-items: center;
         background-color: #ffffff;
-        border: 1px solid #e2e8f0;
+        border: 1px solid #cbd5e1;
         border-radius: 20px;
-        padding: 5px 15px;
-        margin: 4px;
+        padding: 6px 14px;
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.88rem;
         color: #334155;
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     .farm-badge img {
-        width: 22px;
-        height: 22px;
-        object-fit: contain;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
         margin-right: 8px;
     }
 
-    /* Cards Classifica */
     .card-container {
         border-radius: 12px;
         padding: 18px;
@@ -69,14 +71,13 @@ st.markdown("""
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
+        gap: 8px;
         margin-bottom: 10px;
     }
     .pharm-header img {
-        height: 28px;
-        width: auto;
-        max-width: 100px;
-        object-fit: contain;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
     }
     .pharm-name {
         font-size: 1.2rem;
@@ -90,7 +91,6 @@ st.markdown("""
         margin: 8px 0;
     }
     
-    /* Pulsante Acquista */
     .btn-buy {
         display: block;
         width: 100%;
@@ -103,11 +103,7 @@ st.markdown("""
         text-decoration: none !important;
         margin-top: 15px;
     }
-    .btn-buy:hover {
-        background-color: #1d4ed8;
-    }
-    
-    /* Box Info Spedizione */
+
     .shipping-box {
         background-color: #f8fafc;
         border-radius: 6px;
@@ -181,7 +177,7 @@ FARMACIE_INFO = {
 # ---------------------------------------------------------
 @st.cache_data
 def load_data():
-    data = [
+    return [
         {
             "id": "MINSAN: 900000001",
             "nome": "Magnesio Supremo 150g",
@@ -213,7 +209,6 @@ def load_data():
             }
         }
     ]
-    return data
 
 products_db = load_data()
 
@@ -223,19 +218,11 @@ products_db = load_data()
 st.markdown('<div class="main-title">💊 ComparaCarrello.it</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-title">Trova la farmacia online più conveniente per il tuo carrello</div>', unsafe_allow_html=True)
 
-# Generazione badge farmacie con icone
-badges_html = '<div style="text-align: center; margin-bottom: 20px;">'
-for name, info in FARMACIE_INFO.items():
-    badges_html += f'''
-        <div class="farm-badge">
-            <img src="{info['logo']}" alt="{name}">
-            <span>{name}</span>
-        </div>
-    '''
-badges_html += '</div>'
+# Badge farmacie senza andate a capo che rompono l'HTML
+badge_items = "".join([f'<div class="farm-badge"><img src="{info["logo"]}"><span>{name}</span></div>' for name, info in FARMACIE_INFO.items()])
+badges_html = f'<div class="farm-container">{badge_items}</div>'
 
-# Corretto: Aggiunto unsafe_allow_html=True qui
-st.markdown(badges_html, unsafe_allow_html=True)
+st.html(badges_html)
 
 # Filtro Categoria
 col_cat1, col_cat2, col_cat3 = st.columns([1, 2, 1])
@@ -355,30 +342,14 @@ if st.session_state.carrello:
             card_class = "card-container"
 
         if ship_info["costo_sped"] == 0:
-            ship_html = f'<div class="shipping-box" style="color:#15803d;"><b>🚚 Spedizione GRATUITA!</b></div>'
+            ship_html = '<div class="shipping-box" style="color:#15803d;"><b>🚚 Spedizione GRATUITA!</b></div>'
         else:
-            ship_html = f'''
-            <div class="shipping-box">
-                <p style="color:#b91c1c;"><b>🚚 Spedizione: +{ship_info["costo_sped"]:.2f} €</b></p>
-                <p style="color:#64748b;">Soglia gratuita: {ship_info["soglia"]:.2f} €</p>
-                <p style="color:#d97706;"><b>⚠️ Mancano {ship_info["mancanti"]:.2f} €</b></p>
-            </div>
-            '''
+            ship_html = f'<div class="shipping-box"><p style="color:#b91c1c;"><b>🚚 Spedizione: +{ship_info["costo_sped"]:.2f} €</b></p><p style="color:#64748b;">Soglia gratuita: {ship_info["soglia"]:.2f} €</p><p style="color:#d97706;"><b>⚠️ Mancano {ship_info["mancanti"]:.2f} €</b></p></div>'
 
-        logo_html = f'<img src="{info["logo"]}" alt="{pharm_name}">'
+        logo_html = f'<img src="{info["logo"]}">'
+
+        card_content = f'<div class="{card_class}"><div style="text-align:left; margin-bottom:10px;">{badge_html}</div><div class="pharm-header">{logo_html}<div class="pharm-name">{pharm_name}</div></div><div class="pharm-price">{tot_val:.2f} €</div><div style="font-size:0.85rem; color:#64748b;">Prodotti: {prod_val:.2f} €</div>{ship_html}<a href="{info["url"]}" target="_blank" class="btn-buy">🛒 Vai alla Farmacia</a></div>'
 
         col_idx = i % 3
         with cols_cards[col_idx]:
-            st.markdown(f"""
-                <div class="{card_class}">
-                    <div style="text-align:left; margin-bottom:10px;">{badge_html}</div>
-                    <div class="pharm-header">
-                        {logo_html}
-                        <div class="pharm-name">{pharm_name}</div>
-                    </div>
-                    <div class="pharm-price">{tot_val:.2f} €</div>
-                    <div style="font-size:0.85rem; color:#64748b;">Prodotti: {prod_val:.2f} €</div>
-                    {ship_html}
-                    <a href="{info['url']}" target="_blank" class="btn-buy">🛒 Vai alla Farmacia</a>
-                </div>
-            """, unsafe_allow_html=True)
+            st.html(card_content)
