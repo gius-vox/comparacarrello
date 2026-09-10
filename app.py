@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 
 # ---------------------------------------------------------
 # 1. CONFIGURAZIONE PAGINA
@@ -119,7 +120,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 3. DATABASE FARMACIE E LOGHI
+# 3. DATABASE FARMACIE E LOGHI (CON NOMI PULITI)
 # ---------------------------------------------------------
 FARMACIE_INFO = {
     "Farmacia Igea": {
@@ -154,7 +155,7 @@ FARMACIE_INFO = {
     },
     "1000Farmacie": {
         "logo": "https://www.google.com/s2/favicons?domain=1000farmacie.it&sz=64",
-        "url": "https://www.1000farmacie.it",
+        "url": "https://www.1000Farmacie.it",
         "soglia_gratis": 29.00,
         "costo_sped": 4.90
     },
@@ -173,42 +174,38 @@ FARMACIE_INFO = {
 }
 
 # ---------------------------------------------------------
-# 4. CARICAMENTO DATI
+# 4. CARICAMENTO DATI DAL CSV (SENZA MEMORIA CACHE BLOCCANTE)
 # ---------------------------------------------------------
-@st.cache_data
 def load_data():
-    return [
-        {
-            "id": "MINSAN: 900000001",
-            "nome": "Magnesio Supremo 150g",
-            "categoria": "Integratori",
-            "prezzi": {
-                "Farmaè": 15.50,
-                "Dr. Max": 15.50,
-                "eFarma": 15.50,
-                "Farmacia Igea": 16.90,
-                "RedCare": 17.20,
-                "1000Farmacie": 16.50,
-                "Farmacia Loreto": 18.00,
-                "Top Farmacia": 17.90
+    try:
+        df = pd.read_csv("prodotti.csv")
+        # Rinomina eventuali vecchie intestazioni anomale per sicurezza
+        df = df.rename(columns={"Dottor Max": "Dr Max", "Ristoranti di alto livello": "Top Farmacia"})
+        
+        products = []
+        for _, row in df.iterrows():
+            prezzi = {}
+            for farm in FARMACIE_INFO.keys():
+                if farm in df.columns:
+                    prezzi[farm] = float(row[farm])
+            
+            products.append({
+                "id": str(row.get("MINSAN", "")),
+                "nome": str(row.get("Prodotto", "")),
+                "categoria": str(row.get("Categoria", "Generica")),
+                "prezzi": prezzi
+            })
+        return products
+    except Exception as e:
+        # Fallback di sicurezza nel caso il file CSV non venga letto subito
+        return [
+            {
+                "id": "MINSAN: 900000001",
+                "nome": "Magnesio Supremo 150g",
+                "categoria": "Integratori",
+                "prezzi": {farm: 15.00 for farm in FARMACIE_INFO.keys()}
             }
-        },
-        {
-            "id": "MINSAN: 029007044",
-            "nome": "Tachipirina 500mg 20 Compresse",
-            "categoria": "Farmaci da Banco",
-            "prezzi": {
-                "Farmaè": 5.20,
-                "Dr. Max": 4.90,
-                "eFarma": 5.10,
-                "Farmacia Igea": 5.50,
-                "RedCare": 5.30,
-                "1000Farmacie": 5.00,
-                "Farmacia Loreto": 5.60,
-                "Top Farmacia": 5.40
-            }
-        }
-    ]
+        ]
 
 products_db = load_data()
 
@@ -218,10 +215,8 @@ products_db = load_data()
 st.markdown('<div class="main-title">💊 ComparaCarrello.it</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-title">Trova la farmacia online più conveniente per il tuo carrello</div>', unsafe_allow_html=True)
 
-# Badge farmacie senza andate a capo che rompono l'HTML
 badge_items = "".join([f'<div class="farm-badge"><img src="{info["logo"]}"><span>{name}</span></div>' for name, info in FARMACIE_INFO.items()])
 badges_html = f'<div class="farm-container">{badge_items}</div>'
-
 st.html(badges_html)
 
 # Filtro Categoria
