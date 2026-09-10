@@ -134,7 +134,7 @@ FARMACIE_INFO = {
         "soglia_gratis": 19.90,
         "costo_sped": 3.90
     },
-    "Dr. Max": {
+    "Dr Max": {
         "logo": "https://www.google.com/s2/favicons?domain=drmax.it&sz=64",
         "url": "https://www.drmax.it",
         "soglia_gratis": 19.90,
