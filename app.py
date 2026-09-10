@@ -30,16 +30,25 @@ for _, row in df.iterrows():
         "prezzi": prezzi
     })
 
-# Titolo e Badge superiori
-st.markdown("<h1 style='text-align: center;'>💊 ComparaCarrello.it</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: gray;'>Trova la farmacia online più conveniente per il tuo carrello</p>", unsafe_allow_html=True)
+# Inserimento del Logo ufficiale centrato
+col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
+with col_l2:
+    try:
+        st.image("logo.png", use_container_width=True)
+    except:
+        st.markdown("<h1 style='text-align: center;'>💊 ComparaCarrello.it</h1>", unsafe_allow_html=True)
 
+st.markdown("<p style='text-align: center; color: #64748b; margin-bottom: 25px;'>Trova la farmacia online più conveniente per il tuo carrello</p>", unsafe_allow_html=True)
+
+# Badge superiori delle farmacie
 badge_items = "".join([f'<div style="display:inline-flex; align-items:center; background:#fff; border:1px solid #cbd5e1; border-radius:20px; padding:6px 14px; margin:4px; font-weight:600; font-size:0.88rem;"><img src="{info["logo"]}" style="width:18px; height:18px; border-radius:50%; margin-right:8px;">{name}</div>' for name, info in FARMACIE_INFO.items()])
 st.html(f'<div style="text-align:center; margin-bottom:20px;">{badge_items}</div>')
 
 # Selezione categoria e prodotti
 categorie = ["Tutte le Categorie"] + sorted(list(set(p["categoria"] for p in products_db)))
-cat_selected = st.selectbox("📁 Filtra per Categoria:", categorie)
+col_cat1, col_cat2, col_cat3 = st.columns([1, 2, 1])
+with col_cat2:
+    cat_selected = st.selectbox("📁 Filtra per Categoria:", categorie)
 
 prodotti_filtrati = products_db if cat_selected == "Tutte le Categorie" else [p for p in products_db if p["categoria"] == cat_selected]
 options_map = {f"{p['nome']} — [{p['id']}]": p for p in prodotti_filtrati}
