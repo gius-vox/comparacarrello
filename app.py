@@ -2,153 +2,398 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import os
+import urllib.parse
 
 # Configurazione della pagina
 st.set_page_config(
     page_title="ComparaCarrello.it - Il tuo risparmio in farmacia",
     page_icon="💊",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-# Custom CSS per uno stile pulito ed eliminazione di stili indesiderati
+# Style CSS Avanzato per UI Moderna (Card, Badge, Pulsanti, Spedizioni, Tabelle Eleganti)
 st.markdown("""
     <style>
-    .main-header {
-        font-size: 2.2rem;
-        color: #0E1117;
-        text-align: center;
-        margin-bottom: 0.5rem;
+    .main {
+        background-color: #f8f9fa;
     }
-    .sub-header {
-        font-size: 1.0rem;
-        color: #4F4F4F;
+    .main-title {
+        font-size: 2.4rem;
+        font-weight: 800;
+        color: #1a252f;
         text-align: center;
-        margin-bottom: 1.5rem;
+        margin-top: -10px;
+        margin-bottom: 5px;
     }
-    .stMetric {
-        background-color: #F0F2F6;
-        padding: 15px;
+    .sub-title {
+        font-size: 1.1rem;
+        color: #5a6578;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    /* Cards Classifica Farmacie */
+    .pharmacy-card {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        border: 2px solid #edf2f7;
+        margin-bottom: 15px;
+    }
+    .pharmacy-card.winner {
+        border: 2.5px solid #2ecc71;
+        background: linear-gradient(180deg, #ffffff 0%, #f0fff4 100%);
+        box-shadow: 0 6px 20px rgba(46, 204, 113, 0.15);
+    }
+    .badge-rank {
+        display: inline-block;
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin-bottom: 8px;
+    }
+    .badge-rank.gold { background-color: #fef9e7; color: #d4ac0d; border: 1px solid #f9e79f; }
+    .badge-rank.silver { background-color: #f2f4f4; color: #7f8c8d; border: 1px solid #d5dbdb; }
+    .badge-rank.bronze { background-color: #fbeee6; color: #dc7633; border: 1px solid #edbb99; }
+    .badge-rank.standard { background-color: #ebedef; color: #5d6d7e; }
+
+    .pharm-name {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 5px 0;
+    }
+    .pharm-price {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #2e7d32;
+    }
+    .pharm-shipping {
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        margin-top: 4px;
+    }
+
+    /* Stat Cards Top Metrics */
+    .metric-box {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 18px;
+        text-align: center;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .metric-title {
+        font-size: 0.85rem;
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    .metric-val {
+        font-size: 1.7rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-top: 5px;
+    }
+    .metric-val.green { color: #16a34a; }
+    .metric-val.orange { color: #ea580c; }
+
+    /* Custom Product Chips */
+    .prod-item-row {
+        background: #ffffff;
         border-radius: 10px;
+        padding: 12px 18px;
+        margin-bottom: 8px;
+        border-left: 4px solid #3b82f6;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    }
+    .prod-title {
+        font-weight: 600;
+        color: #1e293b;
+        font-size: 1rem;
+    }
+    .prod-minsan {
+        font-size: 0.8rem;
+        background: #eff6ff;
+        color: #2563eb;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-weight: 600;
+    }
+    
+    .btn-buy {
+        display: block;
+        width: 100%;
+        text-align: center;
+        background-color: #2563eb;
+        color: white !important;
+        font-weight: 700;
+        padding: 10px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        margin-top: 12px;
+        font-size: 0.9rem;
+    }
+    .btn-buy:hover {
+        background-color: #1d4ed8;
     }
     </style>
 """, unsafe_allow_html=True)
+
+# Mappatura per nomi puliti delle farmacie
+CLEAN_PHARMACY_NAMES = {
+    'Farmacia Igea': 'Farmacia Igea',
+    'FarmaciaIgea': 'Farmacia Igea',
+    'igea': 'Farmacia Igea',
+    'Farmae': 'Farmaè',
+    'Farmaè': 'Farmaè',
+    'farmae': 'Farmaè',
+    'Dr Max': 'Dr. Max',
+    'DrMax': 'Dr. Max',
+    'Dottor Max': 'Dr. Max',
+    'drmax': 'Dr. Max',
+    'RedCare': 'RedCare',
+    'redcare': 'RedCare',
+    'Farmacia Loreto': 'Farmacia Loreto',
+    'loreto': 'Farmacia Loreto',
+    '1000Farmacie': '1000Farmacie',
+    '1000farmacie': '1000Farmacie',
+    'Top Farmacia': 'Top Farmacia',
+    'TopFarmacia': 'Top Farmacia',
+    'topfarmacia': 'Top Farmacia',
+    'Farmacia di alto livello': 'Top Farmacia',
+    'Ristoranti di alto livello': 'Top Farmacia',
+    'eFarma': 'eFarma',
+    'efarma': 'eFarma'
+}
+
+# Spese di Spedizione Standard
+SHIPPING_RULES = {
+    'Farmacia Igea': {'free_threshold': 29.90, 'cost': 4.50},
+    'Farmaè': {'free_threshold': 19.90, 'cost': 3.90},
+    'Dr. Max': {'free_threshold': 19.90, 'cost': 3.90},
+    'RedCare': {'free_threshold': 18.00, 'cost': 3.99},
+    'Farmacia Loreto': {'free_threshold': 29.90, 'cost': 4.90},
+    '1000Farmacie': {'free_threshold': 29.00, 'cost': 4.20},
+    'Top Farmacia': {'free_threshold': 29.90, 'cost': 4.50},
+    'eFarma': {'free_threshold': 19.90, 'cost': 3.90}
+}
 
 @st.cache_data(ttl=60)
 def load_data():
     try:
         df = pd.read_csv("prodotti.csv", dtype={'MINSAN': str})
-        fixed_cols = ['MINSAN', 'Prodotto', 'Immagine', 'Categoria']
-        pharmacy_cols = [c for c in df.columns if c not in fixed_cols]
+        
+        fixed_cols = ['MINSAN', 'Prodotto', 'Categoria', 'Immagine']
+        raw_pharm_cols = [c for c in df.columns if c not in fixed_cols]
+        
+        rename_dict = {}
+        for c in raw_pharm_cols:
+            cleaned_c = c.strip()
+            rename_dict[c] = CLEAN_PHARMACY_NAMES.get(cleaned_c, cleaned_c)
+                
+        df = df.rename(columns=rename_dict)
+        pharmacy_cols = [rename_dict.get(c, c) for c in raw_pharm_cols]
+        
+        df['MINSAN'] = df['MINSAN'].astype(str).str.zfill(9)
         return df, pharmacy_cols
     except Exception as e:
-        st.error(f"Errore nel caricamento del database prodotti: {e}")
+        st.error(f"Errore nel caricamento del database: {e}")
         return pd.DataFrame(), []
 
 df_prodotti, farmacie_disponibili = load_data()
 
-# Logo
+# Logo e Header
 if os.path.exists("logo.png"):
-    col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
+    col_l1, col_l2, col_l3 = st.columns([1, 1.8, 1])
     with col_l2:
         st.image("logo.png", use_container_width=True)
 
-# Titolo Principale
-st.markdown("<h1 class='main-header'>💊 ComparaCarrello.it</h1>", unsafe_allow_html=True)
-st.markdown("<p class='sub-header'>Confronta i prezzi di farmaci, integratori, fitoterapici e omeopatia sulle migliori farmacie online d'Italia</p>", unsafe_allow_html=True)
+st.markdown("<h1 class='main-title'>💊 ComparaCarrello.it</h1>", unsafe_allow_html=True)
+st.markdown("<p class='sub-title'>Trova la farmacia online più conveniente per il tuo carrello completo</p>", unsafe_allow_html=True)
 
 if df_prodotti.empty:
-    st.warning("Database prodotti in fase di aggiornamento. Riprova tra pochi minuti.")
+    st.warning("Database in aggiornamento...")
     st.stop()
 
-# BARRA LATERALE (PULITA)
+# BARRA LATERALE PULITA
 with st.sidebar:
-    st.title("⚙️ Filtri App")
+    st.markdown("### ⚙️ Filtra Catalogo")
     
-    categorie = ["Tutte"] + [str(c) for c in df_prodotti['Categoria'].dropna().unique() if str(c).strip() != ""]
-    cat_selezionata = st.selectbox("Seleziona Categoria:", categorie)
+    categorie = ["Tutte le Categorie"] + sorted([str(c) for c in df_prodotti['Categoria'].dropna().unique() if str(c).strip() != ""])
+    cat_selezionata = st.selectbox("Filtra per Categoria:", categorie)
     
     st.markdown("---")
-    st.subheader("🏥 Farmacie attive")
+    st.markdown("### 🏥 Farmacie Monitorate")
     for f in farmacie_disponibili:
-        st.markdown(f"• **{f}**")
-    
+        display_name = CLEAN_PHARMACY_NAMES.get(f, f)
+        st.markdown(f"• **{display_name}**")
+        
     st.markdown("---")
-    st.caption("Confronto prezzi in tempo reale via codice MINSAN.")
+    st.caption("🔒 Prezzi sincronizzati via codice MINSAN ufficiale.")
 
-# Filtro categoria
-if cat_selezionata != "Tutte":
+# Filtro prodotti
+if cat_selezionata != "Tutte le Categorie":
     df_filtrato = df_prodotti[df_prodotti['Categoria'] == cat_selezionata]
 else:
     df_filtrato = df_prodotti
 
-# Carrello e Ricerca
-st.subheader("🛒 Crea il tuo carrello di confronto")
+# INIZIALIZZAZIONE CARRELLO
+if 'cart_indices' not in st.session_state:
+    st.session_state.cart_indices = []
 
-def format_func(idx):
+st.markdown("---")
+st.subheader("🔍 Cerca e Aggiungi Prodotti al Carrello")
+
+def format_prod(idx):
     row = df_filtrato.loc[idx]
-    minsan_str = f" [MINSAN: {row['MINSAN']}]" if pd.notna(row['MINSAN']) and str(row['MINSAN']).strip() != '' else ""
-    return f"{row['Prodotto']}{minsan_str}"
+    minsan = row['MINSAN']
+    prod = row['Prodotto']
+    cat = row.get('Categoria', '')
+    return f"{prod} — [MINSAN: {minsan}] ({cat})"
 
-prodotti_selezionati_idx = st.multiselect(
-    "Cerca e seleziona i prodotti:",
-    options=df_filtrato.index.tolist(),
-    format_func=format_func,
-    placeholder="Scrivi qui il nome del prodotto o il codice MINSAN..."
-)
+selected_to_add = st.selectbox("Seleziona o digita un prodotto:", options=[None] + df_filtrato.index.tolist(), format_func=lambda x: "— Seleziona un prodotto —" if x is None else format_prod(x))
 
-if prodotti_selezionati_idx:
-    df_carrello = df_filtrato.loc[prodotti_selezionati_idx].copy()
+col_b1, col_b2 = st.columns([1.5, 3.5])
+with col_b1:
+    if st.button("➕ Aggiungi al Carrello", type="primary", use_container_width=True):
+        if selected_to_add is not None:
+            if selected_to_add not in st.session_state.cart_indices:
+                st.session_state.cart_indices.append(selected_to_add)
+                st.experimental_rerun()
+
+with col_b2:
+    if st.session_state.cart_indices:
+        if st.button("🗑️ Svuota Carrello"):
+            st.session_state.cart_indices = []
+            st.experimental_rerun()
+
+# CARRELLO PRODOTTI
+if st.session_state.cart_indices:
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("### 🛒 Prodotti nel Carrello")
     
+    df_carrello = df_prodotti.loc[st.session_state.cart_indices].copy()
+    
+    for idx, row in df_carrello.iterrows():
+        c_p1, c_p2 = st.columns([5, 1])
+        with c_p1:
+            st.markdown(f"""
+                <div class="prod-item-row">
+                    <div>
+                        <span class="prod-title">{row['Prodotto']}</span>
+                        <span style="color:#64748b; font-size:0.85rem; margin-left:10px;">({row.get('Categoria', 'Farmaco')})</span>
+                    </div>
+                    <span class="prod-minsan">MINSAN: {row['MINSAN']}</span>
+                </div>
+            """, unsafe_allow_html=True)
+        with c_p2:
+            if st.button("❌ Rimuovi", key=f"rem_{idx}", use_container_width=True):
+                st.session_state.cart_indices.remove(idx)
+                st.experimental_rerun()
+
+    # CLASSIFICA FARMACIE CON CARD E SPEDIZIONE
     st.markdown("---")
-    st.subheader("📋 Prodotti Selezionati")
-    st.dataframe(
-        df_carrello[['MINSAN', 'Prodotto', 'Categoria']],
-        use_container_width=True,
-        hide_index=True
-    )
-    
-    st.markdown("---")
-    st.subheader("📊 Confronto Risparmio Carrello")
-    
-    totali_farmacie = {}
+    st.subheader("📊 Classifica Risparmio Carrello Completo")
+
+    totali_prodotti = {}
+    totali_finali = {}
+    spese_spedizione = {}
+
     for f in farmacie_disponibili:
+        display_name = CLEAN_PHARMACY_NAMES.get(f, f)
         prezzi = pd.to_numeric(df_carrello[f], errors='coerce')
+        
         if prezzi.notna().all():
-            totali_farmacie[f] = prezzi.sum()
-        else:
-            totali_farmacie[f] = np.nan
+            sum_prod = prezzi.sum()
+            totali_prodotti[display_name] = sum_prod
+            
+            rules = SHIPPING_RULES.get(display_name, {'free_threshold': 29.90, 'cost': 4.50})
+            ship_cost = 0.0 if sum_prod >= rules['free_threshold'] else rules['cost']
+                
+            spese_spedizione[display_name] = ship_cost
+            totali_finali[display_name] = sum_prod + ship_cost
 
-    totali_validi = {k: v for k, v in totali_farmacie.items() if not np.isnan(v)}
-    
-    if totali_validi:
-        farmacia_migliore = min(totali_validi, key=totali_validi.get)
-        prezzo_min = totali_validi[farmacia_migliore]
-        prezzo_max = max(totali_validi.values())
-        risparmio_max = prezzo_max - prezzo_min
+    if totali_finali:
+        sorted_pharmacies = sorted(totali_finali.items(), key=lambda x: x[1])
+        
+        miglior_farmacia, miglior_prezzo = sorted_pharmacies[0]
+        peggior_prezzo = sorted_pharmacies[-1][1]
+        risparmio_max = peggior_prezzo - miglior_prezzo
 
+        # TOP METRICS DASHBOARD
         m1, m2, m3 = st.columns(3)
         with m1:
-            st.metric("🥇 Miglior Farmacia", farmacia_migliore)
+            st.markdown(f"""
+                <div class="metric-box">
+                    <div class="metric-title">🥇 Farmacia Più Conveniente</div>
+                    <div class="metric-val green">{miglior_farmacia}</div>
+                </div>
+            """, unsafe_allow_html=True)
         with m2:
-            st.metric("💰 Totale Migliore", f"{prezzo_min:.2f} €")
+            st.markdown(f"""
+                <div class="metric-box">
+                    <div class="metric-title">💰 Totale Carrello (Sped. Inclusa)</div>
+                    <div class="metric-val">{miglior_prezzo:.2f} €</div>
+                </div>
+            """, unsafe_allow_html=True)
         with m3:
-            st.metric("🔥 Risparmio Massimo", f"{risparmio_max:.2f} €")
+            st.markdown(f"""
+                <div class="metric-box">
+                    <div class="metric-title">🔥 Tuo Risparmio Massimo</div>
+                    <div class="metric-val orange">{risparmio_max:.2f} €</div>
+                </div>
+            """, unsafe_allow_html=True)
 
+        st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("### 🏆 Classifica Farmacie")
-        df_classifica = pd.DataFrame(list(totali_validi.items()), columns=['Farmacia', 'Totale Carrello (€)'])
-        df_classifica = df_classifica.sort_values(by='Totale Carrello (€)').reset_index(drop=True)
-        df_classifica['Totale Carrello (€)'] = df_classifica['Totale Carrello (€)'].map('{:.2f} €'.format)
+
+        # RENDER CARDS VISIVE
+        cols_cards = st.columns(min(3, len(sorted_pharmacies)))
         
-        st.table(df_classifica)
+        for i, (pharm_name, tot_val) in enumerate(sorted_pharmacies):
+            prod_val = totali_prodotti[pharm_name]
+            ship_val = spese_spedizione[pharm_name]
+            
+            is_winner = (i == 0)
+            card_class = "pharmacy-card winner" if is_winner else "pharmacy-card"
+            
+            if i == 0:
+                badge_html = '<span class="badge-rank gold">🥇 1° Posto - Scelta Migliore</span>'
+            elif i == 1:
+                badge_html = '<span class="badge-rank silver">🥈 2° Posto</span>'
+            elif i == 2:
+                badge_html = '<span class="badge-rank bronze">🥉 3° Posto</span>'
+            else:
+                badge_html = f'<span class="badge-rank standard">{i+1}° Posto</span>'
+                
+            ship_txt = "🚚 Spedizione Gratuita" if ship_val == 0 else f"🚚 Spedizione: +{ship_val:.2f} €"
+
+            col_idx = i % 3
+            with cols_cards[col_idx]:
+                st.markdown(f"""
+                    <div class="{card_class}">
+                        {badge_html}
+                        <div class="pharm-name">{pharm_name}</div>
+                        <div class="pharm-price">{tot_val:.2f} €</div>
+                        <div style="font-size:0.85rem; color:#64748b; margin-top:2px;">Prodotti: {prod_val:.2f} €</div>
+                        <div class="pharm-shipping">{ship_txt}</div>
+                        <a href="https://www.google.com/search?q={urllib.parse.quote(pharm_name)}+farmacia+online" target="_blank" class="btn-buy">🛒 Vai alla Farmacia</a>
+                    </div>
+                """, unsafe_allow_html=True)
+
+        with st.expander("🔍 Mostra Matrice Dettagliata Prezzi Singoli Prodotti"):
+            st.dataframe(
+                df_carrello[['Prodotto', 'MINSAN'] + farmacie_disponibili],
+                use_container_width=True,
+                hide_index=True
+            )
+
     else:
-        st.warning("Alcuni prodotti non sono disponibili in tutte le farmacie contemporaneamente.")
-        
-    with st.expander("🔍 Mostra dettaglio prezzi per singolo prodotto"):
-        st.dataframe(
-            df_carrello[['Prodotto'] + farmacie_disponibili],
-            use_container_width=True,
-            hide_index=True
-        )
+        st.warning("I prodotti selezionati non sono presenti contemporaneamente in tutte le farmacie.")
 
 else:
-    st.info("💡 Usa la barra qui sopra per aggiungere prodotti al carrello e confrontare i prezzi.")
+    st.info("💡 Usa la barra di ricerca qui sopra e clicca su **'➕ Aggiungi al Carrello'** per iniziare il confronto!")
