@@ -10,7 +10,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS per uno stile moderno e pulito
+# Custom CSS per uno stile pulito ed eliminazione di stili indesiderati
 st.markdown("""
     <style>
     .main-header {
@@ -33,7 +33,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-@st.cache_data(ttl=3600)
+@st.cache_data(ttl=60)
 def load_data():
     try:
         df = pd.read_csv("prodotti.csv", dtype={'MINSAN': str})
@@ -46,13 +46,13 @@ def load_data():
 
 df_prodotti, farmacie_disponibili = load_data()
 
-# Mostra il logo se presente nel repository
+# Logo
 if os.path.exists("logo.png"):
     col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
     with col_l2:
         st.image("logo.png", use_container_width=True)
 
-# Header Principale
+# Titolo Principale
 st.markdown("<h1 class='main-header'>💊 ComparaCarrello.it</h1>", unsafe_allow_html=True)
 st.markdown("<p class='sub-header'>Confronta i prezzi di farmaci, integratori, fitoterapici e omeopatia sulle migliori farmacie online d'Italia</p>", unsafe_allow_html=True)
 
@@ -60,28 +60,28 @@ if df_prodotti.empty:
     st.warning("Database prodotti in fase di aggiornamento. Riprova tra pochi minuti.")
     st.stop()
 
-# Sidebar per filtri e informazioni
+# BARRA LATERALE (PULITA)
 with st.sidebar:
-    st.header("🔍 Filtri")
+    st.title("⚙️ Filtri App")
     
-    categorie = ["Tutte"] + list(df_prodotti['Categoria'].dropna().unique())
-    cat_selezionata = st.selectbox("Filtra per Categoria", categorie)
+    categorie = ["Tutte"] + [str(c) for c in df_prodotti['Categoria'].dropna().unique() if str(c).strip() != ""]
+    cat_selezionata = st.selectbox("Seleziona Categoria:", categorie)
     
     st.markdown("---")
-    st.markdown("### 🏥 Farmacie Monitorate")
+    st.subheader("🏥 Farmacie attive")
     for f in farmacie_disponibili:
-        st.markdown(f"- **{f}**")
+        st.markdown(f"• **{f}**")
     
     st.markdown("---")
-    st.caption("Prezzi aggiornati automaticamente tramite codice MINSAN/PARAF ufficiale.")
+    st.caption("Confronto prezzi in tempo reale via codice MINSAN.")
 
-# Filtraggio dati per categoria
+# Filtro categoria
 if cat_selezionata != "Tutte":
     df_filtrato = df_prodotti[df_prodotti['Categoria'] == cat_selezionata]
 else:
     df_filtrato = df_prodotti
 
-# Selezione Prodotti per il Carrello
+# Carrello e Ricerca
 st.subheader("🛒 Crea il tuo carrello di confronto")
 
 def format_func(idx):
@@ -90,21 +90,19 @@ def format_func(idx):
     return f"{row['Prodotto']}{minsan_str}"
 
 prodotti_selezionati_idx = st.multiselect(
-    "Cerca e seleziona uno o più prodotti da inserire nel carrello:",
+    "Cerca e seleziona i prodotti:",
     options=df_filtrato.index.tolist(),
     format_func=format_func,
-    placeholder="Es. Tachipirina, Magnesio Supremo, Arnica..."
+    placeholder="Scrivi qui il nome del prodotto o il codice MINSAN..."
 )
 
 if prodotti_selezionati_idx:
     df_carrello = df_filtrato.loc[prodotti_selezionati_idx].copy()
     
     st.markdown("---")
-    st.subheader("📋 Prodotti nel Carrello")
-    
-    cols_display = ['MINSAN', 'Prodotto', 'Categoria']
+    st.subheader("📋 Prodotti Selezionati")
     st.dataframe(
-        df_carrello[cols_display],
+        df_carrello[['MINSAN', 'Prodotto', 'Categoria']],
         use_container_width=True,
         hide_index=True
     )
@@ -136,16 +134,14 @@ if prodotti_selezionati_idx:
         with m3:
             st.metric("🔥 Risparmio Massimo", f"{risparmio_max:.2f} €")
 
-        st.markdown("### 🏆 Classifica Farmacie per questo Carrello")
-        
+        st.markdown("### 🏆 Classifica Farmacie")
         df_classifica = pd.DataFrame(list(totali_validi.items()), columns=['Farmacia', 'Totale Carrello (€)'])
         df_classifica = df_classifica.sort_values(by='Totale Carrello (€)').reset_index(drop=True)
         df_classifica['Totale Carrello (€)'] = df_classifica['Totale Carrello (€)'].map('{:.2f} €'.format)
         
         st.table(df_classifica)
-        
     else:
-        st.warning("Alcuni prodotti selezionati non sono disponibili contemporaneamente in tutte le farmacie. Consulta la tabella sottostante per i dettagli sui singoli prezzi.")
+        st.warning("Alcuni prodotti non sono disponibili in tutte le farmacie contemporaneamente.")
         
     with st.expander("🔍 Mostra dettaglio prezzi per singolo prodotto"):
         st.dataframe(
@@ -155,4 +151,4 @@ if prodotti_selezionati_idx:
         )
 
 else:
-    st.info("💡 Inizia digitando un prodotto nella barra di ricerca sopra per confrontare i prezzi.")
+    st.info("💡 Usa la barra qui sopra per aggiungere prodotti al carrello e confrontare i prezzi.")
