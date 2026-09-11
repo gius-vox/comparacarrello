@@ -6,7 +6,7 @@ from io import BytesIO
 
 st.set_page_config(page_title="Comparacarrello.it", page_icon="💊", layout="wide")
 
-# CSS per uniformare bottoni e card delle farmacie
+# CSS Avanzato per card professionali delle farmacie e layout grafico pulito
 st.markdown("""
     <style>
     .main-title {
@@ -24,31 +24,45 @@ st.markdown("""
     }
     .pharmacy-card {
         border: 1px solid #E5E7EB;
-        border-radius: 10px;
-        padding: 8px;
+        border-radius: 12px;
+        padding: 10px;
         text-align: center;
         background-color: #FFFFFF;
-        box-shadow: 0px 2px 4px rgba(0,0,0,0.05);
-        height: 50px;
+        box-shadow: 0px 4px 6px rgba(0,0,0,0.04);
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         gap: 6px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        min-height: 70px;
+    }
+    .pharmacy-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0px 6px 12px rgba(0,0,0,0.08);
     }
     .pharmacy-card img {
-        width: 18px;
-        height: 18px;
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
     }
     .pharmacy-card a {
         text-decoration: none;
         color: #1F2937;
         font-weight: 600;
-        font-size: 12px;
+        font-size: 13px;
+    }
+    .podium-card {
+        background-color: #F0FDF4;
+        border: 1px solid #BBF7D0;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 8px;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# Regole di spedizione per ciascuno store
+# Regole di spedizione e loghi ufficiali delle 9 farmacie online
 FARMACIE_INFO = {
     "Farmacia Igea": {"logo": "https://www.google.com/s2/favicons?domain=farmaciaigea.com&sz=64", "url": "https://www.farmaciaigea.com", "sped_base": 4.90, "soglia_gratis": 29.90},
     "Farmaè": {"logo": "https://www.google.com/s2/favicons?domain=farmae.it&sz=64", "url": "https://www.farmae.it", "sped_base": 3.90, "soglia_gratis": 19.90},
@@ -71,7 +85,7 @@ def load_data():
 
 df = load_data()
 
-# Header e Logo Grande
+# Header e Logo Principale
 c_left, c_mid, c_right = st.columns([1, 2, 1])
 with c_mid:
     if os.path.exists("logo.png"):
@@ -79,7 +93,7 @@ with c_mid:
     st.markdown("<div class='main-title'>Comparacarrello.it</div>", unsafe_allow_html=True)
     st.markdown("<div class='sub-title'>Trova il tuo carrello online più conveniente</div>", unsafe_allow_html=True)
 
-# Grid Farmacie Uniforme
+# Grid Farmacie Grafiche e Uniformi
 cols = st.columns(len(FARMACIE_INFO))
 for idx, (farmacia, info) in enumerate(FARMACIE_INFO.items()):
     with cols[idx]:
@@ -137,7 +151,7 @@ if not df.empty:
                 except (ValueError, TypeError):
                     pass
             
-            info_f = FARMACIE_INFO.get(f, {"sped_base": 4.90, "soglia_gratis": 29.90, "url": "#"})
+            info_f = FARMACIE_INFO.get(f, {"sped_base": 4.90, "soglia_gratis": 29.90, "url": "#", "logo": ""})
             if tot_prodotti >= info_f["soglia_gratis"] or tot_prodotti == 0:
                 spedizione = 0.0
             else:
@@ -147,7 +161,8 @@ if not df.empty:
                 "prodotti": tot_prodotti,
                 "spedizione": spedizione,
                 "totale_completo": tot_prodotti + spedizione,
-                "url": info_f["url"]
+                "url": info_f["url"],
+                "logo": info_f["logo"]
             }
 
         totali_ordinati = sorted(totali.items(), key=lambda x: x[1]["totale_completo"])
