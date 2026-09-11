@@ -155,6 +155,18 @@ st.markdown("""
     .btn-store-sm:hover {
         background-color: #E5E7EB;
     }
+    
+    /* Box Prodotto in Carrello */
+    .cart-item-box {
+        background-color: #F9FAFB;
+        border: 1px solid #E5E7EB;
+        border-radius: 8px;
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -213,25 +225,52 @@ if not df.empty:
     else:
         df_filtrato = df
 
-    prodotto_scelto = st.selectbox("🔍 Seleziona o cerca un prodotto (Nome o MINSAN):", df_filtrato["Prodotto"].tolist())
+    # Tendina con opzione vuota di default
+    lista_prodotti = sorted(df_filtrato["Prodotto"].tolist())
+    prodotto_scelto = st.selectbox(
+        "🔍 Seleziona o cerca un prodotto (Nome o MINSAN):",
+        options=lista_prodotti,
+        index=None,
+        placeholder="-- Seleziona o digita per cercare un prodotto --"
+    )
 
     if "carrello" not in st.session_state:
         st.session_state.carrello = {}
 
-    col1, col2 = st.columns([3, 1])
-    with col1:
-        if prodotto_scelto:
-            riga = df_filtrato[df_filtrato["Prodotto"] == prodotto_scelto].iloc[0]
+    # Mostra dettagli e bottone aggiungi solo se è stato selezionato un prodotto
+    if prodotto_scelto:
+        riga = df_filtrato[df_filtrato["Prodotto"] == prodotto_scelto].iloc[0]
+        col1, col2 = st.columns([3, 1])
+        with col1:
             st.info(f"**Prodotto selezionato:** {riga['Prodotto']} — **MINSAN:** {riga.get('MINSAN', 'N/D')}")
 
-    with col2:
-        if st.button("➕ Aggiungi al Carrello", type="primary", use_container_width=True):
-            if prodotto_scelto:
+        with col2:
+            if st.button("➕ Aggiungi al Carrello", type="primary", use_container_width=True):
                 st.session_state.carrello[prodotto_scelto] = riga
+                st.success(f"Aggiunto: {prodotto_scelto}")
 
-    if st.button("🗑️ Svuota Carrello"):
-        st.session_state.carrello.clear()
-        st.rerun()
+    # Gestione visuale articoli nel carrello e rimozione singola
+    if st.session_state.carrello:
+        st.markdown("---")
+        st.markdown("### 🛍️ Articoli nel tuo Carrello")
+        
+        prodotto_da_rimuovere = None
+        for prod_name in list(st.session_state.carrello.keys()):
+            c_prod, c_del = st.columns([4, 1])
+            with c_prod:
+                minsan_val = st.session_state.carrello[prod_name].get('MINSAN', 'N/D')
+                st.markdown(f"📦 **{prod_name}** *(MINSAN: {minsan_val})*")
+            with c_del:
+                if st.button("❌ Rimuovi", key=f"del_{prod_name}", use_container_width=True):
+                    prodotto_da_rimuovere = prod_name
+
+        if prodotto_da_rimuovere:
+            del st.session_state.carrello[prodotto_da_rimuovere]
+            st.rerun()
+
+        if st.button("🗑️ Svuota interamente il carrello"):
+            st.session_state.carrello.clear()
+            st.rerun()
 
     # Sezione Podio e Comparazione
     if st.session_state.carrello:
