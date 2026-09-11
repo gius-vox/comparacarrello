@@ -6,7 +6,7 @@ from io import BytesIO
 
 st.set_page_config(page_title="Comparacarrello.it", page_icon="💊", layout="wide")
 
-# CSS Personalizzato Avanzato per Card Grafiche, Podio e Layout
+# CSS Personalizzato Avanzato per Card Grafiche, Podio e Indicatore Spedizione Gratis
 st.markdown("""
     <style>
     .main-title {
@@ -76,6 +76,27 @@ st.markdown("""
     .podium-details {
         font-size: 0.9rem;
         color: #4B5563;
+        margin-bottom: 8px;
+    }
+    .threshold-badge-success {
+        background-color: #D1FAE5;
+        color: #065F46;
+        font-weight: 700;
+        font-size: 0.8rem;
+        padding: 4px 8px;
+        border-radius: 6px;
+        display: inline-block;
+        margin-top: 4px;
+    }
+    .threshold-badge-warning {
+        background-color: #FEF3C7;
+        color: #92400E;
+        font-weight: 700;
+        font-size: 0.8rem;
+        padding: 4px 8px;
+        border-radius: 6px;
+        display: inline-block;
+        margin-top: 4px;
     }
     .btn-store {
         display: inline-block;
@@ -85,7 +106,7 @@ st.markdown("""
         border-radius: 6px;
         font-weight: 600;
         text-decoration: none;
-        margin-top: 8px;
+        margin-top: 10px;
         font-size: 0.9rem;
     }
     .btn-store:hover {
@@ -184,15 +205,21 @@ if not df.empty:
                     pass
             
             info_f = FARMACIE_INFO.get(f, {"sped_base": 4.90, "soglia_gratis": 29.90, "url": "#", "logo": ""})
-            if tot_prodotti >= info_f["soglia_gratis"] or tot_prodotti == 0:
+            soglia = info_f["soglia_gratis"]
+            
+            if tot_prodotti >= soglia or tot_prodotti == 0:
                 spedizione = 0.0
+                mancanti = 0.0
             else:
                 spedizione = info_f["sped_base"]
+                mancanti = soglia - tot_prodotti
             
             totali[f] = {
                 "prodotti": tot_prodotti,
                 "spedizione": spedizione,
                 "totale_completo": tot_prodotti + spedizione,
+                "soglia_gratis": soglia,
+                "mancanti_gratis": mancanti,
                 "url": info_f["url"],
                 "logo": info_f["logo"]
             }
@@ -201,13 +228,19 @@ if not df.empty:
 
         st.markdown("### 🏆 Podio Farmacie Più Convenienti")
         
-        # Generiamo le Card Podio grafiche
         podio_cols = st.columns(3)
         medaglie = ["🥇 1° Posto", "🥈 2° Posto", "🥉 3° Posto"]
         
         for i, (farmacia, info) in enumerate(totali_ordinati[:3]):
             with podio_cols[i]:
                 sped_badge = "<span style='color:#059669; font-weight:bold;'>GRATIS</span>" if info["spedizione"] == 0 else f"€ {info['spedizione']:.2f}"
+                
+                # Indicatore soglia spedizione gratuita
+                if info["mancanti_gratis"] == 0:
+                    threshold_html = "<div class='threshold-badge-success'>🎉 Spedizione GRATUITA raggiunta!</div>"
+                else:
+                    threshold_html = f"<div class='threshold-badge-warning'>🚚 Aggiungi <strong>€ {info['mancanti_gratis']:.2f}</strong> per la spedizione GRATIS (Soglia: € {info['soglia_gratis']:.2f})</div>"
+
                 st.markdown(f"""
                     <div class='podium-box'>
                         <div class='podium-rank'>{medaglie[i]}</div>
@@ -220,6 +253,7 @@ if not df.empty:
                             📦 Prodotti: <strong>€ {info['prodotti']:.2f}</strong><br>
                             🚚 Spedizione: <strong>{sped_badge}</strong>
                         </div>
+                        {threshold_html}<br>
                         <a href='{info["url"]}' target='_blank' class='btn-store'>🛒 Vai allo Store</a>
                     </div>
                 """, unsafe_allow_html=True)
@@ -229,7 +263,12 @@ if not df.empty:
             with st.expander("📊 Vedi i prezzi di tutte le altre farmacie"):
                 for farmacia, info in totali_ordinati[3:]:
                     sped_txt = "GRATIS" if info["spedizione"] == 0 else f"€ {info['spedizione']:.2f}"
-                    st.write(f"**{farmacia}**: **€ {info['totale_completo']:.2f}** *(Prodotti: € {info['prodotti']:.2f} | Spedizione: {sped_txt})* — [Apri]({info['url']})")
+                    if info["mancanti_gratis"] == 0:
+                        soglia_txt = "Spedizione Gratis!"
+                    else:
+                        soglia_txt = f"Mancano € {info['mancanti_gratis']:.2f} per sped. gratis (Soglia € {info['soglia_gratis']:.2f})"
+                    
+                    st.write(f"**{farmacia}**: **€ {info['totale_completo']:.2f}** *(Prodotti: € {info['prodotti']:.2f} | Spedizione: {sped_txt})* — <small>{soglia_txt}</small> — [Apri]({info['url']})")
 
 # Footer Social e QR Code
 st.markdown("---")
