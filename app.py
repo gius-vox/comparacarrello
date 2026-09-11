@@ -6,7 +6,7 @@ from io import BytesIO
 
 st.set_page_config(page_title="Comparacarrello.it", page_icon="💊", layout="wide")
 
-# Styling CSS per uniformare bottoni, card e layout
+# CSS per uniformare bottoni e card delle farmacie
 st.markdown("""
     <style>
     .main-title {
@@ -48,7 +48,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Database Farmacie con regole di spedizione
+# Regole di spedizione per ciascuno store
 FARMACIE_INFO = {
     "Farmacia Igea": {"logo": "https://www.google.com/s2/favicons?domain=farmaciaigea.com&sz=64", "url": "https://www.farmaciaigea.com", "sped_base": 4.90, "soglia_gratis": 29.90},
     "Farmaè": {"logo": "https://www.google.com/s2/favicons?domain=farmae.it&sz=64", "url": "https://www.farmae.it", "sped_base": 3.90, "soglia_gratis": 19.90},
@@ -69,15 +69,15 @@ def load_data():
 
 df = load_data()
 
-# Header: Logo Grande Centrato e Titolo
+# Header e Logo Grande
 c_left, c_mid, c_right = st.columns([1, 2, 1])
 with c_mid:
     if os.path.exists("logo.png"):
         st.image("logo.png", use_container_width=True)
     st.markdown("<div class='main-title'>Comparacarrello.it</div>", unsafe_allow_html=True)
-    st.markdown("<div class='sub-title'>Trova la farmacia online più conveniente per il tuo carrello intero</div>", unsafe_allow_html=True)
+    st.markdown("<div class='sub-title'>Trova il tuo carrello online più conveniente</div>", unsafe_allow_html=True)
 
-# Grid farmacie uniforme
+# Grid Farmacie Uniforme
 cols = st.columns(len(FARMACIE_INFO))
 for idx, (farmacia, info) in enumerate(FARMACIE_INFO.items()):
     with cols[idx]:
@@ -121,7 +121,7 @@ if not df.empty:
         st.session_state.carrello.clear()
         st.rerun()
 
-    # Dettaglio Carrello e Schede Farmacie
+    # Dettaglio Carrello e Spedizioni
     if st.session_state.carrello:
         st.markdown("---")
         st.subheader("🛒 Dettaglio Carrello e Comparazione Spedizioni")
@@ -161,7 +161,7 @@ if not df.empty:
                     sped_txt = "GRATIS" if info["spedizione"] == 0 else f"€ {info['spedizione']:.2f}"
                     st.write(f"**{farmacia}**: € {info['totale_completo']:.2f} *(Prodotti: € {info['prodotti']:.2f} | Sped: {sped_txt})*")
 
-# Footer: Social, WhatsApp e QR Code
+# Footer Social e QR Code
 st.markdown("---")
 f_col1, f_col2 = st.columns([2, 1])
 
@@ -169,7 +169,6 @@ with f_col1:
     st.markdown("### 💬 Condividi Comparacarrello.it")
     msg_wa = "https://api.whatsapp.com/send?text=Confronta%20i%20prezzi%20delle%20farmacie%20online%20su%20https://comparacarrello.it"
     st.markdown(f"[📲 Condividi su WhatsApp]({msg_wa})", unsafe_allow_html=True)
-    st.write("Seguici sui nostri canali ufficiali per rimanere aggiornato sulle offerte.")
 
 with f_col2:
     st.markdown("### 📱 QR Code App")
