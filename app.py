@@ -6,7 +6,7 @@ from io import BytesIO
 
 st.set_page_config(page_title="Comparacarrello.it", page_icon="💊", layout="wide")
 
-# CSS Personalizzato Avanzato per Card Grafiche, Podio e Indicatore Spedizione Gratis
+# CSS Personalizzato Avanzato
 st.markdown("""
     <style>
     .main-title {
@@ -50,7 +50,7 @@ st.markdown("""
         font-size: 11px;
     }
 
-    /* Podium Cards per il Carrello */
+    /* Podium Cards */
     .podium-box {
         border-radius: 12px;
         padding: 16px;
@@ -109,8 +109,51 @@ st.markdown("""
         margin-top: 10px;
         font-size: 0.9rem;
     }
-    .btn-store:hover {
-        background-color: #1D4ED8;
+
+    /* Mini Card per Altre Farmacie */
+    .other-pharmacy-row {
+        background-color: #FFFFFF;
+        border: 1px solid #E5E7EB;
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0px 1px 3px rgba(0,0,0,0.03);
+    }
+    .other-pharmacy-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .other-pharmacy-name {
+        font-weight: 700;
+        font-size: 1rem;
+        color: #1F2937;
+    }
+    .other-pharmacy-sub {
+        font-size: 0.82rem;
+        color: #6B7280;
+    }
+    .other-pharmacy-price {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: #1E3A8A;
+        text-align: right;
+    }
+    .btn-store-sm {
+        background-color: #F3F4F6;
+        color: #1F2937 !important;
+        border: 1px solid #D1D5DB;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 0.82rem;
+    }
+    .btn-store-sm:hover {
+        background-color: #E5E7EB;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -235,11 +278,10 @@ if not df.empty:
             with podio_cols[i]:
                 sped_badge = "<span style='color:#059669; font-weight:bold;'>GRATIS</span>" if info["spedizione"] == 0 else f"€ {info['spedizione']:.2f}"
                 
-                # Indicatore soglia spedizione gratuita
                 if info["mancanti_gratis"] == 0:
                     threshold_html = "<div class='threshold-badge-success'>🎉 Spedizione GRATUITA raggiunta!</div>"
                 else:
-                    threshold_html = f"<div class='threshold-badge-warning'>🚚 Aggiungi <strong>€ {info['mancanti_gratis']:.2f}</strong> per la spedizione GRATIS (Soglia: € {info['soglia_gratis']:.2f})</div>"
+                    threshold_html = f"<div class='threshold-badge-warning'>🚚 Aggiungi <strong>€ {info['mancanti_gratis']:.2f}</strong> per la spedizione GRATIS</div>"
 
                 st.markdown(f"""
                     <div class='podium-box'>
@@ -250,8 +292,7 @@ if not df.empty:
                         </div>
                         <div class='podium-price'>€ {info['totale_completo']:.2f}</div>
                         <div class='podium-details'>
-                            📦 Prodotti: <strong>€ {info['prodotti']:.2f}</strong><br>
-                            🚚 Spedizione: <strong>{sped_badge}</strong>
+                            📦 Prodotti: <strong>€ {info['prodotti']:.2f}</strong> | 🚚 Sped: <strong>{sped_badge}</strong>
                         </div>
                         {threshold_html}<br>
                         <a href='{info["url"]}' target='_blank' class='btn-store'>🛒 Vai allo Store</a>
@@ -260,15 +301,30 @@ if not df.empty:
 
         if len(totali_ordinati) > 3:
             st.markdown("<br>", unsafe_allow_html=True)
-            with st.expander("📊 Vedi i prezzi di tutte le altre farmacie"):
+            with st.expander("📊 Vedi le altre farmacie in ordine di prezzo"):
                 for farmacia, info in totali_ordinati[3:]:
-                    sped_txt = "GRATIS" if info["spedizione"] == 0 else f"€ {info['spedizione']:.2f}"
-                    if info["mancanti_gratis"] == 0:
-                        soglia_txt = "Spedizione Gratis!"
-                    else:
-                        soglia_txt = f"Mancano € {info['mancanti_gratis']:.2f} per sped. gratis (Soglia € {info['soglia_gratis']:.2f})"
+                    sped_txt = "<span style='color:#059669; font-weight:bold;'>GRATIS</span>" if info["spedizione"] == 0 else f"€ {info['spedizione']:.2f}"
                     
-                    st.write(f"**{farmacia}**: **€ {info['totale_completo']:.2f}** *(Prodotti: € {info['prodotti']:.2f} | Spedizione: {sped_txt})* — <small>{soglia_txt}</small> — [Apri]({info['url']})")
+                    if info["mancanti_gratis"] == 0:
+                        soglia_info = "<span style='color:#059669;'>Spedizione gratuita applicata</span>"
+                    else:
+                        soglia_info = f"Mancano <strong>€ {info['mancanti_gratis']:.2f}</strong> per la spedizione gratis"
+
+                    st.markdown(f"""
+                        <div class='other-pharmacy-row'>
+                            <div class='other-pharmacy-info'>
+                                <img src='{info["logo"]}' width='22' height='22'>
+                                <div>
+                                    <div class='other-pharmacy-name'>{farmacia}</div>
+                                    <div class='other-pharmacy-sub'>Prodotti: € {info['prodotti']:.2f} | Spedizione: {sped_txt} • {soglia_info}</div>
+                                </div>
+                            </div>
+                            <div style='display:flex; align-items:center; gap:16px;'>
+                                <div class='other-pharmacy-price'>€ {info['totale_completo']:.2f}</div>
+                                <a href='{info["url"]}' target='_blank' class='btn-store-sm'>Apri Store</a>
+                            </div>
+                        </div>
+                    """, unsafe_allow_html=True)
 
 # Footer Social e QR Code
 st.markdown("---")
