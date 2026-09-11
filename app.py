@@ -63,7 +63,9 @@ FARMACIE_INFO = {
 
 @st.cache_data(ttl=60)
 def load_data():
-    if os.path.exists("prodotti.csv"):
+    if os.path.exists("prodotti_1000_minsan.csv"):
+        return pd.read_csv("prodotti_1000_minsan.csv", dtype={"MINSAN": str})
+    elif os.path.exists("prodotti.csv"):
         return pd.read_csv("prodotti.csv", dtype={"MINSAN": str})
     return pd.DataFrame()
 
