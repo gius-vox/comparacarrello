@@ -1,9 +1,10 @@
 import streamlit as st
 import pandas as pd
+import os
 
 st.set_page_config(page_title="Comparacarrello.it", page_icon="💊", layout="wide")
 
-# Database ufficiale delle farmacie con loghi e link
+# Database ufficiale delle farmacie con loghi e link corretti
 FARMACIE_INFO = {
     "Farmacia Igea": {"logo": "https://www.google.com/s2/favicons?domain=farmaciaigea.com&sz=64", "url": "https://www.farmaciaigea.com"},
     "Farmaè": {"logo": "https://www.google.com/s2/favicons?domain=farmae.it&sz=64", "url": "https://www.farmae.it"},
@@ -18,8 +19,10 @@ FARMACIE_INFO = {
 # Caricamento del file CSV dei prodotti
 df = pd.read_csv("prodotti.csv")
 
-# Interfaccia grafica principale
-st.image("logo.png", width=150)
+# Interfaccia grafica principale (con controllo logo per evitare errori)
+if os.path.exists("logo.png"):
+    st.image("logo.png", width=150)
+
 st.markdown("<h3 style='text-align: center;'>Trova la farmacia online più conveniente per il tuo carrello</h3>", unsafe_allow_html=True)
 
 # Mostra i pulsanti/loghi delle farmacie
