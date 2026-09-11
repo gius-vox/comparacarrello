@@ -6,7 +6,7 @@ from io import BytesIO
 
 st.set_page_config(page_title="Comparacarrello.it", page_icon="💊", layout="wide")
 
-# CSS Avanzato per card professionali delle farmacie e layout grafico pulito
+# CSS Personalizzato Avanzato per Card Grafiche, Podio e Layout
 st.markdown("""
     <style>
     .main-title {
@@ -22,47 +22,79 @@ st.markdown("""
         color: #4B5563;
         margin-bottom: 25px;
     }
+    
+    /* Top Bar Farmacie */
     .pharmacy-card {
         border: 1px solid #E5E7EB;
-        border-radius: 12px;
-        padding: 10px;
+        border-radius: 10px;
+        padding: 8px 4px;
         text-align: center;
         background-color: #FFFFFF;
-        box-shadow: 0px 4px 6px rgba(0,0,0,0.04);
+        box-shadow: 0px 2px 4px rgba(0,0,0,0.04);
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 6px;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        min-height: 70px;
-    }
-    .pharmacy-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0px 6px 12px rgba(0,0,0,0.08);
+        gap: 4px;
+        min-height: 65px;
     }
     .pharmacy-card img {
-        width: 24px;
-        height: 24px;
+        width: 20px;
+        height: 20px;
         object-fit: contain;
     }
     .pharmacy-card a {
         text-decoration: none;
         color: #1F2937;
         font-weight: 600;
-        font-size: 13px;
+        font-size: 11px;
     }
-    .podium-card {
-        background-color: #F0FDF4;
-        border: 1px solid #BBF7D0;
-        border-radius: 10px;
-        padding: 12px;
-        margin-bottom: 8px;
+
+    /* Podium Cards per il Carrello */
+    .podium-box {
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.06);
+        background: #FFFFFF;
+        border-left: 6px solid #10B981;
+    }
+    .podium-rank {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: #065F46;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .podium-price {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #1E3A8A;
+        margin: 5px 0;
+    }
+    .podium-details {
+        font-size: 0.9rem;
+        color: #4B5563;
+    }
+    .btn-store {
+        display: inline-block;
+        background-color: #2563EB;
+        color: white !important;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        text-decoration: none;
+        margin-top: 8px;
+        font-size: 0.9rem;
+    }
+    .btn-store:hover {
+        background-color: #1D4ED8;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# Regole di spedizione e loghi ufficiali delle 9 farmacie online
+# Informazioni e loghi delle farmacie
 FARMACIE_INFO = {
     "Farmacia Igea": {"logo": "https://www.google.com/s2/favicons?domain=farmaciaigea.com&sz=64", "url": "https://www.farmaciaigea.com", "sped_base": 4.90, "soglia_gratis": 29.90},
     "Farmaè": {"logo": "https://www.google.com/s2/favicons?domain=farmae.it&sz=64", "url": "https://www.farmae.it", "sped_base": 3.90, "soglia_gratis": 19.90},
@@ -93,7 +125,7 @@ with c_mid:
     st.markdown("<div class='main-title'>Comparacarrello.it</div>", unsafe_allow_html=True)
     st.markdown("<div class='sub-title'>Trova il tuo carrello online più conveniente</div>", unsafe_allow_html=True)
 
-# Grid Farmacie Grafiche e Uniformi
+# Barra Superiore con Loghi Farmacie
 cols = st.columns(len(FARMACIE_INFO))
 for idx, (farmacia, info) in enumerate(FARMACIE_INFO.items()):
     with cols[idx]:
@@ -126,7 +158,7 @@ if not df.empty:
     with col1:
         if prodotto_scelto:
             riga = df_filtrato[df_filtrato["Prodotto"] == prodotto_scelto].iloc[0]
-            st.info(f"**Prodotto:** {riga['Prodotto']} — **MINSAN:** {riga.get('MINSAN', 'N/D')}")
+            st.info(f"**Prodotto selezionato:** {riga['Prodotto']} — **MINSAN:** {riga.get('MINSAN', 'N/D')}")
 
     with col2:
         if st.button("➕ Aggiungi al Carrello", type="primary", use_container_width=True):
@@ -137,7 +169,7 @@ if not df.empty:
         st.session_state.carrello.clear()
         st.rerun()
 
-    # Dettaglio Carrello e Spedizioni
+    # Sezione Podio e Comparazione
     if st.session_state.carrello:
         st.markdown("---")
         st.subheader("🛒 Dettaglio Carrello e Comparazione Spedizioni")
@@ -167,16 +199,37 @@ if not df.empty:
 
         totali_ordinati = sorted(totali.items(), key=lambda x: x[1]["totale_completo"])
 
-        st.markdown("### 🏆 Podio Farmacie (Prodotti + Spedizione)")
-        for i, (farmacia, info) in enumerate(totali_ordinati[:3], 1):
-            sped_txt = "GRATIS" if info["spedizione"] == 0 else f"€ {info['spedizione']:.2f}"
-            st.success(f"**#{i} {farmacia}** — Totale: **€ {info['totale_completo']:.2f}** (Prodotti: € {info['prodotti']:.2f} | Spedizione: {sped_txt}) — [Vai allo Store]({info['url']})")
+        st.markdown("### 🏆 Podio Farmacie Più Convenienti")
+        
+        # Generiamo le Card Podio grafiche
+        podio_cols = st.columns(3)
+        medaglie = ["🥇 1° Posto", "🥈 2° Posto", "🥉 3° Posto"]
+        
+        for i, (farmacia, info) in enumerate(totali_ordinati[:3]):
+            with podio_cols[i]:
+                sped_badge = "<span style='color:#059669; font-weight:bold;'>GRATIS</span>" if info["spedizione"] == 0 else f"€ {info['spedizione']:.2f}"
+                st.markdown(f"""
+                    <div class='podium-box'>
+                        <div class='podium-rank'>{medaglie[i]}</div>
+                        <div style='display:flex; align-items:center; gap:8px; margin-top:8px;'>
+                            <img src='{info["logo"]}' width='24' height='24'>
+                            <strong style='font-size:1.1rem;'>{farmacia}</strong>
+                        </div>
+                        <div class='podium-price'>€ {info['totale_completo']:.2f}</div>
+                        <div class='podium-details'>
+                            📦 Prodotti: <strong>€ {info['prodotti']:.2f}</strong><br>
+                            🚚 Spedizione: <strong>{sped_badge}</strong>
+                        </div>
+                        <a href='{info["url"]}' target='_blank' class='btn-store'>🛒 Vai allo Store</a>
+                    </div>
+                """, unsafe_allow_html=True)
 
         if len(totali_ordinati) > 3:
-            with st.expander("📊 Dettaglio completo per tutte le altre farmacie"):
+            st.markdown("<br>", unsafe_allow_html=True)
+            with st.expander("📊 Vedi i prezzi di tutte le altre farmacie"):
                 for farmacia, info in totali_ordinati[3:]:
                     sped_txt = "GRATIS" if info["spedizione"] == 0 else f"€ {info['spedizione']:.2f}"
-                    st.write(f"**{farmacia}**: € {info['totale_completo']:.2f} *(Prodotti: € {info['prodotti']:.2f} | Sped: {sped_txt})*")
+                    st.write(f"**{farmacia}**: **€ {info['totale_completo']:.2f}** *(Prodotti: € {info['prodotti']:.2f} | Spedizione: {sped_txt})* — [Apri]({info['url']})")
 
 # Footer Social e QR Code
 st.markdown("---")
