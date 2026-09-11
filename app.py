@@ -22,6 +22,19 @@ df = pd.read_csv("prodotti.csv")
 st.image("logo.png", width=150)
 st.markdown("<h3 style='text-align: center;'>Trova la farmacia online più conveniente per il tuo carrello</h3>", unsafe_allow_html=True)
 
+# Mostra i pulsanti/loghi delle farmacie
+cols = st.columns(len(FARMACIE_INFO))
+for i, (farmacia, info) in enumerate(FARMACIE_INFO.items()):
+    with cols[i]:
+        st.markdown(f"""
+            <div style="text-align: center; padding: 5px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 10px;">
+                <img src="{info['logo']}" width="24" style="vertical-align: middle; margin-right: 5px;">
+                <a href="{info['url']}" target="_blank" style="text-decoration: none; color: #31333F; font-weight: 500; font-size: 14px;">{farmacia}</a>
+            </div>
+        """, unsafe_allow_html=True)
+
+st.markdown("---")
+
 # Filtro per categoria
 if "Categoria" in df.columns:
     categorie = ["Tutte le Categorie"] + sorted(df["Categoria"].dropna().unique().tolist())
