@@ -15,8 +15,10 @@ FARMACIE_INFO = {
     "eFarma": {"logo": "https://www.google.com/s2/favicons?domain=efarma.com&sz=64", "url": "https://www.efarma.com", "soglia_gratis": 19.90, "costo_sped": 3.90}
 }
 
-# Caricamento pulito dal CSV
+# Caricamento pulito dal CSV con normalizzazione automatica dei nomi
 df = pd.read_csv("prodotti.csv")
+df = df.rename(columns={"Dottor Max": "Dr Max", "Ristoranti di alto livello": "Top Farmacia"})
+
 products_db = []
 for _, row in df.iterrows():
     prezzi = {}
@@ -30,11 +32,11 @@ for _, row in df.iterrows():
         "prezzi": prezzi
     })
 
-# Inserimento del Logo ufficiale centrato
-col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
+# Logo centrale ridimensionato elegantemente
+col_l1, col_l2, col_l3 = st.col([1, 2, 1]) if hasattr(st, "col") else st.columns([1, 1.5, 1])
 with col_l2:
     try:
-        st.image("logo.png", use_container_width=True)
+        st.image("logo.png", width=320)
     except:
         st.markdown("<h1 style='text-align: center;'>💊 ComparaCarrello.it</h1>", unsafe_allow_html=True)
 
