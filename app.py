@@ -10,7 +10,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 2. CSS Pulito, Moderno ed Elegante
+# 2. CSS Personalizzato basato sui colori del TUO LOGO (Arancione & Antracite)
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -19,66 +19,72 @@ st.markdown("""
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
-    /* Header Navbar Unificata */
-    .brand-header {
+    /* Container Header con colori coerenti al Logo */
+    .brand-header-container {
         display: flex;
         align-items: center;
-        gap: 20px;
-        padding: 15px 0 25px 0;
+        gap: 25px;
+        padding: 10px 0 25px 0;
         border-bottom: 2px solid #f1f5f9;
         margin-bottom: 25px;
     }
 
-    .brand-logo-img {
-        height: 75px;
-        width: auto;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-
-    .brand-title {
-        font-size: 2.5rem;
+    .brand-title-main {
+        font-size: 3.2rem;
         font-weight: 800;
-        color: #0f172a;
+        color: #1e293b; /* Nero / Antracite */
         margin: 0;
         line-height: 1.1;
         letter-spacing: -1px;
     }
 
-    .brand-title span {
-        color: #2563eb;
+    .brand-title-main span {
+        color: #f97316; /* Arancione coordinato al carrello del logo */
     }
 
-    .brand-subtitle {
-        font-size: 1rem;
+    .brand-subtitle-main {
+        font-size: 1.15rem;
         color: #64748b;
-        margin: 4px 0 0 0;
+        margin-top: 6px;
         font-weight: 500;
     }
 
-    /* Partner Badge Testuali */
+    /* Sezione Farmacie con Loghi reali */
     .partner-label {
-        font-size: 0.78rem;
+        font-size: 0.85rem;
         text-transform: uppercase;
         letter-spacing: 1.2px;
-        color: #94a3b8;
+        color: #64748b;
         font-weight: 700;
-        margin-bottom: 12px;
+        margin-bottom: 15px;
     }
 
-    .pharmacy-badge {
-        background: #f8fafc;
+    .logo-card {
+        background: white;
         border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 8px 12px;
-        text-align: center;
-        font-weight: 700;
-        font-size: 0.85rem;
-        color: #334155;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        border-radius: 12px;
+        padding: 12px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 65px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        transition: transform 0.2s, box-shadow 0.2s;
     }
 
-    /* Result Cards */
+    .logo-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+        border-color: #f97316;
+    }
+
+    .logo-card img {
+        max-height: 42px;
+        max-width: 90%;
+        object-fit: contain;
+    }
+
+    /* Card Risultati */
     .result-card {
         background: white;
         border-radius: 16px;
@@ -89,9 +95,9 @@ st.markdown("""
     }
 
     .result-card.first {
-        border: 2px solid #2563eb;
-        background: #fafbfd;
-        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.1);
+        border: 2px solid #f97316;
+        background: #fffbf7;
+        box-shadow: 0 8px 20px rgba(249, 115, 22, 0.12);
     }
 
     .badge-rank {
@@ -125,65 +131,97 @@ st.markdown("""
         margin-top: 8px;
     }
 
-    .stButton>button {
-        border-radius: 10px;
-        font-weight: 600;
+    /* Bottone Principale Arancione */
+    .stButton>button[kind="primary"] {
+        background-color: #f97316 !important;
+        border-color: #f97316 !important;
+        color: white !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# 3. Configurazione Farmacie Partner
+# 3. Mappa Farmacie + URL Loghi reali
 FARMACIE = {
-    "Farmacia Igea": {"spedizione_base": 4.90, "soglia_gratis": 29.00, "url": "https://www.farmaciaigea.com"},
-    "Farmaè": {"spedizione_base": 3.90, "soglia_gratis": 19.90, "url": "https://www.farmae.it"},
-    "Dr Max": {"spedizione_base": 4.50, "soglia_gratis": 24.90, "url": "https://www.drmax.it"},
-    "RedCare": {"spedizione_base": 3.95, "soglia_gratis": 18.00, "url": "https://www.redcare.it"},
-    "Farmacia Loreto": {"spedizione_base": 4.90, "soglia_gratis": 29.90, "url": "https://farmacialoreto.it"},
-    "1000Farmacie": {"spedizione_base": 2.90, "soglia_gratis": 29.00, "url": "https://www.1000farmacie.it"},
-    "Top Farmacia": {"spedizione_base": 4.90, "soglia_gratis": 19.90, "url": "https://www.topfarmacia.it"},
-    "eFarma": {"spedizione_base": 4.90, "soglia_gratis": 29.90, "url": "https://www.efarma.com"},
-    "Farmacosmo": {"spedizione_base": 3.90, "soglia_gratis": 29.90, "url": "https://www.farmacosmo.it"}
+    "Farmacia Igea": {
+        "spedizione_base": 4.90, "soglia_gratis": 29.00, "url": "https://www.farmaciaigea.com",
+        "logo": "https://www.farmaciaigea.com/img/farmacia-igea-logo-1621255554.jpg"
+    },
+    "Farmaè": {
+        "spedizione_base": 3.90, "soglia_gratis": 19.90, "url": "https://www.farmae.it",
+        "logo": "https://www.farmae.it/media/logo/default/farmae_logo.png"
+    },
+    "Dr Max": {
+        "spedizione_base": 4.50, "soglia_gratis": 24.90, "url": "https://www.drmax.it",
+        "logo": "https://www.drmax.it/static/version1710323315/frontend/DrMax/default/it_IT/images/logo.svg"
+    },
+    "RedCare": {
+        "spedizione_base": 3.95, "soglia_gratis": 18.00, "url": "https://www.redcare.it",
+        "logo": "https://www.redcare.it/assets/images/redcare-logo.svg"
+    },
+    "Farmacia Loreto": {
+        "spedizione_base": 4.90, "soglia_gratis": 29.90, "url": "https://farmacialoreto.it",
+        "logo": "https://farmacialoreto.it/img/farmacia-loreto-gallo-logo-1663162703.jpg"
+    },
+    "1000Farmacie": {
+        "spedizione_base": 2.90, "soglia_gratis": 29.00, "url": "https://www.1000farmacie.it",
+        "logo": "https://www.1000farmacie.it/images/logo.svg"
+    },
+    "Top Farmacia": {
+        "spedizione_base": 4.90, "soglia_gratis": 19.90, "url": "https://www.topfarmacia.it",
+        "logo": "https://www.topfarmacia.it/img/top-farmacia-logo-1563287611.jpg"
+    },
+    "eFarma": {
+        "spedizione_base": 4.90, "soglia_gratis": 29.90, "url": "https://www.efarma.com",
+        "logo": "https://www.efarma.com/media/logo/default/efarma_logo.png"
+    },
+    "Farmacosmo": {
+        "spedizione_base": 3.90, "soglia_gratis": 29.90, "url": "https://www.farmacosmo.it",
+        "logo": "https://www.farmacosmo.it/img/farmacosmo-logo-1588673738.jpg"
+    }
 }
 
-# 4. Controllo Logo Locale (JPG o PNG)
-logo_path = None
+# 4. Controllo del Logo Locale
+logo_filename = None
 for name in ["logo_comparacarrello.jpg", "logo_comparacarrello.png", "logo.jpg", "logo.png"]:
     if os.path.exists(name):
-        logo_path = name
+        logo_filename = name
         break
 
-# 5. Header Navbar
-if logo_path:
-    col_l, col_r = st.columns([1, 6], vertical_alignment="center")
-    with col_l:
-        st.image(logo_path, width=90)
-    with col_r:
-        st.markdown("""
-        <div>
-            <h1 class="brand-title" style="margin:0;">Comparacarrello<span>.it</span></h1>
-            <p class="brand-subtitle" style="margin:0;">Trova la farmacia online più conveniente per la tua spesa totale in un click.</p>
-        </div>
-        """, unsafe_allow_html=True)
-else:
+# 5. Header Grande con Logo in Evidenza e Titolo Abbinato
+col_logo, col_title = st.columns([1, 4], vertical_alignment="center")
+
+with col_logo:
+    if logo_filename:
+        # Mostra il tuo logo bello GRANDE (larghezza 220px)
+        st.image(logo_filename, width=220)
+    else:
+        st.write("🛒")
+
+with col_title:
     st.markdown("""
-    <div class="brand-header">
-        <div>
-            <h1 class="brand-title">🛒 Comparacarrello<span>.it</span></h1>
-            <p class="brand-subtitle">Trova la farmacia online più conveniente per la tua spesa totale in un click.</p>
-        </div>
+    <div>
+        <h1 class="brand-title-main">Compara<span>carrello.it</span></h1>
+        <p class="brand-subtitle-main">Confronta il prezzo totale della tua spesa nelle migliori farmacie online d'Italia.</p>
     </div>
     """, unsafe_allow_html=True)
 
-# 6. Farmacie Monitorate
-st.markdown('<div class="partner-label">Farmacie Online Monitorate in Tempo Reale:</div>', unsafe_allow_html=True)
-cols_brand = st.columns(len(FARMACIE))
-for idx, nome_f in enumerate(FARMACIE.keys()):
-    with cols_brand[idx]:
-        st.markdown(f'<div class="pharmacy-badge">{nome_f}</div>', unsafe_allow_html=True)
-
 st.markdown("<br>", unsafe_allow_html=True)
 
-# 7. Caricamento Dati
+# 6. Griglia Loghi Farmacie Partner Reali
+st.markdown('<div class="partner-label">Farmacie Online Monitorate in Tempo Reale:</div>', unsafe_allow_html=True)
+
+cols = st.columns(len(FARMACIE))
+for idx, (nome, info) in enumerate(FARMACIE.items()):
+    with cols[idx]:
+        st.markdown(f"""
+        <div class="logo-card" title="{nome}">
+            <img src="{info['logo']}" alt="{nome}" onerror="this.style.display='none'; this.parentNode.innerText='{nome}';">
+        </div>
+        """, unsafe_allow_html=True)
+
+st.markdown("<br><br>", unsafe_allow_html=True)
+
+# 7. Caricamento Dati CSV
 @st.cache_data
 def load_data():
     try:
@@ -300,7 +338,7 @@ if st.session_state.carrello:
                     {"<div class='ship-badge'>🚚 +€ " + f"{res['mancante_gratis']:.2f}" + " per Sped. GRATIS</div>" if res['mancante_gratis'] > 0 else "<div class='ship-badge' style='background:#dcfce7;color:#166534;'>🎉 Spedizione GRATUITA</div>"}
                     <br><br>
                     <a href="{res['url']}" target="_blank" style="text-decoration:none;">
-                        <button style="width:100%; background-color:#2563eb; color:white; border:none; padding:12px; border-radius:10px; font-weight:700; cursor:pointer;">
+                        <button style="width:100%; background-color:#f97316; color:white; border:none; padding:12px; border-radius:10px; font-weight:700; cursor:pointer;">
                             🛒 Vai allo Store
                         </button>
                     </a>
