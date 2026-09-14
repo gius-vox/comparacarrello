@@ -14,85 +14,114 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------
-# 2. DESIGN SYSTEM & CSS E-COMMERCE STYLE
+# 2. DESIGN SYSTEM - HEADER FULL WIDTH E-COMMERCE
 # ---------------------------------------------------------
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     
     html, body, [class*="css"] {
-        font-family: 'Inter', sans-serif;
+        font-family: 'Plus Jakarta Sans', sans-serif;
         background-color: #f8fafc;
     }
 
-    /* Header e Brand */
-    .brand-header {
+    /* Rimuove i margini superiori di Streamlit per incollare l'header in alto */
+    .block-container {
+        padding-top: 0rem !important;
+        padding-bottom: 2rem !important;
+        max-width: 100% !important;
+    }
+    
+    /* HEADER FULL-WIDTH STILE TROVAPREZZI */
+    .tp-header-container {
+        background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+        margin-left: -5rem;
+        margin-right: -5rem;
+        padding: 24px 5rem 28px 5rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        border-bottom: 4px solid #ea580c;
+        margin-bottom: 25px;
+    }
+
+    .tp-header-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .tp-logo-box {
         display: flex;
         align-items: center;
         gap: 16px;
-        padding-bottom: 12px;
-        border-bottom: 1px solid #e2e8f0;
-        margin-bottom: 16px;
-    }
-    .brand-title {
-        font-size: 2.2rem;
-        font-weight: 800;
-        color: #0f172a;
-        margin: 0;
-        letter-spacing: -0.5px;
-    }
-    .brand-title span {
-        color: #ea580c;
-    }
-    .brand-tagline {
-        color: #64748b;
-        font-size: 0.95rem;
-        font-weight: 500;
-        margin-top: 2px;
     }
 
-    /* Value Proposition Badge (Sintetico) */
-    .value-badge {
-        background: #fff7ed;
-        border: 1px solid #ffedd5;
-        color: #c2410c;
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-size: 0.88rem;
+    .tp-brand-title {
+        font-size: 2.4rem;
+        font-weight: 800;
+        color: #ffffff;
+        margin: 0;
+        letter-spacing: -0.5px;
+        line-height: 1;
+    }
+
+    .tp-brand-title span {
+        color: #f97316;
+    }
+
+    .tp-brand-tagline {
+        color: #94a3b8;
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-top: 4px;
+    }
+
+    /* BANNER VALUE PROPOSITION COMPATTO */
+    .tp-value-banner {
+        background: rgba(249, 115, 22, 0.15);
+        border: 1px solid rgba(249, 115, 22, 0.4);
+        border-radius: 30px;
+        padding: 6px 18px;
+        color: #fdba74;
+        font-size: 0.85rem;
         font-weight: 600;
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        margin-bottom: 16px;
     }
 
-    /* Griglia Partner Farmacie */
-    .partner-section {
+    /* STRISCIA FARMACIE MONITORATE */
+    .pharmacy-bar {
         background: #ffffff;
         border: 1px solid #e2e8f0;
-        padding: 12px 18px;
         border-radius: 12px;
-        margin-bottom: 24px;
+        padding: 12px 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
-    .partner-label {
+    
+    .pharmacy-bar-title {
         font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 0.8px;
-        color: #94a3b8;
+        color: #64748b;
         font-weight: 700;
         margin-bottom: 8px;
     }
+
     .pharmacy-grid {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
+        align-items: center;
     }
+
     .pharmacy-chip {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        background: #f1f5f9;
-        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
         padding: 4px 10px;
         border-radius: 20px;
         font-weight: 600;
@@ -105,17 +134,7 @@ st.markdown("""
         border-radius: 50%;
     }
 
-    /* Card Prodotto Selezionato */
-    .product-preview-card {
-        background: white;
-        border: 1px solid #cbd5e1;
-        border-radius: 12px;
-        padding: 16px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        margin-top: 12px;
-    }
-
-    /* Card Podio Risultati */
+    /* CARD RISULTATI PODIO */
     .result-card {
         background: white;
         border-radius: 14px;
@@ -163,10 +182,10 @@ st.markdown("""
     .ship-free { background-color: #dcfce7; color: #166534; }
     .ship-paid { background-color: #fef9c3; color: #854d0e; }
 
-    /* Override Pulsanti Streamlit */
+    /* STILE PULSANTI OVERRIDE */
     .stButton>button[kind="primary"] {
-        background-color: #ea580c !important;
-        border-color: #ea580c !important;
+        background-color: #f97316 !important;
+        border-color: #f97316 !important;
         color: white !important;
         font-weight: 700 !important;
         border-radius: 8px !important;
@@ -209,7 +228,7 @@ def load_data():
 df_prodotti = load_data()
 
 # ---------------------------------------------------------
-# 5. HEADER
+# 5. HEADER FULL-WIDTH (TROVAPREZZI STYLE)
 # ---------------------------------------------------------
 logo_filename = None
 for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
@@ -217,91 +236,82 @@ for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
         logo_filename = name
         break
 
-col_logo, col_head = st.columns([0.8, 4], vertical_alignment="center")
-
-with col_logo:
-    if logo_filename:
-        st.image(logo_filename, width=130)
-    else:
-        st.markdown("<h1 style='font-size: 2.5rem; margin:0;'>🛒</h1>", unsafe_allow_html=True)
-
-with col_head:
-    st.markdown("""
-        <div style="margin-bottom: 0px;">
-            <h1 class="brand-title" style="display:inline-block;">Compara<span>carrello.it</span></h1>
-            <span class="brand-tagline"> | Il motore di ricerca per la tua spesa in farmacia</span>
-        </div>
-    """, unsafe_allow_html=True)
-
-# Value Proposition in 1 riga
 st.markdown("""
-    <div class="value-badge">
-        <span>⚡ <b>Confronta il Carrello Completo:</b> Calcoliamo la farmacia più conveniente per l'intera spesa inclusa la spedizione.</span>
+    <div class="tp-header-container">
+        <div class="tp-header-top">
+            <div class="tp-logo-box">
+                <div>
+                    <h1 class="tp-brand-title">Compara<span>carrello.it</span></h1>
+                    <div class="tp-brand-tagline">Il motore di ricerca per la tua spesa in farmacia al miglior prezzo totale</div>
+                </div>
+            </div>
+            <div class="tp-value-banner">
+                ⚡ <b>Calcolo Carrello Unico:</b> Risparmia sulle spedizioni unificando la tua spesa
+            </div>
+        </div>
     </div>
 """, unsafe_allow_html=True)
 
-# Grid Partner Compatta
+# ---------------------------------------------------------
+# 6. STRISCIA PARTNER FARMACIE
+# ---------------------------------------------------------
 chips = "".join([
     f'<div class="pharmacy-chip"><img src="https://www.google.com/s2/favicons?domain={info["domain"]}&sz=32"><span>{nome}</span></div>'
     for nome, info in FARMACIE.items()
 ])
+
 st.markdown(f"""
-    <div class="partner-section">
-        <div class="partner-label">Farmacie monitorate in tempo reale</div>
+    <div class="pharmacy-bar">
+        <div class="pharmacy-bar-title">Farmacie Online Monitorate in Tempo Reale</div>
         <div class="pharmacy-grid">{chips}</div>
     </div>
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 6. SESSION STATE
+# 7. CARRELLO STATE
 # ---------------------------------------------------------
 if 'carrello' not in st.session_state:
     st.session_state.carrello = []
 
 # ---------------------------------------------------------
-# 7. BARRA DI RICERCA COMPATTA
+# 8. RICERCA PRODOTTI (PROMINENTE)
 # ---------------------------------------------------------
+st.markdown("### 🔍 Cerca e aggiungi un prodotto")
+
 if not df_prodotti.empty:
     c_cat, c_search = st.columns([1, 3], vertical_alignment="bottom")
     
     with c_cat:
         categorie = ["Tutte le Categorie"] + sorted(list(df_prodotti['Categoria'].dropna().unique()))
-        cat_selezionata = st.selectbox("Categoria", categorie, label_visibility="visible")
+        cat_selezionata = st.selectbox("Seleziona Categoria:", categorie)
     
     df_filtrato = df_prodotti if cat_selezionata == "Tutte le Categorie" else df_prodotti[df_prodotti['Categoria'] == cat_selezionata]
     
     with c_search:
         opzioni = df_filtrato.apply(lambda row: f"{row['Prodotto']} | MINSAN: {row['MINSAN']}", axis=1).tolist()
-        prod_selezionato = st.selectbox("🔍 Cerca prodotto per Nome o Codice MINSAN:", [""] + opzioni, label_visibility="visible")
+        prod_selezionato = st.selectbox("Digita il nome del farmaco o il codice MINSAN:", [""] + opzioni)
 
     if prod_selezionato:
         minsan_sel = prod_selezionato.split("MINSAN: ")[-1]
         row_prod = df_prodotti[df_prodotti['MINSAN'] == minsan_sel].iloc[0]
         
-        # Card d'anteprima stile e-commerce
+        # Scheda Prodotto selezionato
         img_url = row_prod['Immagine_URL'] if 'Immagine_URL' in row_prod and pd.notna(row_prod['Immagine_URL']) else "https://cdn-icons-png.flaticon.com/512/883/883407.png"
         
-        st.markdown(f"""
-            <div class="product-preview-card">
-                <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px;">
-                    <div style="display: flex; align-items: center; gap: 16px;">
-                        <img src="{img_url}" style="width: 55px; height: 55px; object-fit: contain;">
-                        <div>
-                            <div style="font-weight: 700; font-size: 1.05rem; color: #0f172a;">{row_prod['Prodotto']}</div>
-                            <div style="font-size: 0.85rem; color: #64748b;">MINSAN: <code>{row_prod['MINSAN']}</code> | Categoria: {row_prod.get('Categoria', 'Generale')}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        if st.button("➕ Aggiungi al Carrello", type="primary", use_container_width=False):
-            st.session_state.carrello.append(row_prod)
-            st.success("Prodotto aggiunto al carrello!")
-            st.rerun()
+        c_p_img, c_p_info, c_p_btn = st.columns([0.8, 3.2, 1], vertical_alignment="center")
+        with c_p_img:
+            st.image(img_url, width=65)
+        with c_p_info:
+            st.markdown(f"**{row_prod['Prodotto']}**")
+            st.caption(f"Codice MINSAN: `{row_prod['MINSAN']}` | Categoria: {row_prod.get('Categoria', 'Generale')}")
+        with c_p_btn:
+            if st.button("➕ Aggiungi al Carrello", type="primary", use_container_width=True):
+                st.session_state.carrello.append(row_prod)
+                st.success("Aggiunto!")
+                st.rerun()
 
 # ---------------------------------------------------------
-# 8. CARRELLO UTENTE
+# 9. CARRELLO UTENTE
 # ---------------------------------------------------------
 st.markdown("---")
 st.markdown("### 🛍️ Il tuo Carrello")
@@ -319,18 +329,18 @@ if st.session_state.carrello:
                 st.session_state.carrello.pop(idx)
                 st.rerun()
                 
-    if st.button("🗑️ Svuota Carrello", help="Svuota tutti gli elementi inseriti"):
+    if st.button("🗑️ Svuota Carrello"):
         st.session_state.carrello = []
         st.rerun()
 else:
     st.info("Il carrello è vuoto. Cerca un prodotto qui sopra per iniziare il confronto.")
 
 # ---------------------------------------------------------
-# 9. COMPARATORE ED ESITO
+# 10. RISULTATI ED ESITO COMPARATORE
 # ---------------------------------------------------------
 if st.session_state.carrello:
     st.markdown("---")
-    st.markdown("### 📊 Miglior Totale Carrello Completo")
+    st.markdown("### 📊 Risultato Comparazione Spesa Completa")
     
     risultati = []
     
@@ -398,7 +408,7 @@ if st.session_state.carrello:
                     </div>
                 """, unsafe_allow_html=True)
                 
-        with st.expander("📊 Classifica completa di tutte le farmacie"):
+        with st.expander("📊 Guarda la classifica completa di tutte le farmacie"):
             df_res = pd.DataFrame(risultati)[['farmacia', 'totale_prodotti', 'spese_spedizione', 'totale_complessivo']]
             df_res.columns = ['Farmacia', 'Totale Prodotti (€)', 'Spedizioni (€)', 'Totale Carrello (€)']
             st.dataframe(df_res.style.format({'Totale Prodotti (€)': '{:.2f}', 'Spedizioni (€)': '{:.2f}', 'Totale Carrello (€)': '{:.2f}'}), use_container_width=True)
