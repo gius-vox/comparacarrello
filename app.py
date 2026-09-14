@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 import urllib.parse
+import base64
 
 # ---------------------------------------------------------
 # 1. CONFIGURAZIONE PAGINA
@@ -14,7 +15,24 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------
-# 2. DESIGN SYSTEM - HEADER LUMINOSO E-COMMERCE
+# 2. HELPER LOGO BASE64
+# ---------------------------------------------------------
+def get_image_base64(path):
+    if os.path.exists(path):
+        with open(path, "rb") as image_file:
+            encoded = base64.b64encode(image_file.read()).decode()
+            ext = path.split('.')[-1]
+            return f"data:image/{ext};base64,{encoded}"
+    return None
+
+logo_src = None
+for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
+    logo_src = get_image_base64(name)
+    if logo_src:
+        break
+
+# ---------------------------------------------------------
+# 3. DESIGN SYSTEM - GRIGIO ANTRACITE NEUTRO E TECNOLOGICO
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -25,21 +43,20 @@ st.markdown("""
         background-color: #f8fafc;
     }
 
-    /* Rimuove i margini superiori di Streamlit per incollare l'header in alto */
     .block-container {
         padding-top: 0rem !important;
         padding-bottom: 2rem !important;
         max-width: 100% !important;
     }
     
-    /* HEADER FULL-WIDTH CHIARO E LUMINOSO */
+    /* HEADER GRIGIO ANTRACITE (SLATE) - EQUILIBRATO E MODERNO */
     .tp-header-container {
-        background: #ffffff;
+        background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
         margin-left: -5rem;
         margin-right: -5rem;
-        padding: 20px 5rem 22px 5rem;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        border-bottom: 3px solid #ea580c;
+        padding: 22px 5rem 24px 5rem;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+        border-bottom: 4px solid #ea580c;
         margin-bottom: 25px;
     }
 
@@ -52,44 +69,54 @@ st.markdown("""
     .tp-logo-box {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 18px;
+    }
+
+    .tp-logo-img {
+        height: 60px;
+        width: auto;
+        object-fit: contain;
+        background: #ffffff;
+        padding: 6px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
 
     .tp-brand-title {
-        font-size: 2.3rem;
+        font-size: 2.4rem;
         font-weight: 800;
-        color: #0f172a;
+        color: #ffffff;
         margin: 0;
         letter-spacing: -0.5px;
-        line-height: 1;
+        line-height: 1.1;
     }
 
     .tp-brand-title span {
-        color: #ea580c;
+        color: #f97316;
     }
 
     .tp-brand-tagline {
-        color: #64748b;
+        color: #cbd5e1;
         font-size: 0.9rem;
         font-weight: 500;
-        margin-top: 4px;
+        margin-top: 2px;
     }
 
-    /* BANNER VALUE PROPOSITION CHIARO E LEGGIBILE */
+    /* BANNER VALUE PROPOSITION */
     .tp-value-banner {
-        background: #fff7ed;
-        border: 1px solid #ffedd5;
+        background: rgba(249, 115, 22, 0.15);
+        border: 1px solid rgba(249, 115, 22, 0.4);
         border-radius: 30px;
         padding: 8px 18px;
-        color: #c2410c;
-        font-size: 0.85rem;
+        color: #fdba74;
+        font-size: 0.88rem;
         font-weight: 600;
         display: inline-flex;
         align-items: center;
         gap: 8px;
     }
 
-    /* STRISCIA FARMACIE MONITORATE */
+    /* BARRA FARMACIE */
     .pharmacy-bar {
         background: #ffffff;
         border: 1px solid #e2e8f0;
@@ -133,7 +160,7 @@ st.markdown("""
         border-radius: 50%;
     }
 
-    /* CARD RISULTATI PODIO */
+    /* CARD PODIO RISULTATI */
     .result-card {
         background: white;
         border-radius: 14px;
@@ -181,7 +208,7 @@ st.markdown("""
     .ship-free { background-color: #dcfce7; color: #166534; }
     .ship-paid { background-color: #fef9c3; color: #854d0e; }
 
-    /* STILE PULSANTI OVERRIDE */
+    /* OVERRIDE BUTTON STREAMLIT */
     .stButton>button[kind="primary"] {
         background-color: #ea580c !important;
         border-color: #ea580c !important;
@@ -193,7 +220,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 3. DATI FARMACIE MONITORATE
+# 4. DATI FARMACIE
 # ---------------------------------------------------------
 FARMACIE = {
     "Farmacia Igea": {"domain": "farmaciaigea.com", "spedizione_base": 4.90, "soglia_gratis": 29.00, "search_url": "https://www.farmaciaigea.com/ricerca?search_query="},
@@ -208,7 +235,7 @@ FARMACIE = {
 }
 
 # ---------------------------------------------------------
-# 4. CARICAMENTO DATI
+# 5. CARICAMENTO DATI
 # ---------------------------------------------------------
 @st.cache_data
 def load_data():
@@ -227,12 +254,15 @@ def load_data():
 df_prodotti = load_data()
 
 # ---------------------------------------------------------
-# 5. HEADER FULL-WIDTH CHIARO E FRESCO
+# 6. HEADER ANTRACITE CON LOGO INTEGRATO
 # ---------------------------------------------------------
-st.markdown("""
+logo_html = f'<img src="{logo_src}" class="tp-logo-img">' if logo_src else '<div style="font-size:2.4rem;">🛒</div>'
+
+st.markdown(f"""
     <div class="tp-header-container">
         <div class="tp-header-top">
             <div class="tp-logo-box">
+                {logo_html}
                 <div>
                     <h1 class="tp-brand-title">Compara<span>carrello.it</span></h1>
                     <div class="tp-brand-tagline">Il motore di ricerca per la tua spesa in farmacia al miglior prezzo totale</div>
@@ -246,7 +276,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 6. STRISCIA PARTNER FARMACIE
+# 7. STRISCIA PARTNER FARMACIE
 # ---------------------------------------------------------
 chips = "".join([
     f'<div class="pharmacy-chip"><img src="https://www.google.com/s2/favicons?domain={info["domain"]}&sz=32"><span>{nome}</span></div>'
@@ -261,13 +291,13 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 7. CARRELLO STATE
+# 8. CARRELLO STATE
 # ---------------------------------------------------------
 if 'carrello' not in st.session_state:
     st.session_state.carrello = []
 
 # ---------------------------------------------------------
-# 8. RICERCA PRODOTTI
+# 9. RICERCA PRODOTTI
 # ---------------------------------------------------------
 st.markdown("### 🔍 Cerca e aggiungi un prodotto")
 
@@ -288,7 +318,6 @@ if not df_prodotti.empty:
         minsan_sel = prod_selezionato.split("MINSAN: ")[-1]
         row_prod = df_prodotti[df_prodotti['MINSAN'] == minsan_sel].iloc[0]
         
-        # Scheda Prodotto selezionato
         img_url = row_prod['Immagine_URL'] if 'Immagine_URL' in row_prod and pd.notna(row_prod['Immagine_URL']) else "https://cdn-icons-png.flaticon.com/512/883/883407.png"
         
         c_p_img, c_p_info, c_p_btn = st.columns([0.8, 3.2, 1], vertical_alignment="center")
@@ -304,7 +333,7 @@ if not df_prodotti.empty:
                 st.rerun()
 
 # ---------------------------------------------------------
-# 9. CARRELLO UTENTE
+# 10. CARRELLO UTENTE
 # ---------------------------------------------------------
 st.markdown("---")
 st.markdown("### 🛍️ Il tuo Carrello")
@@ -329,7 +358,7 @@ else:
     st.info("Il carrello è vuoto. Cerca un prodotto qui sopra per iniziare il confronto.")
 
 # ---------------------------------------------------------
-# 10. RISULTATI ED ESITO COMPARATORE
+# 11. RISULTATI ED ESITO COMPARATORE
 # ---------------------------------------------------------
 if st.session_state.carrello:
     st.markdown("---")
