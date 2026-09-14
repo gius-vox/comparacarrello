@@ -14,7 +14,7 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------
-# 2. DESIGN SYSTEM - HEADER FULL WIDTH E-COMMERCE
+# 2. DESIGN SYSTEM - HEADER LUMINOSO E-COMMERCE
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -32,14 +32,14 @@ st.markdown("""
         max-width: 100% !important;
     }
     
-    /* HEADER FULL-WIDTH STILE TROVAPREZZI */
+    /* HEADER FULL-WIDTH CHIARO E LUMINOSO */
     .tp-header-container {
-        background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+        background: #ffffff;
         margin-left: -5rem;
         margin-right: -5rem;
-        padding: 24px 5rem 28px 5rem;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-        border-bottom: 4px solid #ea580c;
+        padding: 20px 5rem 22px 5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        border-bottom: 3px solid #ea580c;
         margin-bottom: 25px;
     }
 
@@ -47,7 +47,6 @@ st.markdown("""
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 20px;
     }
 
     .tp-logo-box {
@@ -57,32 +56,32 @@ st.markdown("""
     }
 
     .tp-brand-title {
-        font-size: 2.4rem;
+        font-size: 2.3rem;
         font-weight: 800;
-        color: #ffffff;
+        color: #0f172a;
         margin: 0;
         letter-spacing: -0.5px;
         line-height: 1;
     }
 
     .tp-brand-title span {
-        color: #f97316;
+        color: #ea580c;
     }
 
     .tp-brand-tagline {
-        color: #94a3b8;
+        color: #64748b;
         font-size: 0.9rem;
         font-weight: 500;
         margin-top: 4px;
     }
 
-    /* BANNER VALUE PROPOSITION COMPATTO */
+    /* BANNER VALUE PROPOSITION CHIARO E LEGGIBILE */
     .tp-value-banner {
-        background: rgba(249, 115, 22, 0.15);
-        border: 1px solid rgba(249, 115, 22, 0.4);
+        background: #fff7ed;
+        border: 1px solid #ffedd5;
         border-radius: 30px;
-        padding: 6px 18px;
-        color: #fdba74;
+        padding: 8px 18px;
+        color: #c2410c;
         font-size: 0.85rem;
         font-weight: 600;
         display: inline-flex;
@@ -184,8 +183,8 @@ st.markdown("""
 
     /* STILE PULSANTI OVERRIDE */
     .stButton>button[kind="primary"] {
-        background-color: #f97316 !important;
-        border-color: #f97316 !important;
+        background-color: #ea580c !important;
+        border-color: #ea580c !important;
         color: white !important;
         font-weight: 700 !important;
         border-radius: 8px !important;
@@ -228,14 +227,8 @@ def load_data():
 df_prodotti = load_data()
 
 # ---------------------------------------------------------
-# 5. HEADER FULL-WIDTH (TROVAPREZZI STYLE)
+# 5. HEADER FULL-WIDTH CHIARO E FRESCO
 # ---------------------------------------------------------
-logo_filename = None
-for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
-    if os.path.exists(name):
-        logo_filename = name
-        break
-
 st.markdown("""
     <div class="tp-header-container">
         <div class="tp-header-top">
@@ -274,7 +267,7 @@ if 'carrello' not in st.session_state:
     st.session_state.carrello = []
 
 # ---------------------------------------------------------
-# 8. RICERCA PRODOTTI (PROMINENTE)
+# 8. RICERCA PRODOTTI
 # ---------------------------------------------------------
 st.markdown("### 🔍 Cerca e aggiungi un prodotto")
 
