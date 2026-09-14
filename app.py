@@ -13,20 +13,14 @@ st.set_page_config(
 # CSS Personalizzato di Alto Livello
 st.markdown("""
     <style>
-    /* Reset & Font */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
     html, body, [class*="css"] {
         font-family: 'Inter', sans-serif;
     }
     
-    /* Header & Logo */
     .header-container {
         text-align: center;
         padding: 10px 0 15px 0;
-    }
-    .header-logo {
-        max-width: 140px;
-        margin-bottom: 8px;
     }
     .main-title {
         font-size: 2.2rem;
@@ -34,15 +28,16 @@ st.markdown("""
         color: #1E3A8A;
         margin: 0;
         letter-spacing: -0.5px;
+        text-align: center;
     }
     .sub-title {
         font-size: 1rem;
         color: #6B7280;
         margin-top: 4px;
         font-weight: 500;
+        text-align: center;
     }
 
-    /* Top Bar Farmacie Partner */
     .pharmacy-card {
         border: 1px solid #E5E7EB;
         border-radius: 10px;
@@ -50,17 +45,12 @@ st.markdown("""
         text-align: center;
         background-color: #FFFFFF;
         box-shadow: 0px 2px 4px rgba(0,0,0,0.02);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         gap: 4px;
         min-height: 60px;
-    }
-    .pharmacy-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0px 4px 8px rgba(0,0,0,0.06);
     }
     .pharmacy-card img {
         width: 22px;
@@ -74,7 +64,6 @@ st.markdown("""
         font-size: 11px;
     }
 
-    /* Card Podio / Vincitore */
     .podium-box {
         border-radius: 14px;
         padding: 20px;
@@ -82,7 +71,6 @@ st.markdown("""
         background: #FFFFFF;
         border: 1px solid #E5E7EB;
         box-shadow: 0px 4px 12px rgba(0,0,0,0.05);
-        position: relative;
     }
     .podium-box-gold {
         border: 2px solid #F59E0B;
@@ -141,13 +129,8 @@ st.markdown("""
         text-decoration: none;
         margin-top: 14px;
         font-size: 0.95rem;
-        box-shadow: 0px 2px 4px rgba(37,99,235,0.2);
-    }
-    .btn-store:hover {
-        background-color: #1D4ED8;
     }
 
-    /* Tabella / Righe Altre Farmacie */
     .other-row {
         background-color: #FFFFFF;
         border: 1px solid #E5E7EB;
@@ -158,20 +141,9 @@ st.markdown("""
         align-items: center;
         justify-content: space-between;
     }
-    .other-title {
-        font-weight: 700;
-        font-size: 0.98rem;
-        color: #1F2937;
-    }
-    .other-sub {
-        font-size: 0.82rem;
-        color: #6B7280;
-    }
-    .other-price {
-        font-size: 1.25rem;
-        font-weight: 800;
-        color: #1E3A8A;
-    }
+    .other-title { font-weight: 700; font-size: 0.98rem; color: #1F2937; }
+    .other-sub { font-size: 0.82rem; color: #6B7280; }
+    .other-price { font-size: 1.25rem; font-weight: 800; color: #1E3A8A; }
     .btn-store-sm {
         background-color: #F3F4F6;
         color: #374151 !important;
@@ -181,15 +153,6 @@ st.markdown("""
         font-weight: 600;
         text-decoration: none;
         font-size: 0.85rem;
-    }
-
-    /* Cart Item Row */
-    .cart-row {
-        background-color: #F9FAFB;
-        border: 1px solid #E5E7EB;
-        border-radius: 8px;
-        padding: 10px 14px;
-        margin-bottom: 6px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -216,11 +179,11 @@ def load_data():
 
 df = load_data()
 
-# Header Elegante e Compatto
+# Header Elegante e Logo Ridimensionato
 c1, c2, c3 = st.columns([1, 2, 1])
 with c2:
     if os.path.exists("logo.png"):
-        st.image("logo.png", width=110)
+        st.image("logo.png", width=120)
     st.markdown("<div class='main-title'>Comparacarrello.it</div>", unsafe_allow_html=True)
     st.markdown("<div class='sub-title'>Trova il tuo carrello online più conveniente in un click</div>", unsafe_allow_html=True)
 
@@ -239,7 +202,6 @@ for idx, (farmacia, info) in enumerate(FARMACIE_INFO.items()):
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Session State Carrello
 if "carrello" not in st.session_state:
     st.session_state.carrello = {}
 
@@ -266,7 +228,6 @@ if not df.empty:
             placeholder="-- Inizia a digitare per cercare --"
         )
 
-    # Box Aggiunta al Carrello
     if prodotto_scelto:
         riga = df_filtrato[df_filtrato["Prodotto"] == prodotto_scelto].iloc[0]
         c_info, c_btn = st.columns([3, 1])
@@ -275,9 +236,8 @@ if not df.empty:
         with c_btn:
             if st.button("➕ Aggiungi al Carrello", type="primary", use_container_width=True):
                 st.session_state.carrello[prodotto_scelto] = riga
-                st.toast(f"Aggiunto al carrello: {prodotto_scelto}", icon="🛒")
+                st.toast(f"Aggiunto: {prodotto_scelto}", icon="🛒")
 
-    # Gestione Carrello
     if st.session_state.carrello:
         st.markdown("<br>", unsafe_allow_html=True)
         st.subheader("🛍️ Articoli nel tuo Carrello")
@@ -300,7 +260,6 @@ if not df.empty:
             st.session_state.carrello.clear()
             st.rerun()
 
-    # Comparatore Prezzi
     if st.session_state.carrello:
         st.markdown("---")
         st.subheader("🛒 Risultato Comparazione Carrello")
@@ -336,7 +295,6 @@ if not df.empty:
 
         totali_ordinati = sorted(totali.items(), key=lambda x: x[1]["totale_completo"])
 
-        # Podio Top 3
         podio_cols = st.columns(3)
         medaglie = [("🥇 1° Posto", "podium-rank-gold", "podium-box-gold"), 
                     ("🥈 2° Posto", "podium-rank-silver", ""), 
@@ -368,7 +326,6 @@ if not df.empty:
                     </div>
                 """, unsafe_allow_html=True)
 
-        # Altre Farmacie
         if len(totali_ordinati) > 3:
             st.markdown("<br>", unsafe_allow_html=True)
             with st.expander("📊 Guarda la classifica completa di tutte le farmacie"):
@@ -392,7 +349,6 @@ if not df.empty:
                         </div>
                     """, unsafe_allow_html=True)
 
-# Footer
 st.markdown("---")
 f_col1, f_col2 = st.columns([2, 1])
 with f_col1:
