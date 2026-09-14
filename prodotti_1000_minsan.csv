@@ -1,49 +1,48 @@
 MINSAN,Prodotto,Categoria,Farmacia Igea,Farmaè,Dr Max,RedCare,Farmacia Loreto,1000Farmacie,Top Farmacia,eFarma,Farmacosmo
-900000017,Arnica Forte Unguento 50ml Fitocose,Omeopatia e Fitoterapia,12.78,13.62,13.88,14.07,14.93,12.57,11.53,13.31,14.28
 800123401,Boiron Oscillococcinum 30 Dosi,Omeopatia e Fitoterapia,21.73,22.13,20.44,19.34,20.08,22.78,18.89,20.15,19.98
 800123402,Boiron Oscillococcinum 6 Dosi,Omeopatia e Fitoterapia,10.25,9.45,10.88,11.20,10.12,9.80,10.50,11.10,9.90
 800234101,Boiron Arnigel Gel Omeopatico 120g,Omeopatia e Fitoterapia,11.45,12.10,10.90,11.85,12.30,11.20,10.75,11.95,12.00
 800234102,Boiron Arnica Montana 9CH Granuli,Omeopatia e Fitoterapia,5.80,6.10,5.50,5.95,6.20,5.70,5.40,6.00,5.85
 800234103,Boiron Arnica Montana 15CH Granuli,Omeopatia e Fitoterapia,5.80,6.10,5.50,5.95,6.20,5.70,5.40,6.00,5.85
 800234104,Boiron Arnica Montana 30CH Granuli,Omeopatia e Fitoterapia,5.80,6.10,5.50,5.95,6.20,5.70,5.40,6.00,5.85
+800234105,Boiron Belladonna 5CH Granuli,Omeopatia e Fitoterapia,5.80,6.10,5.40,5.90,6.20,5.65,5.35,6.00,5.80
+800234106,Boiron Belladonna 9CH Granuli,Omeopatia e Fitoterapia,5.80,6.10,5.40,5.90,6.20,5.65,5.35,6.00,5.80
+800234107,Boiron Belladonna 15CH Granuli,Omeopatia e Fitoterapia,5.80,6.10,5.40,5.90,6.20,5.65,5.35,6.00,5.80
+800234108,Boiron Belladonna 30CH Granuli,Omeopatia e Fitoterapia,5.80,6.10,5.40,5.90,6.20,5.65,5.35,6.00,5.80
+800234109,Boiron Mercurius Solubilis 9CH Granuli,Omeopatia e Fitoterapia,5.80,6.15,5.45,5.95,6.25,5.70,5.40,6.05,5.85
+800234110,Boiron Mercurius Solubilis 15CH Granuli,Omeopatia e Fitoterapia,5.80,6.15,5.45,5.95,6.25,5.70,5.40,6.05,5.85
+800234111,Boiron Mercurius Solubilis 30CH Granuli,Omeopatia e Fitoterapia,5.80,6.15,5.45,5.95,6.25,5.70,5.40,6.05,5.85
+800234112,Boiron Drosera 9CH Granuli,Omeopatia e Fitoterapia,5.80,6.05,5.35,5.85,6.15,5.60,5.30,5.95,5.75
+800234113,Boiron Drosera 15CH Granuli,Omeopatia e Fitoterapia,5.80,6.05,5.35,5.85,6.15,5.60,5.30,5.95,5.75
+800234114,Boiron Drosera 30CH Granuli,Omeopatia e Fitoterapia,5.80,6.05,5.35,5.85,6.15,5.60,5.30,5.95,5.75
+800234115,Boiron Nux Vomica 9CH Granuli,Omeopatia e Fitoterapia,5.80,6.10,5.50,5.95,6.20,5.70,5.40,6.00,5.85
+800234116,Boiron Nux Vomica 15CH Granuli,Omeopatia e Fitoterapia,5.80,6.10,5.50,5.95,6.20,5.70,5.40,6.00,5.85
+800234117,Boiron Chamomilla 9CH Granuli,Omeopatia e Fitoterapia,5.80,6.10,5.40,5.90,6.20,5.65,5.35,6.00,5.80
+800234118,Boiron Chamomilla 15CH Granuli,Omeopatia e Fitoterapia,5.80,6.10,5.40,5.90,6.20,5.65,5.35,6.00,5.80
+800234119,Boiron Pulsatilla 9CH Granuli,Omeopatia e Fitoterapia,5.80,6.10,5.45,5.90,6.20,5.65,5.35,6.00,5.80
+800234120,Boiron Pulsatilla 15CH Granuli,Omeopatia e Fitoterapia,5.80,6.10,5.45,5.90,6.20,5.65,5.35,6.00,5.80
+800234121,Boiron Sepia 9CH Granuli,Omeopatia e Fitoterapia,5.80,6.10,5.50,5.95,6.20,5.70,5.40,6.00,5.85
+800234122,Boiron Aconitum Napellus 9CH Granuli,Omeopatia e Fitoterapia,5.80,6.10,5.40,5.90,6.20,5.65,5.35,6.00,5.80
+800234123,Boiron Silicea 9CH Granuli,Omeopatia e Fitoterapia,5.80,6.10,5.40,5.90,6.20,5.65,5.35,6.00,5.80
 800345101,Boiron Stodal Sciroppo 200ml,Omeopatia e Fitoterapia,10.50,11.20,10.10,10.80,11.50,10.30,9.90,10.95,11.10
 800345102,Boiron Coryzalia 40 Compresse Omeopatiche,Omeopatia e Fitoterapia,8.90,9.40,8.60,9.10,9.60,8.80,8.40,9.20,9.30
 800345103,Boiron Homeovox 60 Compresse,Omeopatia e Fitoterapia,9.20,9.80,8.90,9.50,9.90,9.10,8.70,9.60,9.70
 800345104,Boiron Euphrasia Officinalis 5CH Granuli,Omeopatia e Fitoterapia,5.80,6.10,5.50,5.95,6.20,5.70,5.40,6.00,5.85
 800456101,Guna Gunabowel Gocce 30ml Omeopatico,Omeopatia e Fitoterapia,16.50,17.20,15.90,16.80,17.40,16.20,15.60,16.90,17.10
 800456102,Guna Colostrum Noni 24 Buste,Omeopatia e Fitoterapia,18.90,19.50,18.20,19.10,19.80,18.60,17.90,19.30,19.40
-800456103,Guna Vitamina C Buste,Omeopatia e Fitoterapia,14.20,14.80,13.70,14.50,15.10,14.00,13.50,14.70,14.90
-800456104,Guna Anti Age Vein Gocce 30ml,Omeopatia e Fitoterapia,17.10,17.80,16.50,17.40,18.00,16.80,16.20,17.50,17.70
 800567101,Heel Traumeel S 50 Compresse Omeopatiche,Omeopatia e Fitoterapia,13.80,14.50,13.20,14.10,14.70,13.50,12.90,14.20,14.40
 800567102,Heel Traumeel S Unguento 100g,Omeopatia e Fitoterapia,15.90,16.60,15.30,16.20,16.80,15.60,15.00,16.30,16.50
 800567103,Heel Zeel T 50 Compresse,Omeopatia e Fitoterapia,14.10,14.80,13.50,14.40,15.00,13.80,13.20,14.50,14.70
 800567104,Heel Neurexan 50 Compresse,Omeopatia e Fitoterapia,13.50,14.20,12.90,13.80,14.40,13.20,12.60,13.90,14.10
-800567105,Heel Euphorbium Compositum Spray Nasale,Omeopatia e Fitoterapia,12.20,12.90,11.60,12.50,13.10,11.90,11.30,12.60,12.80
-800678101,Schwabe Mama Natura Denti's Gocce 15ml,Omeopatia e Fitoterapia,11.50,12.10,10.90,11.80,12.30,11.20,10.70,11.90,12.00
-800678102,Schwabe Nisita Unguento Nasale 10g,Omeopatia e Fitoterapia,8.40,8.90,8.10,8.60,9.10,8.30,7.90,8.70,8.80
 901234001,Aboca Grintuss Adulti Sciroppo 180g,Omeopatia e Fitoterapia,13.20,13.90,12.60,13.50,14.10,12.90,12.30,13.60,13.80
 901234002,Aboca Grintuss Pediatric Sciroppo 180g,Omeopatia e Fitoterapia,13.20,13.90,12.60,13.50,14.10,12.90,12.30,13.60,13.80
 901234003,Aboca Fitonasal Spray Concentrato 30ml,Omeopatia e Fitoterapia,10.80,11.40,10.20,11.10,11.60,10.50,9.90,11.20,11.30
 901234004,Aboca Neobianacid 45 Compresse Masticabili,Omeopatia e Fitoterapia,14.50,15.10,13.90,14.80,15.30,14.20,13.60,14.90,15.00
 901234005,Aboca ColiGas Fast 50 Opercoli,Omeopatia e Fitoterapia,15.80,16.40,15.20,16.10,16.60,15.50,14.90,16.20,16.30
 901234006,Aboca Sollievo Bio 90 Tavolette,Omeopatia e Fitoterapia,16.20,16.80,15.60,16.50,17.00,15.90,15.30,16.60,16.70
-901234007,Aboca Meliloto Fitocomposto 50 Opercoli,Omeopatia e Fitoterapia,12.90,13.50,12.30,13.20,13.70,12.60,12.00,13.30,13.40
 901234008,Aboca Biancospino Fitocomposto Concentrato,Omeopatia e Fitoterapia,11.80,12.40,11.20,12.10,12.60,11.50,10.90,12.20,12.30
-901234009,Aboca Passiflora Concentrate 50 Opercoli,Omeopatia e Fitoterapia,12.40,13.00,11.80,12.70,13.20,12.10,11.50,12.80,12.90
-901234010,Aboca Valeriana Concentrate Opercoli,Omeopatia e Fitoterapia,11.90,12.50,11.30,12.20,12.70,11.60,11.00,12.30,12.40
 902345001,ESI Aloe Vera Gel Puro 200ml,Omeopatia e Fitoterapia,9.50,10.10,8.90,9.80,10.30,9.20,8.60,9.90,10.00
-902345002,ESI Propolaid Rino Act Spray Nasale 20ml,Omeopatia e Fitoterapia,8.20,8.70,7.90,8.40,8.90,8.10,7.70,8.50,8.60
 902345003,ESI Melatonin Pura 1mg 120 Microtavolette,Omeopatia e Fitoterapia,7.90,8.40,7.60,8.10,8.60,7.80,7.40,8.20,8.30
-902345004,ESI Fitoterapico Artiglio del Diavolo Forte 60 Tavolette,Omeopatia e Fitoterapia,10.40,11.00,9.80,10.70,11.20,10.10,9.50,10.80,10.90
-902345005,ESI Cranberry Cist 30 Tavolette,Omeopatia e Fitoterapia,11.20,11.80,10.60,11.50,12.00,10.90,10.30,11.60,11.70
-903456001,Erba Vita Estratto Idroalcolico Echinacea 50ml,Omeopatia e Fitoterapia,9.10,9.70,8.50,9.40,9.90,8.80,8.20,9.50,9.60
-903456002,Erba Vita Pilosella Estratto Secco 60 Capsule,Omeopatia e Fitoterapia,12.10,12.70,11.50,12.40,12.90,11.80,11.20,12.50,12.60
-903456003,Erba Vita Tarassaco Estratto Secco 60 Capsule,Omeopatia e Fitoterapia,11.80,12.40,11.20,12.10,12.60,11.50,10.90,12.20,12.30
-903456004,Erba Vita Cardo Mariano Estratto Secco 60 Capsule,Omeopatia e Fitoterapia,12.50,13.10,11.90,12.80,13.30,12.20,11.60,12.90,13.00
-903456005,Erba Vita Ginkgo Biloba 60 Capsule Fitoterapiche,Omeopatia e Fitoterapia,13.10,13.70,12.50,13.40,13.90,12.80,12.20,13.50,13.60
-904567001,Specchiasol Epid Spray Orale Propoli 15ml,Omeopatia e Fitoterapia,8.80,9.30,8.50,9.00,9.50,8.70,8.30,9.10,9.20
-904567002,Specchiasol Cotidierbe 45 Tavolette,Omeopatia e Fitoterapia,9.90,10.50,9.30,10.20,10.70,9.60,9.00,10.30,10.40
-904567003,Specchiasol Anslev 30 Compresse Fitoterapiche,Omeopatia e Fitoterapia,13.40,14.00,12.80,13.70,14.20,13.10,12.50,13.80,13.90
 901234011,Polase Arancia 36 Buste Sali Minerali,Integratori,14.90,15.50,14.20,15.10,15.70,14.60,13.90,15.30,15.40
 901234012,Supradyn Ricarica 35 Compresse Effervescenti,Integratori,16.80,17.40,16.10,17.00,17.60,16.50,15.80,17.20,17.30
 901234013,Multicentrum Adulti 30 Compresse,Integratori,12.30,12.90,11.70,12.60,13.10,12.00,11.40,12.70,12.80
