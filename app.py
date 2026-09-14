@@ -10,7 +10,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 2. CSS Personalizzato basato sui colori del TUO LOGO (Arancione & Antracite)
+# 2. CSS Custom - Look Moderno, Pulito ed Elegante
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -19,37 +19,28 @@ st.markdown("""
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
-    /* Container Header con colori coerenti al Logo */
-    .brand-header-container {
-        display: flex;
-        align-items: center;
-        gap: 25px;
-        padding: 10px 0 25px 0;
-        border-bottom: 2px solid #f1f5f9;
-        margin-bottom: 25px;
-    }
-
+    /* Header e Titolo */
     .brand-title-main {
-        font-size: 3.2rem;
+        font-size: 3rem;
         font-weight: 800;
-        color: #1e293b; /* Nero / Antracite */
+        color: #1e293b;
         margin: 0;
         line-height: 1.1;
         letter-spacing: -1px;
     }
 
     .brand-title-main span {
-        color: #f97316; /* Arancione coordinato al carrello del logo */
+        color: #f97316; /* Arancione del logo */
     }
 
     .brand-subtitle-main {
-        font-size: 1.15rem;
+        font-size: 1.1rem;
         color: #64748b;
         margin-top: 6px;
         font-weight: 500;
     }
 
-    /* Sezione Farmacie con Loghi reali */
+    /* Sezione Farmacie Partner (Griglia Badge Eleganti) */
     .partner-label {
         font-size: 0.85rem;
         text-transform: uppercase;
@@ -59,32 +50,43 @@ st.markdown("""
         margin-bottom: 15px;
     }
 
-    .logo-card {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 12px 8px;
+    .pharmacy-grid {
         display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
         align-items: center;
-        justify-content: center;
-        height: 65px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-        transition: transform 0.2s, box-shadow 0.2s;
+        margin-bottom: 25px;
     }
 
-    .logo-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+    .pharmacy-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        padding: 8px 16px;
+        border-radius: 50px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        transition: all 0.2s ease;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #1e293b;
+    }
+
+    .pharmacy-chip:hover {
         border-color: #f97316;
+        box-shadow: 0 4px 10px rgba(249, 115, 22, 0.15);
+        transform: translateY(-2px);
     }
 
-    .logo-card img {
-        max-height: 42px;
-        max-width: 90%;
-        object-fit: contain;
+    .pharmacy-chip img {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        object-fit: cover;
     }
 
-    /* Card Risultati */
+    /* Result Cards per il Podio */
     .result-card {
         background: white;
         border-radius: 16px;
@@ -131,7 +133,6 @@ st.markdown("""
         margin-top: 8px;
     }
 
-    /* Bottone Principale Arancione */
     .stButton>button[kind="primary"] {
         background-color: #f97316 !important;
         border-color: #f97316 !important;
@@ -140,44 +141,17 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 3. Mappa Farmacie + URL Loghi reali
+# 3. Mappa Farmacie con domini puliti per icone affidabili
 FARMACIE = {
-    "Farmacia Igea": {
-        "spedizione_base": 4.90, "soglia_gratis": 29.00, "url": "https://www.farmaciaigea.com",
-        "logo": "https://www.farmaciaigea.com/img/farmacia-igea-logo-1621255554.jpg"
-    },
-    "Farmaè": {
-        "spedizione_base": 3.90, "soglia_gratis": 19.90, "url": "https://www.farmae.it",
-        "logo": "https://www.farmae.it/media/logo/default/farmae_logo.png"
-    },
-    "Dr Max": {
-        "spedizione_base": 4.50, "soglia_gratis": 24.90, "url": "https://www.drmax.it",
-        "logo": "https://www.drmax.it/static/version1710323315/frontend/DrMax/default/it_IT/images/logo.svg"
-    },
-    "RedCare": {
-        "spedizione_base": 3.95, "soglia_gratis": 18.00, "url": "https://www.redcare.it",
-        "logo": "https://www.redcare.it/assets/images/redcare-logo.svg"
-    },
-    "Farmacia Loreto": {
-        "spedizione_base": 4.90, "soglia_gratis": 29.90, "url": "https://farmacialoreto.it",
-        "logo": "https://farmacialoreto.it/img/farmacia-loreto-gallo-logo-1663162703.jpg"
-    },
-    "1000Farmacie": {
-        "spedizione_base": 2.90, "soglia_gratis": 29.00, "url": "https://www.1000farmacie.it",
-        "logo": "https://www.1000farmacie.it/images/logo.svg"
-    },
-    "Top Farmacia": {
-        "spedizione_base": 4.90, "soglia_gratis": 19.90, "url": "https://www.topfarmacia.it",
-        "logo": "https://www.topfarmacia.it/img/top-farmacia-logo-1563287611.jpg"
-    },
-    "eFarma": {
-        "spedizione_base": 4.90, "soglia_gratis": 29.90, "url": "https://www.efarma.com",
-        "logo": "https://www.efarma.com/media/logo/default/efarma_logo.png"
-    },
-    "Farmacosmo": {
-        "spedizione_base": 3.90, "soglia_gratis": 29.90, "url": "https://www.farmacosmo.it",
-        "logo": "https://www.farmacosmo.it/img/farmacosmo-logo-1588673738.jpg"
-    }
+    "Farmacia Igea": {"domain": "farmaciaigea.com", "spedizione_base": 4.90, "soglia_gratis": 29.00, "url": "https://www.farmaciaigea.com"},
+    "Farmaè": {"domain": "farmae.it", "spedizione_base": 3.90, "soglia_gratis": 19.90, "url": "https://www.farmae.it"},
+    "Dr Max": {"domain": "drmax.it", "spedizione_base": 4.50, "soglia_gratis": 24.90, "url": "https://www.drmax.it"},
+    "RedCare": {"domain": "redcare.it", "spedizione_base": 3.95, "soglia_gratis": 18.00, "url": "https://www.redcare.it"},
+    "Farmacia Loreto": {"domain": "farmacialoreto.it", "spedizione_base": 4.90, "soglia_gratis": 29.90, "url": "https://farmacialoreto.it"},
+    "1000Farmacie": {"domain": "1000farmacie.it", "spedizione_base": 2.90, "soglia_gratis": 29.00, "url": "https://www.1000farmacie.it"},
+    "Top Farmacia": {"domain": "topfarmacia.it", "spedizione_base": 4.90, "soglia_gratis": 19.90, "url": "https://www.topfarmacia.it"},
+    "eFarma": {"domain": "efarma.com", "spedizione_base": 4.90, "soglia_gratis": 29.90, "url": "https://www.efarma.com"},
+    "Farmacosmo": {"domain": "farmacosmo.it", "spedizione_base": 3.90, "soglia_gratis": 29.90, "url": "https://www.farmacosmo.it"}
 }
 
 # 4. Controllo del Logo Locale
@@ -187,13 +161,12 @@ for name in ["logo_comparacarrello.jpg", "logo_comparacarrello.png", "logo.jpg",
         logo_filename = name
         break
 
-# 5. Header Grande con Logo in Evidenza e Titolo Abbinato
+# 5. Header Principale
 col_logo, col_title = st.columns([1, 4], vertical_alignment="center")
 
 with col_logo:
     if logo_filename:
-        # Mostra il tuo logo bello GRANDE (larghezza 220px)
-        st.image(logo_filename, width=220)
+        st.image(logo_filename, width=210)
     else:
         st.write("🛒")
 
@@ -207,19 +180,23 @@ with col_title:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# 6. Griglia Loghi Farmacie Partner Reali
+# 6. Sezione Farmacie Online (Chips Eleganti con Favicon Garantite)
 st.markdown('<div class="partner-label">Farmacie Online Monitorate in Tempo Reale:</div>', unsafe_allow_html=True)
 
-cols = st.columns(len(FARMACIE))
-for idx, (nome, info) in enumerate(FARMACIE.items()):
-    with cols[idx]:
-        st.markdown(f"""
-        <div class="logo-card" title="{nome}">
-            <img src="{info['logo']}" alt="{nome}" onerror="this.style.display='none'; this.parentNode.innerText='{nome}';">
+chips_html = '<div class="pharmacy-grid">'
+for nome, info in FARMACIE.items():
+    icon_url = f"https://www.google.com/s2/favicons?domain={info['domain']}&sz=64"
+    chips_html += f'''
+        <div class="pharmacy-chip">
+            <img src="{icon_url}" alt="{nome}">
+            <span>{nome}</span>
         </div>
-        """, unsafe_allow_html=True)
+    '''
+chips_html += '</div>'
 
-st.markdown("<br><br>", unsafe_allow_html=True)
+st.markdown(chips_html, unsafe_allow_html=True)
+
+st.markdown("<br>", unsafe_allow_html=True)
 
 # 7. Caricamento Dati CSV
 @st.cache_data
@@ -351,7 +328,7 @@ if st.session_state.carrello:
             df_res.columns = ['Farmacia', 'Totale Prodotti (€)', 'Spedizioni (€)', 'Totale Carrello (€)']
             st.dataframe(df_res.style.format({'Totale Prodotti (€)': '{:.2f}', 'Spedizioni (€)': '{:.2f}', 'Totale Carrello (€)': '{:.2f}'}), use_container_width=True)
 
-# 12. Footer e Condivisione
+# 12. Footer
 st.markdown("---")
 c_share1, c_share2 = st.columns(2)
 with c_share1:
