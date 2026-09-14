@@ -10,7 +10,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 2. CSS Custom per grafiche eleganti
+# 2. CSS Custom
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -39,7 +39,7 @@ st.markdown("""
         font-weight: 500;
     }
 
-    /* Griglia Farmacie (Pillole / Chips) */
+    /* Griglia Farmacie (Chips) */
     .partner-label {
         font-size: 0.85rem;
         text-transform: uppercase;
@@ -114,8 +114,6 @@ st.markdown("""
     }
 
     .ship-badge {
-        background-color: #fef9c3;
-        color: #854d0e;
         padding: 4px 10px;
         border-radius: 8px;
         font-size: 0.8rem;
@@ -123,6 +121,9 @@ st.markdown("""
         display: inline-block;
         margin-top: 8px;
     }
+    
+    .ship-free { background-color: #dcfce7; color: #166534; }
+    .ship-paid { background-color: #fef9c3; color: #854d0e; }
 
     .stButton>button[kind="primary"] {
         background-color: #f97316 !important;
@@ -162,18 +163,22 @@ with col_logo:
         st.write("🛒")
 
 with col_title:
-    st.markdown('<h1 class="brand-title-main">Compara<span>carrello.it</span></h1><p class="brand-subtitle-main">Confronta il prezzo totale della tua spesa nelle migliori farmacie online d\'Italia.</p>', unsafe_allow_html=True)
+    st.markdown("""
+        <h1 class="brand-title-main">Compara<span>carrello.it</span></h1>
+        <p class="brand-subtitle-main">Confronta il prezzo totale della tua spesa nelle migliori farmacie online d'Italia.</p>
+    """, unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# 6. Sezione Farmacie Online (Costruzione HTML inline senza a-capo)
-chips_html = '<div class="partner-label">Farmacie Online Monitorate in Tempo Reale:</div><div class="pharmacy-grid">'
+# 6. Sezione Farmacie Online
+st.markdown('<div class="partner-label">Farmacie Online Monitorate in Tempo Reale:</div>', unsafe_allow_html=True)
+
+chips = ""
 for nome, info in FARMACIE.items():
     icon_url = f"https://www.google.com/s2/favicons?domain={info['domain']}&sz=64"
-    chips_html += f'<div class="pharmacy-chip"><img src="{icon_url}"><span>{nome}</span></div>'
-chips_html += '</div>'
+    chips += f'<div class="pharmacy-chip"><img src="{icon_url}"><span>{nome}</span></div>'
 
-st.markdown(chips_html, unsafe_allow_html=True)
+st.markdown(f'<div class="pharmacy-grid">{chips}</div>', unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -283,8 +288,27 @@ if st.session_state.carrello:
             res = risultati[i]
             rank_label, badge_color, card_class = badges[i]
             
+            if res['mancante_gratis'] > 0:
+                ship_html = f'<div class="ship-badge ship-paid">🚚 +€ {res["mancante_gratis"]:.2f} per Sped. GRATIS</div>'
+            else:
+                ship_html = '<div class="ship-badge ship-free">🎉 Spedizione GRATUITA</div>'
+
             with cols_podium[i]:
-                st.markdown(f'<div class="result-card {card_class}"><span class="badge-rank {badge_color}">{rank_label}</span><br><h3 style="margin: 8px 0; color: #1e293b; font-size: 1.4rem;">{res["farmacia"]}</h3><div class="price-tag">€ {res["totale_complessivo"]:.2f}</div><small style="color: #64748b;">Prodotti: € {res["totale_prodotti"]:.2f} | Sped: € {res["spese_spedizione"]:.2f}</small><br>{"<div class=\'ship-badge\'>🚚 +€ " + f"{res[\'mancante_gratis\']:.2f}" + " per Sped. GRATIS</div>" if res["mancante_gratis"] > 0 else "<div class=\'ship-badge\' style=\'background:#dcfce7;color:#166534;\'>🎉 Spedizione GRATUITA</div>"}<br><br><a href="{res["url"]}" target="_blank" style="text-decoration:none;"><button style="width:100%; background-color:#f97316; color:white; border:none; padding:12px; border-radius:10px; font-weight:700; cursor:pointer;">🛒 Vai allo Store</button></a></div>', unsafe_allow_html=True)
+                st.markdown(f"""
+                    <div class="result-card {card_class}">
+                        <span class="badge-rank {badge_color}">{rank_label}</span><br>
+                        <h3 style="margin: 8px 0; color: #1e293b; font-size: 1.4rem;">{res['farmacia']}</h3>
+                        <div class="price-tag">€ {res['totale_complessivo']:.2f}</div>
+                        <small style="color: #64748b;">Prodotti: € {res['totale_prodotti']:.2f} | Sped: € {res['spese_spedizione']:.2f}</small><br>
+                        {ship_html}
+                        <br><br>
+                        <a href="{res['url']}" target="_blank" style="text-decoration:none;">
+                            <button style="width:100%; background-color:#f97316; color:white; border:none; padding:12px; border-radius:10px; font-weight:700; cursor:pointer;">
+                                🛒 Vai allo Store
+                            </button>
+                        </a>
+                    </div>
+                """, unsafe_allow_html=True)
                 
         with st.expander("📊 Guarda la classifica completa di tutte le farmacie"):
             df_res = pd.DataFrame(risultati)[['farmacia', 'totale_prodotti', 'spese_spedizione', 'totale_complessivo']]
