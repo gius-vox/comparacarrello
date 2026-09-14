@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 
-# 1. Impostazioni della pagina
+# 1. Configurazione della pagina
 st.set_page_config(
     page_title="Comparacarrello.it - Risparmia sulla tua spesa in farmacia",
     page_icon="🛒",
@@ -10,7 +10,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 2. CSS Pulito, Chiaro ed Elegante (senza blocchi blu scuri)
+# 2. CSS Pulito, Moderno ed Elegante
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -19,35 +19,46 @@ st.markdown("""
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
-    /* Header Pulito senza sfondi pesanti */
-    .header-box {
-        padding: 20px 10px 30px 10px;
+    /* Header Navbar Unificata */
+    .brand-header {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 15px 0 25px 0;
         border-bottom: 2px solid #f1f5f9;
         margin-bottom: 25px;
     }
 
-    .header-title {
-        font-size: 2.8rem;
+    .brand-logo-img {
+        height: 75px;
+        width: auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .brand-title {
+        font-size: 2.5rem;
         font-weight: 800;
         color: #0f172a;
         margin: 0;
+        line-height: 1.1;
         letter-spacing: -1px;
     }
 
-    .header-title span {
+    .brand-title span {
         color: #2563eb;
     }
 
-    .header-subtitle {
-        font-size: 1.1rem;
+    .brand-subtitle {
+        font-size: 1rem;
         color: #64748b;
-        margin-top: 6px;
+        margin: 4px 0 0 0;
         font-weight: 500;
     }
 
-    /* Partner Badge testuali eleganti */
+    /* Partner Badge Testuali */
     .partner-label {
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         text-transform: uppercase;
         letter-spacing: 1.2px;
         color: #94a3b8;
@@ -59,22 +70,15 @@ st.markdown("""
         background: #f8fafc;
         border: 1px solid #e2e8f0;
         border-radius: 10px;
-        padding: 10px 14px;
+        padding: 8px 12px;
         text-align: center;
         font-weight: 700;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         color: #334155;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-        transition: all 0.2s ease;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
     }
 
-    .pharmacy-badge:hover {
-        border-color: #2563eb;
-        color: #2563eb;
-        background: #eff6ff;
-    }
-
-    /* Card Risultati */
+    /* Result Cards */
     .result-card {
         background: white;
         border-radius: 16px;
@@ -141,24 +145,36 @@ FARMACIE = {
     "Farmacosmo": {"spedizione_base": 3.90, "soglia_gratis": 29.90, "url": "https://www.farmacosmo.it"}
 }
 
-# 4. Header Elegante (Logo + Titolo)
-col_head_left, col_head_right = st.columns([3, 1], vertical_alignment="center")
+# 4. Controllo Logo Locale (JPG o PNG)
+logo_path = None
+for name in ["logo_comparacarrello.jpg", "logo_comparacarrello.png", "logo.jpg", "logo.png"]:
+    if os.path.exists(name):
+        logo_path = name
+        break
 
-with col_head_left:
+# 5. Header Navbar
+if logo_path:
+    col_l, col_r = st.columns([1, 6], vertical_alignment="center")
+    with col_l:
+        st.image(logo_path, width=90)
+    with col_r:
+        st.markdown("""
+        <div>
+            <h1 class="brand-title" style="margin:0;">Comparacarrello<span>.it</span></h1>
+            <p class="brand-subtitle" style="margin:0;">Trova la farmacia online più conveniente per la tua spesa totale in un click.</p>
+        </div>
+        """, unsafe_allow_html=True)
+else:
     st.markdown("""
-    <div class="header-box">
-        <h1 class="header-title">Comparacarrello<span>.it</span></h1>
-        <p class="header-subtitle">Trova la farmacia online più conveniente per la tua spesa totale in un click.</p>
+    <div class="brand-header">
+        <div>
+            <h1 class="brand-title">🛒 Comparacarrello<span>.it</span></h1>
+            <p class="brand-subtitle">Trova la farmacia online più conveniente per la tua spesa totale in un click.</p>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
-with col_head_right:
-    # Carica il logo in locale se esiste nel repository
-    logo_filename = "logo_comparacarrello.jpg"
-    if os.path.exists(logo_filename):
-        st.image(logo_filename, width=160)
-
-# 5. Barra Farmacie Monitorate (Badge Puliti)
+# 6. Farmacie Monitorate
 st.markdown('<div class="partner-label">Farmacie Online Monitorate in Tempo Reale:</div>', unsafe_allow_html=True)
 cols_brand = st.columns(len(FARMACIE))
 for idx, nome_f in enumerate(FARMACIE.keys()):
@@ -167,7 +183,7 @@ for idx, nome_f in enumerate(FARMACIE.keys()):
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# 6. Caricamento Dati
+# 7. Caricamento Dati
 @st.cache_data
 def load_data():
     try:
@@ -180,11 +196,11 @@ def load_data():
 
 df_prodotti = load_data()
 
-# 7. Session State Carrello
+# 8. Session State Carrello
 if 'carrello' not in st.session_state:
     st.session_state.carrello = []
 
-# 8. Cerca e Aggiungi Prodotto
+# 9. Cerca e Aggiungi Prodotto
 st.subheader("🔍 Cerca e Aggiungi Prodotti al Carrello")
 
 if not df_prodotti.empty:
@@ -213,7 +229,7 @@ if not df_prodotti.empty:
                 st.success("Aggiunto!")
                 st.rerun()
 
-# 9. Carrello Utente
+# 10. Carrello Utente
 st.markdown("---")
 st.subheader("🛍️ Articoli nel tuo Carrello")
 
@@ -233,7 +249,7 @@ if st.session_state.carrello:
 else:
     st.write("Il tuo carrello è vuoto. Cerca un prodotto per iniziare la comparazione.")
 
-# 10. Algoritmo di Comparazione Totale
+# 11. Algoritmo di Comparazione Totale
 if st.session_state.carrello:
     st.markdown("---")
     st.subheader("🛒 Risultato Comparazione Carrello")
@@ -297,7 +313,7 @@ if st.session_state.carrello:
             df_res.columns = ['Farmacia', 'Totale Prodotti (€)', 'Spedizioni (€)', 'Totale Carrello (€)']
             st.dataframe(df_res.style.format({'Totale Prodotti (€)': '{:.2f}', 'Spedizioni (€)': '{:.2f}', 'Totale Carrello (€)': '{:.2f}'}), use_container_width=True)
 
-# 11. Footer e Condivisione
+# 12. Footer e Condivisione
 st.markdown("---")
 c_share1, c_share2 = st.columns(2)
 with c_share1:
