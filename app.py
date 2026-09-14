@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import os
 
 # 1. Impostazioni della pagina
 st.set_page_config(
@@ -9,133 +10,93 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 2. CSS Avanzato per UI/UX di livello E-commerce
+# 2. CSS Pulito, Chiaro ed Elegante (senza blocchi blu scuri)
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     
     html, body, [class*="css"] {
-        font-family: 'Inter', sans-serif;
+        font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
-    /* Hero Banner Principale */
-    .hero-container {
-        background: linear-gradient(135deg, #0d324d 0%, #175681 50%, #1d72aa 100%);
-        border-radius: 20px;
-        padding: 35px 40px;
-        color: white;
-        margin-bottom: 30px;
-        box-shadow: 0 12px 30px rgba(13, 50, 77, 0.18);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 20px;
+    /* Header Pulito senza sfondi pesanti */
+    .header-box {
+        padding: 20px 10px 30px 10px;
+        border-bottom: 2px solid #f1f5f9;
+        margin-bottom: 25px;
     }
 
-    .hero-text {
-        flex: 1;
-        min-width: 300px;
-    }
-
-    .hero-title {
-        font-size: 2.6rem;
+    .header-title {
+        font-size: 2.8rem;
         font-weight: 800;
+        color: #0f172a;
         margin: 0;
-        letter-spacing: -0.5px;
-        color: #ffffff;
-        line-height: 1.2;
+        letter-spacing: -1px;
     }
 
-    .hero-title span {
-        color: #ffcc00;
+    .header-title span {
+        color: #2563eb;
     }
 
-    .hero-subtitle {
-        font-size: 1.15rem;
-        color: #e2e8f0;
-        margin-top: 10px;
-        margin-bottom: 0;
-        font-weight: 400;
-    }
-
-    .hero-logo-box {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 15px 25px;
-        border-radius: 16px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .hero-logo-img {
-        max-height: 85px;
-        width: auto;
-        object-fit: contain;
-    }
-
-    /* Sezione Brand Farmacie */
-    .brand-bar-title {
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+    .header-subtitle {
+        font-size: 1.1rem;
         color: #64748b;
+        margin-top: 6px;
+        font-weight: 500;
+    }
+
+    /* Partner Badge testuali eleganti */
+    .partner-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: #94a3b8;
         font-weight: 700;
         margin-bottom: 12px;
-        text-align: center;
     }
 
-    .brand-card {
-        background: white;
+    .pharmacy-badge {
+        background: #f8fafc;
         border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 10px;
+        border-radius: 10px;
+        padding: 10px 14px;
         text-align: center;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-        transition: transform 0.2s ease;
-        height: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #334155;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        transition: all 0.2s ease;
     }
 
-    .brand-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    .pharmacy-badge:hover {
+        border-color: #2563eb;
+        color: #2563eb;
+        background: #eff6ff;
     }
 
-    .brand-logo {
-        max-height: 38px;
-        max-width: 90%;
-        object-fit: contain;
-    }
-
-    /* Modifica stile Card Risultati Comparazione */
+    /* Card Risultati */
     .result-card {
         background: white;
         border-radius: 16px;
         padding: 24px;
         border: 1px solid #e2e8f0;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.04);
         text-align: center;
-        position: relative;
-        margin-bottom: 15px;
     }
 
     .result-card.first {
-        border: 2px solid #3b82f6;
-        background: linear-gradient(180deg, #ffffff 0%, #eff6ff 100%);
-        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+        border: 2px solid #2563eb;
+        background: #fafbfd;
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.1);
     }
 
     .badge-rank {
         display: inline-block;
-        padding: 6px 16px;
+        padding: 4px 12px;
         border-radius: 20px;
         font-size: 0.85rem;
         font-weight: 700;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
     }
 
     .badge-rank.gold { background-color: #fef3c7; color: #92400e; }
@@ -160,7 +121,6 @@ st.markdown("""
         margin-top: 8px;
     }
 
-    /* Stile Pulsanti */
     .stButton>button {
         border-radius: 10px;
         font-weight: 600;
@@ -168,44 +128,42 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 3. Logo e Configurazione Farmacie Partner
-LOGO_COMPARA = "https://raw.githubusercontent.com/yfa9374/comparacarrello/main/logo_comparacarrello.jpg"
-
+# 3. Configurazione Farmacie Partner
 FARMACIE = {
-    "Farmacia Igea": {"logo": "https://www.farmaciaigea.com/img/logo-1603704877.jpg", "spedizione_base": 4.90, "soglia_gratis": 29.00, "url": "https://www.farmaciaigea.com"},
-    "Farmaè": {"logo": "https://www.farmae.it/static/version1709123456/frontend/Farmae/default/it_IT/images/logo.svg", "spedizione_base": 3.90, "soglia_gratis": 19.90, "url": "https://www.farmae.it"},
-    "Dr Max": {"logo": "https://www.drmax.it/static/version1709123456/frontend/DrMax/default/it_IT/images/logo.svg", "spedizione_base": 4.50, "soglia_gratis": 24.90, "url": "https://www.drmax.it"},
-    "RedCare": {"logo": "https://www.redcare.it/images/logo.svg", "spedizione_base": 3.95, "soglia_gratis": 18.00, "url": "https://www.redcare.it"},
-    "Farmacia Loreto": {"logo": "https://farmacialoreto.it/image/catalog/logo.png", "spedizione_base": 4.90, "soglia_gratis": 29.90, "url": "https://farmacialoreto.it"},
-    "1000Farmacie": {"logo": "https://www.1000farmacie.it/images/logo.svg", "spedizione_base": 2.90, "soglia_gratis": 29.00, "url": "https://www.1000farmacie.it"},
-    "Top Farmacia": {"logo": "https://www.topfarmacia.it/pub/static/frontend/Topfarmacia/theme/it_IT/images/logo.svg", "spedizione_base": 4.90, "soglia_gratis": 19.90, "url": "https://www.topfarmacia.it"},
-    "eFarma": {"logo": "https://www.efarma.com/static/version1709123456/frontend/Efarma/default/it_IT/images/logo.svg", "spedizione_base": 4.90, "soglia_gratis": 29.90, "url": "https://www.efarma.com"},
-    "Farmacosmo": {"logo": "https://www.farmacosmo.it/img/farmacosmo-logo-1614765632.jpg", "spedizione_base": 3.90, "soglia_gratis": 29.90, "url": "https://www.farmacosmo.it"}
+    "Farmacia Igea": {"spedizione_base": 4.90, "soglia_gratis": 29.00, "url": "https://www.farmaciaigea.com"},
+    "Farmaè": {"spedizione_base": 3.90, "soglia_gratis": 19.90, "url": "https://www.farmae.it"},
+    "Dr Max": {"spedizione_base": 4.50, "soglia_gratis": 24.90, "url": "https://www.drmax.it"},
+    "RedCare": {"spedizione_base": 3.95, "soglia_gratis": 18.00, "url": "https://www.redcare.it"},
+    "Farmacia Loreto": {"spedizione_base": 4.90, "soglia_gratis": 29.90, "url": "https://farmacialoreto.it"},
+    "1000Farmacie": {"spedizione_base": 2.90, "soglia_gratis": 29.00, "url": "https://www.1000farmacie.it"},
+    "Top Farmacia": {"spedizione_base": 4.90, "soglia_gratis": 19.90, "url": "https://www.topfarmacia.it"},
+    "eFarma": {"spedizione_base": 4.90, "soglia_gratis": 29.90, "url": "https://www.efarma.com"},
+    "Farmacosmo": {"spedizione_base": 3.90, "soglia_gratis": 29.90, "url": "https://www.farmacosmo.it"}
 }
 
-# 4. Hero Banner Principale
-st.markdown(f"""
-<div class="hero-container">
-    <div class="hero-text">
-        <h1 class="hero-title">Comparacarrello<span>.it</span></h1>
-        <p class="hero-subtitle">Confronta il prezzo totale del tuo carrello nelle migliori farmacie online d'Italia.</p>
-    </div>
-    <div class="hero-logo-box">
-        <img src="{LOGO_COMPARA}" class="hero-logo-img" alt="Comparacarrello Logo">
-    </div>
-</div>
-""", unsafe_allow_html=True)
+# 4. Header Elegante (Logo + Titolo)
+col_head_left, col_head_right = st.columns([3, 1], vertical_alignment="center")
 
-# 5. Barra Loghi Farmacie Partner
-st.markdown('<div class="brand-bar-title">Farmacie Online Monitorate in Tempo Reale</div>', unsafe_allow_html=True)
+with col_head_left:
+    st.markdown("""
+    <div class="header-box">
+        <h1 class="header-title">Comparacarrello<span>.it</span></h1>
+        <p class="header-subtitle">Trova la farmacia online più conveniente per la tua spesa totale in un click.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col_head_right:
+    # Carica il logo in locale se esiste nel repository
+    logo_filename = "logo_comparacarrello.jpg"
+    if os.path.exists(logo_filename):
+        st.image(logo_filename, width=160)
+
+# 5. Barra Farmacie Monitorate (Badge Puliti)
+st.markdown('<div class="partner-label">Farmacie Online Monitorate in Tempo Reale:</div>', unsafe_allow_html=True)
 cols_brand = st.columns(len(FARMACIE))
-for idx, (nome_f, info_f) in enumerate(FARMACIE.items()):
+for idx, nome_f in enumerate(FARMACIE.keys()):
     with cols_brand[idx]:
-        st.markdown(f"""
-        <div class="brand-card" title="{nome_f}">
-            <img src="{info_f['logo']}" class="brand-logo" alt="{nome_f}" onerror="this.onerror=null; this.src='https://via.placeholder.com/120x40?text={nome_f}';">
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f'<div class="pharmacy-badge">{nome_f}</div>', unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -226,7 +184,7 @@ df_prodotti = load_data()
 if 'carrello' not in st.session_state:
     st.session_state.carrello = []
 
-# 8. Sezione Cerca e Aggiungi Prodotto
+# 8. Cerca e Aggiungi Prodotto
 st.subheader("🔍 Cerca e Aggiungi Prodotti al Carrello")
 
 if not df_prodotti.empty:
@@ -246,7 +204,7 @@ if not df_prodotti.empty:
         minsan_sel = prod_selezionato.split("MINSAN: ")[-1]
         row_prod = df_prodotti[df_prodotti['MINSAN'] == minsan_sel].iloc[0]
         
-        c_info, c_btn = st.columns([3, 1])
+        c_info, c_btn = st.columns([3, 1], vertical_alignment="center")
         with c_info:
             st.info(f"📌 **{row_prod['Prodotto']}** (MINSAN: `{row_prod['MINSAN']}`)")
         with c_btn:
@@ -255,13 +213,13 @@ if not df_prodotti.empty:
                 st.success("Aggiunto!")
                 st.rerun()
 
-# 9. Sezione Carrello Utente
+# 9. Carrello Utente
 st.markdown("---")
 st.subheader("🛍️ Articoli nel tuo Carrello")
 
 if st.session_state.carrello:
     for idx, item in enumerate(st.session_state.carrello):
-        c1, c2 = st.columns([4, 1])
+        c1, c2 = st.columns([4, 1], vertical_alignment="center")
         with c1:
             st.write(f"📦 **{item['Prodotto']}** *(MINSAN: {item['MINSAN']})*")
         with c2:
@@ -298,7 +256,6 @@ if st.session_state.carrello:
             
             risultati.append({
                 "farmacia": farmacia,
-                "logo": info['logo'],
                 "totale_prodotti": totale_prodotti,
                 "spese_spedizione": spese_spedizione,
                 "totale_complessivo": totale_complessivo,
@@ -309,10 +266,9 @@ if st.session_state.carrello:
     risultati = sorted(risultati, key=lambda x: x['totale_complessivo'])
     
     if risultati:
-        # Top 3 Podium Cards
+        # Podio Top 3
         cols_podium = st.columns(min(3, len(risultati)))
-        
-        badges = [("1° Posto", "gold", "first"), ("2° Posto", "silver", "second"), ("3° Posto", "bronze", "third")]
+        badges = [("1° Posto - Più Economico", "gold", "first"), ("2° Posto", "silver", "second"), ("3° Posto", "bronze", "third")]
         
         for i in range(min(3, len(risultati))):
             res = risultati[i]
@@ -322,14 +278,13 @@ if st.session_state.carrello:
                 st.markdown(f"""
                 <div class="result-card {card_class}">
                     <span class="badge-rank {badge_color}">{rank_label}</span><br>
-                    <img src="{res['logo']}" style="max-height: 45px; margin: 10px 0;" alt="{res['farmacia']}"><br>
-                    <strong style="font-size: 1.1rem; color: #334155;">{res['farmacia']}</strong>
+                    <h3 style="margin: 8px 0; color: #1e293b; font-size: 1.4rem;">{res['farmacia']}</h3>
                     <div class="price-tag">€ {res['totale_complessivo']:.2f}</div>
                     <small style="color: #64748b;">Prodotti: € {res['totale_prodotti']:.2f} | Sped: € {res['spese_spedizione']:.2f}</small><br>
                     {"<div class='ship-badge'>🚚 +€ " + f"{res['mancante_gratis']:.2f}" + " per Sped. GRATIS</div>" if res['mancante_gratis'] > 0 else "<div class='ship-badge' style='background:#dcfce7;color:#166534;'>🎉 Spedizione GRATUITA</div>"}
                     <br><br>
                     <a href="{res['url']}" target="_blank" style="text-decoration:none;">
-                        <button style="width:100%; background-color:#2563eb; color:white; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">
+                        <button style="width:100%; background-color:#2563eb; color:white; border:none; padding:12px; border-radius:10px; font-weight:700; cursor:pointer;">
                             🛒 Vai allo Store
                         </button>
                     </a>
