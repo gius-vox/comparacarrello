@@ -43,7 +43,7 @@ for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
         break
 
 # ---------------------------------------------------------
-# 3. DESIGN SYSTEM - RESPONSIVE MOBILE & PC
+# 3. DESIGN SYSTEM - OTTIMIZZATO PER MOBILE & DESKTOP
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -57,6 +57,8 @@ st.markdown("""
     .block-container {
         padding-top: 1rem !important;
         padding-bottom: 2rem !important;
+        padding-left: 0.8rem !important;
+        padding-right: 0.8rem !important;
         max-width: 100% !important;
     }
     
@@ -67,8 +69,10 @@ st.markdown("""
         align-items: center;
         justify-content: center;
         text-align: center;
-        padding: 10px 10px;
+        padding: 5px 0px;
         background: transparent;
+        width: 100%;
+        overflow: hidden;
     }
 
     .brand-hero-logo-box {
@@ -81,19 +85,20 @@ st.markdown("""
     }
 
     .brand-hero-img {
-        height: 65px;
+        height: 60px;
         width: auto;
         object-fit: contain;
     }
 
     .brand-hero-title {
-        font-size: clamp(1.6rem, 6vw, 2.8rem);
+        font-size: clamp(1.4rem, 5vw, 2.8rem);
         font-weight: 800;
         color: #047857;
         margin: 0;
         letter-spacing: -0.5px;
         line-height: 1.1;
         white-space: nowrap;
+        word-break: keep-all;
     }
 
     .brand-hero-title span {
@@ -111,42 +116,44 @@ st.markdown("""
     /* BARRA VERDE CON SLOGAN */
     .value-green-bar {
         background: linear-gradient(90deg, #047857 0%, #10b981 100%);
-        margin-left: -5rem;
-        margin-right: -5rem;
-        padding: 12px 1rem;
+        margin-left: -1rem;
+        margin-right: -1rem;
+        padding: 12px 10px;
         text-align: center;
         box-shadow: 0 4px 12px rgba(4, 120, 87, 0.15);
         border-bottom: 3px solid #ea580c;
         margin-bottom: 20px;
         color: #ffffff;
+        border-radius: 4px;
     }
 
     .value-slogan-main {
-        font-size: clamp(0.95rem, 3.5vw, 1.15rem);
+        font-size: clamp(0.9rem, 3.5vw, 1.15rem);
         font-weight: 800;
         color: #ffffff;
     }
 
     .value-slogan-sub {
-        font-size: clamp(0.8rem, 2.8vw, 0.95rem);
+        font-size: clamp(0.78rem, 2.8vw, 0.95rem);
         font-weight: 600;
         color: #ecfdf5;
         margin-top: 4px;
     }
 
-    /* REGOLE OTTIMIZZAZIONE PER SMARTPHONE */
+    /* REGOLE SPECIFICHE PER SMARTPHONE */
     @media (max-width: 640px) {
         .brand-hero-logo-box {
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
         .brand-hero-img {
-            height: 55px;
+            height: 50px;
         }
-        .value-green-bar {
-            margin-left: -1rem;
-            margin-right: -1rem;
-            padding: 10px 10px;
+        .brand-hero-title {
+            font-size: 1.65rem !important;
+        }
+        h3 {
+            font-size: 1.25rem !important;
         }
     }
 
@@ -155,7 +162,7 @@ st.markdown("""
         background: #ffffff;
         border: 1px solid #e2e8f0;
         border-radius: 12px;
-        padding: 12px 15px;
+        padding: 12px 12px;
         margin-bottom: 25px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
@@ -194,7 +201,7 @@ st.markdown("""
         border-radius: 50%;
     }
 
-    /* CARD RISULTATI COMPATTE */
+    /* CARD RISULTATI */
     .result-card {
         background: white;
         border-radius: 12px;
@@ -302,7 +309,7 @@ def load_data():
 df_prodotti = load_data()
 
 # ---------------------------------------------------------
-# 6. HEADER CENTRATO + BANNER CON SLOGAN
+# 6. HEADER CENTRATO + BANNER CON RIMA AGGIORNATA
 # ---------------------------------------------------------
 logo_html = f'<img src="{logo_src}" class="brand-hero-img">' if logo_src else '<div style="font-size:3rem;">🛒</div>'
 
@@ -316,8 +323,8 @@ st.markdown(f"""
     </div>
 
     <div class="value-green-bar">
-        <div class="value-slogan-main">🛒 Con Comparacarrello fare la spesa online è bello!</div>
-        <div class="value-slogan-sub">⚡ Zero stress per la tua scelta, trova i prodotti giusti ed in fretta!</div>
+        <div class="value-slogan-main">🛒 Con Comparacarrello fare la spesa online è più bello!</div>
+        <div class="value-slogan-sub">⚡ Zero stress per la tua scelta, troverai i prodotti giusti ed in fretta!</div>
     </div>
 """, unsafe_allow_html=True)
 
