@@ -43,7 +43,7 @@ for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
         break
 
 # ---------------------------------------------------------
-# 3. DESIGN SYSTEM - VERDE FARMACIA + LOGO INGRANDITO
+# 3. DESIGN SYSTEM - HEADER VERDE CORRETTO ED ELEGANTE
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -65,8 +65,8 @@ st.markdown("""
         background: linear-gradient(90deg, #047857 0%, #10b981 100%);
         margin-left: -5rem;
         margin-right: -5rem;
-        padding: 16px 5rem;
-        box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+        padding: 14px 5rem;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.1);
         border-bottom: 4px solid #ea580c;
         margin-bottom: 25px;
     }
@@ -80,22 +80,22 @@ st.markdown("""
     .tp-logo-box {
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 16px;
     }
 
-    /* LOGO INGRANDITO PER RIEMPIRERE MEGLIO LA BARRA VERDE */
+    /* ICONA LOGO CIRCOLARE ED ELEGANTE (SENZA SCALINI) */
     .tp-logo-img {
-        height: 80px;
-        width: auto;
+        height: 54px;
+        width: 54px;
         object-fit: contain;
         background: #ffffff;
-        padding: 8px;
-        border-radius: 14px;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+        padding: 6px;
+        border-radius: 50%;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
 
     .tp-brand-title {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
         font-weight: 800;
         color: #ffffff;
         margin: 0;
@@ -109,9 +109,9 @@ st.markdown("""
 
     .tp-brand-tagline {
         color: #ecfdf5;
-        font-size: 0.92rem;
+        font-size: 0.88rem;
         font-weight: 500;
-        margin-top: 3px;
+        margin-top: 2px;
     }
 
     .tp-value-banner {
@@ -327,7 +327,7 @@ if 'carrello' not in st.session_state:
 # ---------------------------------------------------------
 st.markdown("### 🔍 Cerca e aggiungi un prodotto")
 
-DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3028/3028549.png"  # Placeholder farmacia
+DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3028/3028549.png"
 
 if not df_prodotti.empty:
     c_cat, c_search = st.columns([1, 3], vertical_alignment="bottom")
