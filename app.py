@@ -54,8 +54,9 @@ st.markdown("""
         background-color: #f8fafc;
     }
 
+    /* Aumentiamo il padding superiore per non far tagliare il logo in cima */
     .block-container {
-        padding-top: 1rem !important;
+        padding-top: 1.8rem !important;
         padding-bottom: 2rem !important;
         padding-left: 0.8rem !important;
         padding-right: 0.8rem !important;
@@ -72,7 +73,7 @@ st.markdown("""
         padding: 5px 0px;
         background: transparent;
         width: 100%;
-        overflow: hidden;
+        overflow: visible !important;
     }
 
     .brand-hero-logo-box {
@@ -84,10 +85,14 @@ st.markdown("""
         width: 100%;
     }
 
+    /* Correzione dimensioni logo: niente tagli in altezza */
     .brand-hero-img {
-        height: 60px;
+        max-height: 75px;
         width: auto;
         object-fit: contain;
+        padding: 4px;
+        display: block;
+        margin: 0 auto;
     }
 
     .brand-hero-title {
@@ -147,7 +152,8 @@ st.markdown("""
             gap: 6px;
         }
         .brand-hero-img {
-            height: 50px;
+            max-height: 65px;
+            padding-top: 2px;
         }
         .brand-hero-title {
             font-size: 1.65rem !important;
