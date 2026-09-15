@@ -43,7 +43,7 @@ for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
         break
 
 # ---------------------------------------------------------
-# 3. DESIGN SYSTEM - OTTIMIZZATO PER MOBILE & DESKTOP
+# 3. DESIGN SYSTEM - GRAFICA SEMPLIFICATA ED ESSENZIALE
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -54,7 +54,6 @@ st.markdown("""
         background-color: #f8fafc;
     }
 
-    /* Aumentiamo il padding superiore per non far tagliare il logo in cima */
     .block-container {
         padding-top: 1.8rem !important;
         padding-bottom: 2rem !important;
@@ -85,7 +84,6 @@ st.markdown("""
         width: 100%;
     }
 
-    /* Correzione dimensioni logo: niente tagli in altezza */
     .brand-hero-img {
         max-height: 75px;
         width: auto;
@@ -145,7 +143,6 @@ st.markdown("""
         margin-top: 4px;
     }
 
-    /* REGOLE SPECIFICHE PER SMARTPHONE */
     @media (max-width: 640px) {
         .brand-hero-logo-box {
             flex-direction: column;
@@ -163,7 +160,7 @@ st.markdown("""
         }
     }
 
-    /* BARRA FARMACIE MONITORATE */
+    /* STRISCIA FARMACIE MONITORATE */
     .pharmacy-bar {
         background: #ffffff;
         border: 1px solid #e2e8f0;
@@ -207,58 +204,92 @@ st.markdown("""
         border-radius: 50%;
     }
 
-    /* CARD RISULTATI */
+    /* CARD RISULTATI NUOVA GRAFICA ESSENZIALE */
     .result-card {
         background: white;
-        border-radius: 12px;
-        padding: 14px 16px;
+        border-radius: 14px;
+        padding: 18px 16px;
         border: 1px solid #e2e8f0;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         text-align: center;
+        margin-bottom: 15px;
     }
     .result-card.first {
         border: 2px solid #ea580c;
-        background: #fffbf7;
-        box-shadow: 0 6px 16px rgba(234, 88, 12, 0.12);
+        background: #ffffff;
+        box-shadow: 0 8px 20px rgba(234, 88, 12, 0.12);
     }
+
     .badge-rank {
         display: inline-block;
-        padding: 2px 8px;
-        border-radius: 10px;
-        font-size: 0.72rem;
-        font-weight: 700;
-        margin-bottom: 6px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+        text-transform: uppercase;
     }
     .badge-rank.gold { background-color: #fef3c7; color: #92400e; }
     .badge-rank.silver { background-color: #f1f5f9; color: #475569; }
     .badge-rank.bronze { background-color: #ffedd5; color: #9a3412; }
 
-    .price-tag {
-        font-size: 1.8rem;
+    .farmacia-name {
+        font-size: 1.25rem;
         font-weight: 800;
         color: #0f172a;
-        margin: 2px 0;
+        margin: 2px 0 10px 0;
     }
 
-    .ship-info-box {
-        background-color: #f8fafc;
-        border-radius: 8px;
-        padding: 6px;
-        margin: 8px 0;
+    .price-main-box {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 12px;
+        border: 1px solid #f1f5f9;
+    }
+
+    .price-total-label {
         font-size: 0.75rem;
-        color: #475569;
-        border: 1px dashed #cbd5e1;
+        color: #64748b;
+        font-weight: 700;
+        text-transform: uppercase;
     }
 
-    .ship-badge {
-        padding: 3px 8px;
-        border-radius: 6px;
-        font-size: 0.72rem;
-        font-weight: 700;
-        display: inline-block;
+    .price-tag {
+        font-size: 2.1rem;
+        font-weight: 800;
+        color: #047857;
+        line-height: 1;
+        margin: 4px 0;
     }
-    .ship-free { background-color: #dcfce7; color: #166534; }
-    .ship-paid { background-color: #fef9c3; color: #854d0e; }
+
+    .breakdown-row {
+        display: flex;
+        justify-content: space-around;
+        font-size: 0.82rem;
+        color: #475569;
+        font-weight: 600;
+        border-top: 1px dashed #cbd5e1;
+        padding-top: 8px;
+        margin-top: 6px;
+    }
+
+    .promo-shipping-box {
+        background-color: #fff7ed;
+        border: 1px solid #ffedd5;
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 0.78rem;
+        color: #c2410c;
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+
+    .promo-shipping-box.free {
+        background-color: #f0fdf4;
+        border: 1px solid #dcfce7;
+        color: #15803d;
+    }
 
     .minsan-tag {
         background-color: #f1f5f9;
@@ -268,14 +299,6 @@ st.markdown("""
         font-size: 0.78rem;
         font-family: monospace;
         font-weight: 700;
-    }
-
-    .stButton>button[kind="primary"] {
-        background-color: #ea580c !important;
-        border-color: #ea580c !important;
-        color: white !important;
-        font-weight: 700 !important;
-        border-radius: 8px !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -424,7 +447,7 @@ else:
     st.info("Il carrello è vuoto. Cerca un prodotto qui sopra per iniziare il confronto.")
 
 # ---------------------------------------------------------
-# 11. RISULTATI COMPARAZIONE
+# 11. RISULTATI COMPARAZIONE (LOGICA SEMPLIFICATA E CHIARA)
 # ---------------------------------------------------------
 if st.session_state.carrello:
     st.markdown("---")
@@ -473,25 +496,34 @@ if st.session_state.carrello:
             res = risultati[i]
             rank_label, badge_color, card_class = badges[i]
             
+            # Messaggio chiaro per la spedizione
             if res['mancante_gratis'] > 0:
-                ship_html = f'<div class="ship-badge ship-paid">🚚 Sped: € {res["spese_spedizione"]:.2f} (+€ {res["mancante_gratis"]:.2f} per Gratis)</div>'
+                ship_promo_html = f'<div class="promo-shipping-box">💡 Aggiungi <b>€ {res["mancante_gratis"]:.2f}</b> di prodotti per la Spedizione GRATIS (Soglia € {res["soglia_gratis"]:.2f})</div>'
+                ship_text = f"€ {res['spese_spedizione']:.2f}"
             else:
-                ship_html = '<div class="ship-badge ship-free">🎉 Spedizione GRATUITA</div>'
+                ship_promo_html = '<div class="promo-shipping-box free">🎉 Complimenti! Hai la Spedizione GRATUITA</div>'
+                ship_text = "GRATIS"
 
             with cols_podium[i]:
                 st.markdown(f"""
                     <div class="result-card {card_class}">
                         <span class="badge-rank {badge_color}">{rank_label}</span>
-                        <h4 style="margin: 2px 0; color: #0f172a;">{res['farmacia']}</h4>
-                        <div class="price-tag">€ {res['totale_complessivo']:.2f}</div>
-                        <div style="font-size: 0.75rem; color: #64748b;">Prodotti: € {res['totale_prodotti']:.2f}</div>
-                        <div class="ship-info-box">
-                            📌 <b>Soglia Spedizione Gratis: € {res['soglia_gratis']:.2f}</b><br>
-                            {ship_html}
+                        <div class="farmacia-name">{res['farmacia']}</div>
+                        
+                        <div class="price-main-box">
+                            <div class="price-total-label">Totale Finale Spesa</div>
+                            <div class="price-tag">€ {res['totale_complessivo']:.2f}</div>
+                            <div class="breakdown-row">
+                                <span>🛍️ Prodotti: € {res['totale_prodotti']:.2f}</span>
+                                <span>🚚 Spedizione: {ship_text}</span>
+                            </div>
                         </div>
-                        <div style="margin-top: 10px;">
+
+                        {ship_promo_html}
+
+                        <div style="margin-top: 12px;">
                             <a href="{res['url']}" target="_blank" style="text-decoration:none;">
-                                <button style="width:100%; background-color:#ea580c; color:white; border:none; padding:8px; border-radius:6px; font-weight:700; cursor:pointer; font-size:0.85rem;">
+                                <button style="width:100%; background-color:#ea580c; color:white; border:none; padding:10px; border-radius:8px; font-weight:700; cursor:pointer; font-size:0.9rem;">
                                     🛒 Vai alla Farmacia
                                 </button>
                             </a>
