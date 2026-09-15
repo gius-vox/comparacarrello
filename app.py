@@ -43,7 +43,7 @@ for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
         break
 
 # ---------------------------------------------------------
-# 3. DESIGN SYSTEM - HEADER VERDE CORRETTO ED ELEGANTE
+# 3. DESIGN SYSTEM - LOGO CENTRATO + BANNER SLOGAN
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -55,76 +55,82 @@ st.markdown("""
     }
 
     .block-container {
-        padding-top: 0rem !important;
+        padding-top: 1rem !important;
         padding-bottom: 2rem !important;
         max-width: 100% !important;
     }
     
-    /* HEADER VERDE FARMACIA */
-    .tp-header-container {
+    /* SEZIONE BRAND CENTRATA IN ALTO */
+    .brand-hero-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 15px 0 15px 0;
+        background: transparent;
+    }
+
+    .brand-hero-logo-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        margin-bottom: 6px;
+    }
+
+    /* LOGO SPECIALE E GRANDE CENTRATO */
+    .brand-hero-img {
+        height: 80px;
+        width: auto;
+        object-fit: contain;
+    }
+
+    .brand-hero-title {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: #047857;
+        margin: 0;
+        letter-spacing: -0.8px;
+        line-height: 1;
+    }
+
+    .brand-hero-title span {
+        color: #ea580c;
+    }
+
+    .brand-hero-tagline {
+        color: #475569;
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin-top: 6px;
+    }
+
+    /* BARRA VERDE CON IL NUOVO NUOVO SLOGAN/TORMENTONE */
+    .value-green-bar {
         background: linear-gradient(90deg, #047857 0%, #10b981 100%);
         margin-left: -5rem;
         margin-right: -5rem;
         padding: 14px 5rem;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.1);
-        border-bottom: 4px solid #ea580c;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(4, 120, 87, 0.15);
+        border-bottom: 3px solid #ea580c;
         margin-bottom: 25px;
+        color: #ffffff;
     }
 
-    .tp-header-top {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .tp-logo-box {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-    }
-
-    /* ICONA LOGO CIRCOLARE ED ELEGANTE (SENZA SCALINI) */
-    .tp-logo-img {
-        height: 54px;
-        width: 54px;
-        object-fit: contain;
-        background: #ffffff;
-        padding: 6px;
-        border-radius: 50%;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
-
-    .tp-brand-title {
-        font-size: 2.2rem;
+    .value-slogan-main {
+        font-size: 1.15rem;
         font-weight: 800;
+        letter-spacing: 0.2px;
         color: #ffffff;
-        margin: 0;
-        letter-spacing: -0.5px;
-        line-height: 1.1;
     }
 
-    .tp-brand-title span {
-        color: #f97316;
-    }
-
-    .tp-brand-tagline {
-        color: #ecfdf5;
-        font-size: 0.88rem;
-        font-weight: 500;
-        margin-top: 2px;
-    }
-
-    .tp-value-banner {
-        background: rgba(255, 255, 255, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 30px;
-        padding: 8px 18px;
-        color: #ffffff;
-        font-size: 0.88rem;
+    .value-slogan-sub {
+        font-size: 0.95rem;
         font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
+        color: #ecfdf5;
+        margin-top: 4px;
     }
 
     /* BARRA FARMACIE MONITORATE */
@@ -132,7 +138,7 @@ st.markdown("""
         background: #ffffff;
         border: 1px solid #e2e8f0;
         border-radius: 12px;
-        padding: 10px 18px;
+        padding: 12px 20px;
         margin-bottom: 25px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
@@ -143,7 +149,7 @@ st.markdown("""
         letter-spacing: 0.8px;
         color: #64748b;
         font-weight: 700;
-        margin-bottom: 6px;
+        margin-bottom: 8px;
     }
 
     .pharmacy-grid {
@@ -159,10 +165,10 @@ st.markdown("""
         gap: 6px;
         background: #f8fafc;
         border: 1px solid #cbd5e1;
-        padding: 3px 10px;
+        padding: 4px 12px;
         border-radius: 20px;
         font-weight: 600;
-        font-size: 0.78rem;
+        font-size: 0.8rem;
         color: #334155;
     }
     .pharmacy-chip img {
@@ -280,24 +286,22 @@ def load_data():
 df_prodotti = load_data()
 
 # ---------------------------------------------------------
-# 6. HEADER PRINCIPALE
+# 6. HEADER CENTRATO + BANNER CON I NUOVI SLOGAN
 # ---------------------------------------------------------
-logo_html = f'<img src="{logo_src}" class="tp-logo-img">' if logo_src else '<div style="font-size:2.2rem;">🛒</div>'
+logo_html = f'<img src="{logo_src}" class="brand-hero-img">' if logo_src else '<div style="font-size:3rem;">🛒</div>'
 
 st.markdown(f"""
-    <div class="tp-header-container">
-        <div class="tp-header-top">
-            <div class="tp-logo-box">
-                {logo_html}
-                <div>
-                    <h1 class="tp-brand-title">Compara<span>carrello.it</span></h1>
-                    <div class="tp-brand-tagline">Il motore di ricerca per la tua spesa in farmacia al miglior prezzo totale</div>
-                </div>
-            </div>
-            <div class="tp-value-banner">
-                ⚡ <b>Calcolo Carrello Unico:</b> Risparmia sulle spedizioni unificando la tua spesa
-            </div>
+    <div class="brand-hero-section">
+        <div class="brand-hero-logo-box">
+            {logo_html}
+            <h1 class="brand-hero-title">Compara<span>carrello.it</span></h1>
         </div>
+        <div class="brand-hero-tagline">Il motore di ricerca per la tua spesa in farmacia al miglior prezzo totale</div>
+    </div>
+
+    <div class="value-green-bar">
+        <div class="value-slogan-main">🛒 Con Comparacarrello fare la spesa in farmacia è bello!</div>
+        <div class="value-slogan-sub">⚡ Zero stress per la tua scelta, trova i prodotti giusti ed in fretta!</div>
     </div>
 """, unsafe_allow_html=True)
 
