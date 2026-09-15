@@ -43,7 +43,7 @@ for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
         break
 
 # ---------------------------------------------------------
-# 3. DESIGN SYSTEM - CORRETTO ANCHE PER MOBILE
+# 3. DESIGN SYSTEM - OTTIMIZZATO MOBILE E PC
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -110,7 +110,7 @@ st.markdown("""
         margin-top: 2px;
     }
 
-    /* BANNER SLOGAN - PIÙ COMPATTO SU MOBILE */
+    /* BANNER SLOGAN */
     .value-green-bar {
         background: linear-gradient(90deg, #047857 0%, #10b981 100%);
         margin-left: -0.8rem;
@@ -432,7 +432,7 @@ else:
     st.info("Il carrello è vuoto. Cerca un prodotto qui sopra per iniziare il confronto.")
 
 # ---------------------------------------------------------
-# 11. RISULTATI COMPARAZIONE (CHIARO, SEQUENZIALE ED ESPLICITO)
+# 11. RISULTATI COMPARAZIONE
 # ---------------------------------------------------------
 if st.session_state.carrello:
     st.markdown("---")
@@ -481,58 +481,33 @@ if st.session_state.carrello:
             res = risultati[i]
             rank_label, badge_color, card_class = badges[i]
             
-            # Formattazione per la voce spedizione
             if res['spese_spedizione'] == 0:
                 sped_str = "<span style='color:#15803d;'>GRATIS</span>"
-                info_ship_box = '<div class="shipping-info-box free">🎉 <b>Spedizione gratuita sbloccata!</b> Hai superato la soglia minima.</div>'
+                info_ship_box = f'<div class="shipping-info-box free">🎉 <b>Spedizione gratuita sbloccata!</b> Hai superato la soglia minima.</div>'
             else:
                 sped_str = f"+ € {res['spese_spedizione']:.2f}"
-                info_ship_box = f'''
-                    <div class="shipping-info-box">
-                        💡 <b>Vuoi azzerare la spedizione?</b><br>
-                        Aggiungi altri <b>€ {res['mancante_gratis']:.2f}</b> di prodotti su {res['farmacia']} per sbloccare la spedizione GRATIS (soglia a € {res['soglia_gratis']:.2f}).
-                    </div>
-                '''
+                info_ship_box = f'<div class="shipping-info-box">💡 <b>Vuoi azzerare la spedizione?</b><br>Aggiungi altri <b>€ {res["mancante_gratis"]:.2f}</b> di prodotti su {res["farmacia"]} per sbloccare la spedizione GRATIS (soglia a € {res["soglia_gratis"]:.2f}).</div>'
+
+            html_card = f'''<div class="result-card {card_class}">
+<span class="badge-rank {badge_color}">{rank_label}</span>
+<div class="farmacia-name">{res["farmacia"]}</div>
+<div class="calculation-receipt-box">
+<div class="calc-row"><span>🛍️ Prezzo prodotti</span><span>€ {res["totale_prodotti"]:.2f}</span></div>
+<div class="calc-row"><span>🚚 Spese di spedizione</span><span>{sped_str}</span></div>
+<div class="calc-divider"></div>
+<div class="calc-total-row"><span>💳 TOTALE SPESA</span><span class="calc-total-amount">€ {res["totale_complessivo"]:.2f}</span></div>
+</div>
+{info_ship_box}
+<div style="margin-top: 10px;">
+<a href="{res["url"]}" target="_blank" style="text-decoration:none;">
+<button style="width:100%; background-color:#ea580c; color:white; border:none; padding:10px 12px; border-radius:8px; font-weight:700; cursor:pointer; font-size:0.88rem;">↗️ Acquista su {res["farmacia"]}</button>
+</a>
+<div class="redirect-disclaimer">ℹ️ Verrai reindirizzato sul sito ufficiale della farmacia per selezionare e acquistare i tuoi prodotti.</div>
+</div>
+</div>'''
 
             with cols_podium[i]:
-                st.markdown(f"""
-                    <div class="result-card {card_class}">
-                        <span class="badge-rank {badge_color}">{rank_label}</span>
-                        <div class="farmacia-name">{res['farmacia']}</div>
-                        
-                        <!-- SCONTRINO CHIARO CON ADDIZIONE SEQUENZIALE -->
-                        <div class="calculation-receipt-box">
-                            <div class="calc-row">
-                                <span>🛍️ Prezzo prodotti</span>
-                                <span>€ {res['totale_prodotti']:.2f}</span>
-                            </div>
-                            <div class="calc-row">
-                                <span>🚚 Spese di spedizione</span>
-                                <span>{sped_str}</span>
-                            </div>
-                            <div class="calc-divider"></div>
-                            <div class="calc-total-row">
-                                <span>💳 TOTALE SPESA</span>
-                                <span class="calc-total-amount">€ {res['totale_complessivo']:.2f}</span>
-                            </div>
-                        </div>
-
-                        <!-- INFO SOGLIA SPEDIZIONE -->
-                        {info_ship_box}
-
-                        <!-- PULSANTE E AVVISO REINDIRIZZAMENTO -->
-                        <div style="margin-top: 10px;">
-                            <a href="{res['url']}" target="_blank" style="text-decoration:none;">
-                                <button style="width:100%; background-color:#ea580c; color:white; border:none; padding:10px 12px; border-radius:8px; font-weight:700; cursor:pointer; font-size:0.88rem;">
-                                    ↗️ Acquista su {res['farmacia']}
-                                </button>
-                            </a>
-                            <div class="redirect-disclaimer">
-                                ℹ️ Verrai reindirizzato sul sito ufficiale della farmacia per selezionare e acquistare i tuoi prodotti.
-                            </div>
-                        </div>
-                    </div>
-                """, unsafe_allow_html=True)
+                st.markdown(html_card, unsafe_allow_html=True)
                 
         with st.expander("📊 Guarda la classifica completa di tutte le farmacie"):
             df_res = pd.DataFrame(risultati)[['farmacia', 'totale_prodotti', 'spese_spedizione', 'soglia_gratis', 'totale_complessivo']]
