@@ -43,7 +43,7 @@ for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
         break
 
 # ---------------------------------------------------------
-# 3. DESIGN SYSTEM - VERDE FARMACIA + CARD COMPATTE
+# 3. DESIGN SYSTEM - VERDE FARMACIA + LOGO INGRANDITO
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -65,7 +65,7 @@ st.markdown("""
         background: linear-gradient(90deg, #047857 0%, #10b981 100%);
         margin-left: -5rem;
         margin-right: -5rem;
-        padding: 20px 5rem 22px 5rem;
+        padding: 16px 5rem;
         box-shadow: 0 4px 18px rgba(0,0,0,0.12);
         border-bottom: 4px solid #ea580c;
         margin-bottom: 25px;
@@ -80,21 +80,22 @@ st.markdown("""
     .tp-logo-box {
         display: flex;
         align-items: center;
-        gap: 18px;
+        gap: 20px;
     }
 
+    /* LOGO INGRANDITO PER RIEMPIRERE MEGLIO LA BARRA VERDE */
     .tp-logo-img {
-        height: 55px;
+        height: 80px;
         width: auto;
         object-fit: contain;
         background: #ffffff;
-        padding: 6px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        padding: 8px;
+        border-radius: 14px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.18);
     }
 
     .tp-brand-title {
-        font-size: 2.3rem;
+        font-size: 2.5rem;
         font-weight: 800;
         color: #ffffff;
         margin: 0;
@@ -108,25 +109,25 @@ st.markdown("""
 
     .tp-brand-tagline {
         color: #ecfdf5;
-        font-size: 0.88rem;
+        font-size: 0.92rem;
         font-weight: 500;
-        margin-top: 2px;
+        margin-top: 3px;
     }
 
     .tp-value-banner {
         background: rgba(255, 255, 255, 0.2);
         border: 1px solid rgba(255, 255, 255, 0.4);
         border-radius: 30px;
-        padding: 6px 16px;
+        padding: 8px 18px;
         color: #ffffff;
-        font-size: 0.85rem;
+        font-size: 0.88rem;
         font-weight: 600;
         display: inline-flex;
         align-items: center;
         gap: 8px;
     }
 
-    /* BARRA FARMACIE */
+    /* BARRA FARMACIE MONITORATE */
     .pharmacy-bar {
         background: #ffffff;
         border: 1px solid #e2e8f0;
@@ -170,7 +171,7 @@ st.markdown("""
         border-radius: 50%;
     }
 
-    /* CARD PODIO RISULTATI COMPATTE */
+    /* CARD RISULTATI COMPATTE */
     .result-card {
         background: white;
         border-radius: 12px;
@@ -234,7 +235,6 @@ st.markdown("""
         font-weight: 700;
     }
 
-    /* STREAMLIT BUTTON OVERRIDE */
     .stButton>button[kind="primary"] {
         background-color: #ea580c !important;
         border-color: #ea580c !important;
@@ -327,7 +327,7 @@ if 'carrello' not in st.session_state:
 # ---------------------------------------------------------
 st.markdown("### 🔍 Cerca e aggiungi un prodotto")
 
-DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3028/3028549.png"  # Placeholder elegante farmacia
+DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3028/3028549.png"  # Placeholder farmacia
 
 if not df_prodotti.empty:
     c_cat, c_search = st.columns([1, 3], vertical_alignment="bottom")
@@ -361,7 +361,7 @@ if not df_prodotti.empty:
                 st.rerun()
 
 # ---------------------------------------------------------
-# 10. CARRELLO UTENTE (STRINGA HTML CORRETTA)
+# 10. CARRELLO UTENTE
 # ---------------------------------------------------------
 st.markdown("---")
 st.markdown("### 🛍️ Il tuo Carrello")
@@ -373,7 +373,6 @@ if st.session_state.carrello:
             img_url = item['Immagine_URL'] if ('Immagine_URL' in item and pd.notna(item['Immagine_URL']) and str(item['Immagine_URL']).startswith('http')) else DEFAULT_IMG
             st.image(img_url, width=35)
         with c_desc:
-            # FIX: Corretto rendering del MINSAN senza la stringa HTML visibile a schermo
             st.markdown(f"**{item['Prodotto']}** &nbsp; <span class='minsan-tag'>MINSAN: {item['MINSAN']}</span>", unsafe_allow_html=True)
         with c_del:
             if st.button("❌ Rimuovi", key=f"del_{idx}"):
@@ -387,7 +386,7 @@ else:
     st.info("Il carrello è vuoto. Cerca un prodotto qui sopra per iniziare il confronto.")
 
 # ---------------------------------------------------------
-# 11. RISULTATI COMPARAZIONE (CARD COMPATTE & TRASPARENZA SPEDIZIONE)
+# 11. RISULTATI COMPARAZIONE
 # ---------------------------------------------------------
 if st.session_state.carrello:
     st.markdown("---")
@@ -473,7 +472,6 @@ if st.session_state.carrello:
     st.markdown("---")
     st.markdown("### 📲 Condividi Carrello o Salvalo sul Cellulare")
     
-    # Prepara il testo con i codici MINSAN
     testo_condivisione = f"Ecco i codici MINSAN della mia spesa su Comparacarrello.it: {', '.join(lista_minsan)}"
     text_encoded = urllib.parse.quote(testo_condivisione)
     
