@@ -1,5 +1,286 @@
+import streamlit as st
+import pandas as pd
+import os
+import urllib.parse
+import base64
+import io
+import qrcode
+
 # ---------------------------------------------------------
-# 11. RISULTATI COMPARAZIONE (PULITI E SENZA BUG DI RENDERING)
+# 1. CONFIGURAZIONE PAGINA
+# ---------------------------------------------------------
+st.set_page_config(
+    page_title="Comparacarrello.it - Il tuo Carrello Farmacia al Miglior Prezzo",
+    page_icon="🛒",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+# ---------------------------------------------------------
+# 2. HELPER LOGO & QR CODE BASE64
+# ---------------------------------------------------------
+def get_image_base64(path):
+    if os.path.exists(path):
+        with open(path, "rb") as image_file:
+            encoded = base64.b64encode(image_file.read()).decode()
+            ext = path.split('.')[-1]
+            return f"data:image/{ext};base64,{encoded}"
+    return None
+
+def generate_qr_code_base64(data_string):
+    qr = qrcode.QRCode(version=1, box_size=4, border=2)
+    qr.add_data(data_string)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    buffered = io.BytesIO()
+    img.save(buffered, format="PNG")
+    return f"data:image/png;base64,{base64.b64encode(buffered.getvalue()).decode()}"
+
+logo_src = None
+for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
+    logo_src = get_image_base64(name)
+    if logo_src:
+        break
+
+# ---------------------------------------------------------
+# 3. CSS STYLES ESSENZIALI E PULITI
+# ---------------------------------------------------------
+st.markdown("""
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    
+    html, body, [class*="css"] {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: #f8fafc;
+    }
+
+    .block-container {
+        padding-top: 1.5rem !important;
+        padding-bottom: 2rem !important;
+        max-width: 100% !important;
+    }
+
+    /* BANNER SLOGAN */
+    .value-green-bar {
+        background: linear-gradient(90deg, #047857 0%, #10b981 100%);
+        padding: 12px 10px;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(4, 120, 87, 0.15);
+        border-bottom: 3px solid #ea580c;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        color: #ffffff;
+        border-radius: 8px;
+    }
+
+    .value-slogan-main {
+        font-size: clamp(0.9rem, 3.5vw, 1.15rem);
+        font-weight: 800;
+    }
+
+    .value-slogan-sub {
+        font-size: clamp(0.78rem, 2.8vw, 0.95rem);
+        font-weight: 600;
+        color: #ecfdf5;
+        margin-top: 4px;
+    }
+
+    /* STRISCIA FARMACIE */
+    .pharmacy-bar {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 25px;
+    }
+    
+    .pharmacy-bar-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #64748b;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .pharmacy-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .pharmacy-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        color: #334155;
+    }
+    
+    .minsan-tag {
+        background-color: #e2e8f0;
+        color: #0f766e;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-family: monospace;
+        font-weight: 700;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# ---------------------------------------------------------
+# 4. DATI FARMACIE
+# ---------------------------------------------------------
+FARMACIE = {
+    "Farmacia Igea": {"domain": "farmaciaigea.com", "spedizione_base": 4.90, "soglia_gratis": 29.00, "search_url": "https://www.farmaciaigea.com/ricerca?search_query="},
+    "Farmaè": {"domain": "farmae.it", "spedizione_base": 3.90, "soglia_gratis": 19.90, "search_url": "https://www.farmae.it/catalogsearch/result/?q="},
+    "Dr Max": {"domain": "drmax.it", "spedizione_base": 4.50, "soglia_gratis": 24.90, "search_url": "https://www.drmax.it/catalogsearch/result/?q="},
+    "RedCare": {"domain": "redcare.it", "spedizione_base": 3.95, "soglia_gratis": 18.00, "search_url": "https://www.redcare.it/search.htm?q="},
+    "Farmacia Loreto": {"domain": "farmacialoreto.it", "spedizione_base": 4.90, "soglia_gratis": 29.90, "search_url": "https://farmacialoreto.it/catalogsearch/result/?q="},
+    "1000Farmacie": {"domain": "1000farmacie.it", "spedizione_base": 2.90, "soglia_gratis": 29.00, "search_url": "https://www.1000farmacie.it/search?q="},
+    "Top Farmacia": {"domain": "topfarmacia.it", "spedizione_base": 4.90, "soglia_gratis": 19.90, "search_url": "https://www.topfarmacia.it/catalogsearch/result/?q="},
+    "eFarma": {"domain": "efarma.com", "spedizione_base": 4.90, "soglia_gratis": 29.90, "search_url": "https://www.efarma.com/catalogsearch/result/?q="},
+    "Farmacosmo": {"domain": "farmacosmo.it", "spedizione_base": 3.90, "soglia_gratis": 29.90, "search_url": "https://www.farmacosmo.it/ricerca?controller=search&s="}
+}
+
+# ---------------------------------------------------------
+# 5. CARICAMENTO DATI
+# ---------------------------------------------------------
+@st.cache_data
+def load_data():
+    for filename in ["prodotti_1000_minsan.csv", "prodotti.csv"]:
+        if os.path.exists(filename):
+            try:
+                df = pd.read_csv(filename)
+                df['MINSAN'] = df['MINSAN'].astype(str).str.strip()
+                if 'Categoria' not in df.columns:
+                    df['Categoria'] = 'Generale'
+                return df
+            except Exception:
+                pass
+    return pd.DataFrame()
+
+df_prodotti = load_data()
+
+# ---------------------------------------------------------
+# 6. HEADER PERFETTAMENTE ALLINEATO (NATIVO STREAMLIT)
+# ---------------------------------------------------------
+col_logo, col_title = st.columns([1, 4], vertical_alignment="center")
+
+with col_logo:
+    if logo_src:
+        st.image("logo.png" if os.path.exists("logo.png") else "logo_comparacarrello.png", width=110)
+    else:
+        st.markdown("<div style='font-size:3rem; text-align:center;'>🛒</div>", unsafe_allow_html=True)
+
+with col_title:
+    st.markdown("<h1 style='color: #047857; margin:0; padding:0; font-weight:800;'>Comparacarrello<span style='color:#ea580c;'>.it</span></h1>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #475569; margin:0; font-weight:600; font-size:1.05rem;'>Il motore di ricerca per la tua spesa in farmacia al miglior prezzo totale</p>", unsafe_allow_html=True)
+
+# BANNER SLOGAN
+st.markdown("""
+    <div class="value-green-bar">
+        <div class="value-slogan-main">🛒 Con Comparacarrello fare la spesa online è più bello!</div>
+        <div class="value-slogan-sub">⚡ Zero stress per la tua scelta, troverai i prodotti giusti ed in fretta!</div>
+    </div>
+""", unsafe_allow_html=True)
+
+# ---------------------------------------------------------
+# 7. STRISCIA FARMACIE MONITORATE
+# ---------------------------------------------------------
+chips = "".join([
+    f'<div class="pharmacy-chip"><img src="https://www.google.com/s2/favicons?domain={info["domain"]}&sz=32" width="16" height="16"><span>{nome}</span></div>'
+    for nome, info in FARMACIE.items()
+])
+
+st.markdown(f"""
+    <div class="pharmacy-bar">
+        <div class="pharmacy-bar-title">Farmacie Online Monitorate in Tempo Reale</div>
+        <div class="pharmacy-grid">{chips}</div>
+    </div>
+""", unsafe_allow_html=True)
+
+# ---------------------------------------------------------
+# 8. CARRELLO STATE
+# ---------------------------------------------------------
+if 'carrello' not in st.session_state:
+    st.session_state.carrello = []
+
+# ---------------------------------------------------------
+# 9. RICERCA PRODOTTI
+# ---------------------------------------------------------
+st.markdown("### 🔍 Cerca e aggiungi un prodotto")
+
+DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3028/3028549.png"
+
+if not df_prodotti.empty:
+    c_cat, c_search = st.columns([1, 3], vertical_alignment="bottom")
+    
+    with c_cat:
+        categorie = ["Tutte le Categorie"] + sorted(list(df_prodotti['Categoria'].dropna().unique()))
+        cat_selezionata = st.selectbox("Seleziona Categoria:", categorie)
+    
+    df_filtrato = df_prodotti if cat_selezionata == "Tutte le Categorie" else df_prodotti[df_prodotti['Categoria'] == cat_selezionata]
+    
+    with c_search:
+        opzioni = df_filtrato.apply(lambda row: f"{row['Prodotto']} | MINSAN: {row['MINSAN']}", axis=1).tolist()
+        prod_selezionato = st.selectbox(
+            "Digita il nome del farmaco o il codice MINSAN:", 
+            options=opzioni,
+            index=None,
+            placeholder="Cerca o seleziona un farmaco..."
+        )
+
+    if prod_selezionato:
+        minsan_sel = prod_selezionato.split("MINSAN: ")[-1]
+        row_prod = df_prodotti[df_prodotti['MINSAN'] == minsan_sel].iloc[0]
+        
+        img_url = row_prod['Immagine_URL'] if ('Immagine_URL' in row_prod and pd.notna(row_prod['Immagine_URL']) and str(row_prod['Immagine_URL']).startswith('http')) else DEFAULT_IMG
+        
+        c_p_img, c_p_info, c_p_btn = st.columns([0.8, 3.2, 1], vertical_alignment="center")
+        with c_p_img:
+            st.image(img_url, width=60)
+        with c_p_info:
+            st.markdown(f"**{row_prod['Prodotto']}**")
+            st.markdown(f"Codice MINSAN: <span class='minsan-tag'>{row_prod['MINSAN']}</span> | Categoria: {row_prod.get('Categoria', 'Generale')}", unsafe_allow_html=True)
+        with c_p_btn:
+            if st.button("➕ Aggiungi al Carrello", type="primary", use_container_width=True):
+                st.session_state.carrello.append(row_prod)
+                st.success("Aggiunto!")
+                st.rerun()
+
+# ---------------------------------------------------------
+# 10. CARRELLO UTENTE
+# ---------------------------------------------------------
+st.markdown("---")
+st.markdown("### 🛍️ Il tuo Carrello")
+
+if st.session_state.carrello:
+    for idx, item in enumerate(st.session_state.carrello):
+        c_img, c_desc, c_del = st.columns([0.5, 4, 1], vertical_alignment="center")
+        with c_img:
+            img_url = item['Immagine_URL'] if ('Immagine_URL' in item and pd.notna(item['Immagine_URL']) and str(item['Immagine_URL']).startswith('http')) else DEFAULT_IMG
+            st.image(img_url, width=35)
+        with c_desc:
+            st.markdown(f"**{item['Prodotto']}** &nbsp; <span class='minsan-tag'>MINSAN: {item['MINSAN']}</span>", unsafe_allow_html=True)
+        with c_del:
+            if st.button("❌ Rimuovi", key=f"del_{idx}"):
+                st.session_state.carrello.pop(idx)
+                st.rerun()
+                
+    if st.button("🗑️ Svuota Carrello"):
+        st.session_state.carrello = []
+        st.rerun()
+else:
+    st.info("Il carrello è vuoto. Cerca un prodotto qui sopra per iniziare il confronto.")
+
+# ---------------------------------------------------------
+# 11. RISULTATI COMPARAZIONE (NATIVO - ZERO BUG HTML)
 # ---------------------------------------------------------
 if st.session_state.carrello:
     st.markdown("---")
@@ -48,12 +329,10 @@ if st.session_state.carrello:
             res = risultati[i]
             
             with cols_podium[i]:
-                # Card contenitore
                 with st.container(border=True):
                     st.caption(f"**{badges[i]}**")
                     st.subheader(res['farmacia'])
                     
-                    # Prezzo Totale in grande
                     st.metric(
                         label="TOTALE SPESA", 
                         value=f"€ {res['totale_complessivo']:.2f}"
@@ -61,7 +340,6 @@ if st.session_state.carrello:
                     
                     st.divider()
                     
-                    # Dettaglio sequenziale chiaro
                     st.markdown(f"🛍️ **Prezzo prodotti:** € {res['totale_prodotti']:.2f}")
                     if res['spese_spedizione'] == 0:
                         st.markdown("🚚 **Spedizione:** :green[GRATIS]")
@@ -70,7 +348,6 @@ if st.session_state.carrello:
                     
                     st.divider()
                     
-                    # Box soglia spedizione
                     if res['spese_spedizione'] > 0:
                         st.warning(
                             f"💡 **Soglia spedizione gratis:** Aggiungi ancora **€ {res['mancante_gratis']:.2f}** "
@@ -79,7 +356,6 @@ if st.session_state.carrello:
                     else:
                         st.success("🎉 **Spedizione gratuita sbloccata!**")
                         
-                    # Pulsante e Disclaimer
                     st.link_button(
                         label=f"↗️ Acquista su {res['farmacia']}", 
                         url=res['url'], 
@@ -93,3 +369,43 @@ if st.session_state.carrello:
             df_res = pd.DataFrame(risultati)[['farmacia', 'totale_prodotti', 'spese_spedizione', 'soglia_gratis', 'totale_complessivo']]
             df_res.columns = ['Farmacia', 'Totale Prodotti (€)', 'Spedizioni (€)', 'Soglia Gratis (€)', 'Totale Carrello (€)']
             st.dataframe(df_res.style.format({'Totale Prodotti (€)': '{:.2f}', 'Spedizioni (€)': '{:.2f}', 'Soglia Gratis (€)': '{:.2f}', 'Totale Carrello (€)': '{:.2f}'}), use_container_width=True)
+
+    # ---------------------------------------------------------
+    # 12. CONDIVISIONE CARRELLO & QR CODE MOBILE
+    # ---------------------------------------------------------
+    st.markdown("---")
+    st.markdown("### 📲 Condividi Carrello o Salvalo sul Cellulare")
+    
+    testo_condivisione = f"Ecco i codici MINSAN della mia spesa su Comparacarrello.it: {', '.join(lista_minsan)}"
+    text_encoded = urllib.parse.quote(testo_condivisione)
+    
+    whatsapp_url = f"https://api.whatsapp.com/send?text={text_encoded}"
+    telegram_url = f"https://t.me/share/url?url=https://comparacarrello.it&text={text_encoded}"
+    
+    qr_code_img = generate_qr_code_base64(testo_condivisione)
+    
+    col_qr, col_social = st.columns([1, 2], vertical_alignment="center")
+    
+    with col_qr:
+        st.markdown(f"""
+            <div style="text-align: center; background: white; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                <img src="{qr_code_img}" style="width: 120px; height: 120px;"><br>
+                <small style="color: #64748b; font-weight: 600;">Inquadra per aprire sul telefono</small>
+            </div>
+        """, unsafe_allow_html=True)
+        
+    with col_social:
+        st.markdown(f"""
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <a href="{whatsapp_url}" target="_blank" style="text-decoration:none;">
+                    <button style="width:100%; background-color:#25D366; color:white; border:none; padding:10px 16px; border-radius:8px; font-weight:700; cursor:pointer;">
+                        💬 Condividi Carrello su WhatsApp
+                    </button>
+                </a>
+                <a href="{telegram_url}" target="_blank" style="text-decoration:none;">
+                    <button style="width:100%; background-color:#0088cc; color:white; border:none; padding:10px 16px; border-radius:8px; font-weight:700; cursor:pointer;">
+                        ✈️ Condividi Carrello su Telegram
+                    </button>
+                </a>
+            </div>
+        """, unsafe_allow_html=True)
