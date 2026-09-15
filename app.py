@@ -43,7 +43,7 @@ for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
         break
 
 # ---------------------------------------------------------
-# 3. DESIGN SYSTEM - CORRETTO PER DESKTOP E MOBILE
+# 3. DESIGN SYSTEM - SEQUENZIALE ED ESPLICATIVO
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -55,21 +55,22 @@ st.markdown("""
     }
 
     .block-container {
-        padding-top: 1.5rem !important;
+        padding-top: 1.8rem !important;
         padding-bottom: 2rem !important;
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
+        padding-left: 0.8rem !important;
+        padding-right: 0.8rem !important;
         max-width: 100% !important;
     }
     
-    /* SEZIONE BRAND CENTRATA IN ALTO */
+    /* BRAND HERO */
     .brand-hero-section {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         text-align: center;
-        padding: 10px 0px;
+        padding: 5px 0px;
+        background: transparent;
         width: 100%;
     }
 
@@ -83,13 +84,16 @@ st.markdown("""
     }
 
     .brand-hero-img {
-        max-height: 60px;
+        max-height: 75px;
         width: auto;
         object-fit: contain;
+        padding: 4px;
+        display: block;
+        margin: 0 auto;
     }
 
     .brand-hero-title {
-        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        font-size: clamp(1.4rem, 5vw, 2.8rem);
         font-weight: 800;
         color: #047857;
         margin: 0;
@@ -97,57 +101,53 @@ st.markdown("""
         line-height: 1.1;
     }
 
-    .brand-hero-title span {
-        color: #ea580c;
-    }
+    .brand-hero-title span { color: #ea580c; }
 
     .brand-hero-tagline {
         color: #475569;
-        font-size: clamp(0.85rem, 2vw, 1.05rem);
+        font-size: clamp(0.85rem, 3vw, 1.05rem);
         font-weight: 600;
         margin-top: 6px;
     }
 
-    /* BARRA VERDE CON SLOGAN */
+    /* BANNER SLOGAN */
     .value-green-bar {
         background: linear-gradient(90deg, #047857 0%, #10b981 100%);
+        margin-left: -1rem;
+        margin-right: -1rem;
         padding: 12px 10px;
         text-align: center;
         box-shadow: 0 4px 12px rgba(4, 120, 87, 0.15);
         border-bottom: 3px solid #ea580c;
-        margin-top: 10px;
         margin-bottom: 20px;
         color: #ffffff;
-        border-radius: 8px;
+        border-radius: 4px;
     }
 
     .value-slogan-main {
-        font-size: clamp(0.9rem, 2.5vw, 1.15rem);
+        font-size: clamp(0.9rem, 3.5vw, 1.15rem);
         font-weight: 800;
-        color: #ffffff;
     }
 
     .value-slogan-sub {
-        font-size: clamp(0.78rem, 2vw, 0.95rem);
+        font-size: clamp(0.78rem, 2.8vw, 0.95rem);
         font-weight: 600;
         color: #ecfdf5;
         margin-top: 4px;
     }
 
-    /* STRISCIA FARMACIE MONITORATE */
+    /* STRISCIA FARMACIE */
     .pharmacy-bar {
         background: #ffffff;
         border: 1px solid #e2e8f0;
         border-radius: 12px;
-        padding: 12px 16px;
+        padding: 12px 12px;
         margin-bottom: 25px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
     
     .pharmacy-bar-title {
         font-size: 0.72rem;
         text-transform: uppercase;
-        letter-spacing: 0.8px;
         color: #64748b;
         font-weight: 700;
         margin-bottom: 8px;
@@ -156,8 +156,7 @@ st.markdown("""
     .pharmacy-grid {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
-        align-items: center;
+        gap: 6px;
     }
 
     .pharmacy-chip {
@@ -172,70 +171,110 @@ st.markdown("""
         font-size: 0.78rem;
         color: #334155;
     }
-    .pharmacy-chip img {
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-    }
+    .pharmacy-chip img { width: 14px; height: 14px; border-radius: 50%; }
 
-    /* CARD RISULTATI */
+    /* CARD RISULTATI CON CONTO SEQUENZIALE */
     .result-card {
         background: white;
-        border-radius: 12px;
-        padding: 16px;
+        border-radius: 14px;
+        padding: 18px 16px;
         border: 1px solid #e2e8f0;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         text-align: center;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+        margin-bottom: 15px;
     }
     .result-card.first {
         border: 2px solid #ea580c;
-        background: #fffbf7;
-        box-shadow: 0 6px 16px rgba(234, 88, 12, 0.12);
+        background: #ffffff;
+        box-shadow: 0 8px 20px rgba(234, 88, 12, 0.12);
     }
 
     .badge-rank {
         display: inline-block;
-        padding: 3px 10px;
-        border-radius: 12px;
-        font-size: 0.75rem;
-        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 800;
         margin-bottom: 8px;
+        text-transform: uppercase;
     }
     .badge-rank.gold { background-color: #fef3c7; color: #92400e; }
     .badge-rank.silver { background-color: #f1f5f9; color: #475569; }
     .badge-rank.bronze { background-color: #ffedd5; color: #9a3412; }
 
-    .price-tag {
-        font-size: 1.9rem;
+    .farmacia-name {
+        font-size: 1.3rem;
         font-weight: 800;
         color: #0f172a;
-        margin: 4px 0;
+        margin: 2px 0 12px 0;
     }
 
-    .ship-info-box {
-        background-color: #ffffff;
-        border-radius: 8px;
-        padding: 8px;
-        margin: 8px 0;
-        font-size: 0.78rem;
+    /* BOX SCONTRINO / SOMMA SEQUENZIALE */
+    .calculation-receipt-box {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 12px 14px;
+        text-align: left;
+        margin-bottom: 12px;
+    }
+
+    .calc-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.88rem;
         color: #475569;
-        border: 1px dashed #cbd5e1;
+        margin-bottom: 6px;
+        font-weight: 600;
     }
 
-    .ship-badge {
-        padding: 3px 8px;
-        border-radius: 6px;
-        font-size: 0.72rem;
-        font-weight: 700;
-        display: inline-block;
-        margin-top: 4px;
+    .calc-divider {
+        border-top: 2px dashed #cbd5e1;
+        margin: 8px 0;
     }
-    .ship-free { background-color: #dcfce7; color: #166534; }
-    .ship-paid { background-color: #fef9c3; color: #854d0e; }
+
+    .calc-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #047857;
+    }
+
+    .calc-total-amount {
+        font-size: 1.7rem;
+        font-weight: 800;
+        color: #047857;
+    }
+
+    /* NOTE SULLE SPEDIZIONI */
+    .shipping-info-box {
+        background-color: #fff7ed;
+        border: 1px solid #ffedd5;
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 0.78rem;
+        color: #9a3412;
+        text-align: left;
+        line-height: 1.35;
+        margin-bottom: 14px;
+    }
+
+    .shipping-info-box.free {
+        background-color: #f0fdf4;
+        border: 1px solid #dcfce7;
+        color: #166534;
+    }
+
+    /* AVVISO DI REINDIRIZZAMENTO SUL PULSANTE */
+    .redirect-disclaimer {
+        font-size: 0.72rem;
+        color: #64748b;
+        margin-top: 6px;
+        line-height: 1.25;
+    }
 
     .minsan-tag {
         background-color: #f1f5f9;
@@ -245,14 +284,6 @@ st.markdown("""
         font-size: 0.78rem;
         font-family: monospace;
         font-weight: 700;
-    }
-
-    .stButton>button[kind="primary"] {
-        background-color: #ea580c !important;
-        border-color: #ea580c !important;
-        color: white !important;
-        font-weight: 700 !important;
-        border-radius: 8px !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -294,7 +325,7 @@ df_prodotti = load_data()
 # ---------------------------------------------------------
 # 6. HEADER CENTRATO + BANNER
 # ---------------------------------------------------------
-logo_html = f'<img src="{logo_src}" class="brand-hero-img">' if logo_src else '<div style="font-size:2.5rem;">🛒</div>'
+logo_html = f'<img src="{logo_src}" class="brand-hero-img">' if logo_src else '<div style="font-size:3rem;">🛒</div>'
 
 st.markdown(f"""
     <div class="brand-hero-section">
@@ -401,7 +432,7 @@ else:
     st.info("Il carrello è vuoto. Cerca un prodotto qui sopra per iniziare il confronto.")
 
 # ---------------------------------------------------------
-# 11. RISULTATI COMPARAZIONE
+# 11. RISULTATI COMPARAZIONE (CHIARO, SEQUENZIALE ED ESPLICITO)
 # ---------------------------------------------------------
 if st.session_state.carrello:
     st.markdown("---")
@@ -450,30 +481,55 @@ if st.session_state.carrello:
             res = risultati[i]
             rank_label, badge_color, card_class = badges[i]
             
-            if res['mancante_gratis'] > 0:
-                ship_html = f'<div class="ship-badge ship-paid">🚚 Sped: € {res["spese_spedizione"]:.2f} (+€ {res["mancante_gratis"]:.2f} per Gratis)</div>'
+            # Formattazione per la voce spedizione
+            if res['spese_spedizione'] == 0:
+                sped_str = "<span style='color:#15803d;'>GRATIS</span>"
+                info_ship_box = '<div class="shipping-info-box free">🎉 <b>Spedizione gratuita sbloccata!</b> Hai superato la soglia minima.</div>'
             else:
-                ship_html = '<div class="ship-badge ship-free">🎉 Spedizione GRATUITA</div>'
+                sped_str = f"+ € {res['spese_spedizione']:.2f}"
+                info_ship_box = f'''
+                    <div class="shipping-info-box">
+                        💡 <b>Vuoi azzerare la spedizione?</b><br>
+                        Aggiungi altri <b>€ {res['mancante_gratis']:.2f}</b> di prodotti su {res['farmacia']} per sbloccare la spedizione GRATIS (soglia a € {res['soglia_gratis']:.2f}).
+                    </div>
+                '''
 
             with cols_podium[i]:
                 st.markdown(f"""
                     <div class="result-card {card_class}">
-                        <div>
-                            <span class="badge-rank {badge_color}">{rank_label}</span>
-                            <h3 style="margin: 4px 0 10px 0; color: #0f172a; font-size: 1.3rem; font-weight: 800;">{res['farmacia']}</h3>
-                            <div class="price-tag">€ {res['totale_complessivo']:.2f}</div>
-                            <div style="font-size: 0.8rem; color: #64748b; font-weight: 600;">Prodotti: € {res['totale_prodotti']:.2f}</div>
-                            <div class="ship-info-box">
-                                📌 <b>Soglia Spedizione Gratis: € {res['soglia_gratis']:.2f}</b><br>
-                                {ship_html}
+                        <span class="badge-rank {badge_color}">{rank_label}</span>
+                        <div class="farmacia-name">{res['farmacia']}</div>
+                        
+                        <!-- SCONTRINO CHIARO CON ADDIZIONE SEQUENZIALE -->
+                        <div class="calculation-receipt-box">
+                            <div class="calc-row">
+                                <span>🛍️ Prezzo prodotti</span>
+                                <span>€ {res['totale_prodotti']:.2f}</span>
+                            </div>
+                            <div class="calc-row">
+                                <span>🚚 Spese di spedizione</span>
+                                <span>{sped_str}</span>
+                            </div>
+                            <div class="calc-divider"></div>
+                            <div class="calc-total-row">
+                                <span>💳 TOTALE SPESA</span>
+                                <span class="calc-total-amount">€ {res['totale_complessivo']:.2f}</span>
                             </div>
                         </div>
-                        <div style="margin-top: 14px;">
+
+                        <!-- INFO SOGLIA SPEDIZIONE -->
+                        {info_ship_box}
+
+                        <!-- PULSANTE E AVVISO REINDIRIZZAMENTO -->
+                        <div style="margin-top: 10px;">
                             <a href="{res['url']}" target="_blank" style="text-decoration:none;">
-                                <button style="width:100%; background-color:#ea580c; color:white; border:none; padding:10px; border-radius:8px; font-weight:700; cursor:pointer; font-size:0.9rem;">
-                                    🛒 Vai alla Farmacia
+                                <button style="width:100%; background-color:#ea580c; color:white; border:none; padding:10px 12px; border-radius:8px; font-weight:700; cursor:pointer; font-size:0.88rem;">
+                                    ↗️ Acquista su {res['farmacia']}
                                 </button>
                             </a>
+                            <div class="redirect-disclaimer">
+                                ℹ️ Verrai reindirizzato sul sito ufficiale della farmacia per selezionare e acquistare i tuoi prodotti.
+                            </div>
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
