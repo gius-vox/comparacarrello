@@ -43,7 +43,7 @@ for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
         break
 
 # ---------------------------------------------------------
-# 3. CSS STYLES ESSENZIALI E PULITI
+# 3. CSS STYLES AVANZATI (CARD COMPATTE E DESIGN MODERNO)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -55,57 +55,96 @@ st.markdown("""
     }
 
     .block-container {
-        padding-top: 1.5rem !important;
+        padding-top: 1.2rem !important;
         padding-bottom: 2rem !important;
-        max-width: 100% !important;
+        max-width: 1200px !important;
+        margin: 0 auto;
+    }
+
+    /* HEADER BEN ALLINEATO */
+    .header-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        padding: 10px 0;
+        margin-bottom: 5px;
+    }
+
+    .header-logo {
+        height: 65px;
+        width: auto;
+        object-fit: contain;
+    }
+
+    .header-title-box {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .header-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #047857;
+        line-height: 1;
+        margin: 0;
+    }
+
+    .header-title span { color: #ea580c; }
+
+    .header-subtitle {
+        font-size: 0.95rem;
+        color: #475569;
+        font-weight: 600;
+        margin-top: 4px;
     }
 
     /* BANNER SLOGAN */
     .value-green-bar {
         background: linear-gradient(90deg, #047857 0%, #10b981 100%);
-        padding: 12px 10px;
+        padding: 10px;
         text-align: center;
-        box-shadow: 0 4px 12px rgba(4, 120, 87, 0.15);
+        box-shadow: 0 4px 10px rgba(4, 120, 87, 0.12);
         border-bottom: 3px solid #ea580c;
-        margin-top: 10px;
         margin-bottom: 20px;
         color: #ffffff;
         border-radius: 8px;
     }
 
     .value-slogan-main {
-        font-size: clamp(0.9rem, 3.5vw, 1.15rem);
+        font-size: 1rem;
         font-weight: 800;
     }
 
     .value-slogan-sub {
-        font-size: clamp(0.78rem, 2.8vw, 0.95rem);
+        font-size: 0.85rem;
         font-weight: 600;
         color: #ecfdf5;
-        margin-top: 4px;
+        margin-top: 2px;
     }
 
     /* STRISCIA FARMACIE */
     .pharmacy-bar {
         background: #ffffff;
         border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 12px;
-        margin-bottom: 25px;
+        border-radius: 10px;
+        padding: 10px 14px;
+        margin-bottom: 20px;
     }
     
     .pharmacy-bar-title {
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         text-transform: uppercase;
         color: #64748b;
         font-weight: 700;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
     }
 
     .pharmacy-grid {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
+        gap: 6px;
     }
 
     .pharmacy-chip {
@@ -114,19 +153,137 @@ st.markdown("""
         gap: 6px;
         background: #f8fafc;
         border: 1px solid #cbd5e1;
-        padding: 4px 10px;
-        border-radius: 20px;
+        padding: 3px 8px;
+        border-radius: 16px;
         font-weight: 600;
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         color: #334155;
     }
-    
+
+    /* CARD RISULTATI COMPATTE E DESIGN MODERNO */
+    .card-result {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        margin-bottom: 15px;
+        transition: transform 0.2s ease;
+    }
+
+    .card-result.best {
+        border: 2px solid #ea580c;
+        box-shadow: 0 6px 18px rgba(234, 88, 12, 0.15);
+        background: #ffffff;
+    }
+
+    .badge-rank {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+    .badge-rank.gold { background: #fef3c7; color: #92400e; }
+    .badge-rank.silver { background: #f1f5f9; color: #475569; }
+    .badge-rank.bronze { background: #ffedd5; color: #9a3412; }
+
+    .card-farmacia-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 10px;
+    }
+
+    /* SCONTRINO CONTO COMPATTO */
+    .receipt-box {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin-bottom: 10px;
+    }
+
+    .receipt-line {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: #475569;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .receipt-divider {
+        border-top: 1px dashed #cbd5e1;
+        margin: 6px 0;
+    }
+
+    .receipt-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1rem;
+        font-weight: 800;
+        color: #047857;
+    }
+
+    .receipt-total-price {
+        font-size: 1.45rem;
+        font-weight: 800;
+        color: #047857;
+    }
+
+    /* BOX SOGLIA SPEDIZIONE */
+    .ship-alert {
+        background-color: #fff7ed;
+        border: 1px solid #ffedd5;
+        border-radius: 6px;
+        padding: 8px;
+        font-size: 0.76rem;
+        color: #9a3412;
+        line-height: 1.3;
+        margin-bottom: 12px;
+    }
+    .ship-alert.free {
+        background-color: #f0fdf4;
+        border: 1px solid #dcfce7;
+        color: #166534;
+    }
+
+    /* BOTTONE VAI ALLA FARMACIA */
+    .btn-buy {
+        display: block;
+        width: 100%;
+        background-color: #ea580c;
+        color: white !important;
+        text-align: center;
+        padding: 9px 0;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.88rem;
+        text-decoration: none !important;
+        box-shadow: 0 2px 6px rgba(234, 88, 12, 0.25);
+    }
+    .btn-buy:hover {
+        background-color: #c2410c;
+    }
+
+    .btn-subtext {
+        font-size: 0.70rem;
+        color: #64748b;
+        text-align: center;
+        margin-top: 5px;
+        line-height: 1.2;
+    }
+
     .minsan-tag {
         background-color: #e2e8f0;
         color: #0f766e;
         padding: 2px 6px;
         border-radius: 4px;
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         font-family: monospace;
         font-weight: 700;
     }
@@ -168,22 +325,19 @@ def load_data():
 df_prodotti = load_data()
 
 # ---------------------------------------------------------
-# 6. HEADER PERFETTAMENTE ALLINEATO (NATIVO STREAMLIT)
+# 6. HEADER PERFETTAMENTE ALLINEATO E CENTRATO
 # ---------------------------------------------------------
-col_logo, col_title = st.columns([1, 4], vertical_alignment="center")
+logo_img_html = f'<img src="{logo_src}" class="header-logo">' if logo_src else '<div style="font-size:2.5rem;">🛒</div>'
 
-with col_logo:
-    if logo_src:
-        st.image("logo.png" if os.path.exists("logo.png") else "logo_comparacarrello.png", width=110)
-    else:
-        st.markdown("<div style='font-size:3rem; text-align:center;'>🛒</div>", unsafe_allow_html=True)
+st.markdown(f"""
+    <div class="header-box">
+        {logo_img_html}
+        <div class="header-title-box">
+            <h1 class="header-title">Comparacarrello<span>.it</span></h1>
+            <div class="header-subtitle">Il motore di ricerca per la tua spesa in farmacia al miglior prezzo totale</div>
+        </div>
+    </div>
 
-with col_title:
-    st.markdown("<h1 style='color: #047857; margin:0; padding:0; font-weight:800;'>Comparacarrello<span style='color:#ea580c;'>.it</span></h1>", unsafe_allow_html=True)
-    st.markdown("<p style='color: #475569; margin:0; font-weight:600; font-size:1.05rem;'>Il motore di ricerca per la tua spesa in farmacia al miglior prezzo totale</p>", unsafe_allow_html=True)
-
-# BANNER SLOGAN
-st.markdown("""
     <div class="value-green-bar">
         <div class="value-slogan-main">🛒 Con Comparacarrello fare la spesa online è più bello!</div>
         <div class="value-slogan-sub">⚡ Zero stress per la tua scelta, troverai i prodotti giusti ed in fretta!</div>
@@ -194,7 +348,7 @@ st.markdown("""
 # 7. STRISCIA FARMACIE MONITORATE
 # ---------------------------------------------------------
 chips = "".join([
-    f'<div class="pharmacy-chip"><img src="https://www.google.com/s2/favicons?domain={info["domain"]}&sz=32" width="16" height="16"><span>{nome}</span></div>'
+    f'<div class="pharmacy-chip"><img src="https://www.google.com/s2/favicons?domain={info["domain"]}&sz=32" width="14" height="14"><span>{nome}</span></div>'
     for nome, info in FARMACIE.items()
 ])
 
@@ -244,7 +398,7 @@ if not df_prodotti.empty:
         
         c_p_img, c_p_info, c_p_btn = st.columns([0.8, 3.2, 1], vertical_alignment="center")
         with c_p_img:
-            st.image(img_url, width=60)
+            st.image(img_url, width=50)
         with c_p_info:
             st.markdown(f"**{row_prod['Prodotto']}**")
             st.markdown(f"Codice MINSAN: <span class='minsan-tag'>{row_prod['MINSAN']}</span> | Categoria: {row_prod.get('Categoria', 'Generale')}", unsafe_allow_html=True)
@@ -265,7 +419,7 @@ if st.session_state.carrello:
         c_img, c_desc, c_del = st.columns([0.5, 4, 1], vertical_alignment="center")
         with c_img:
             img_url = item['Immagine_URL'] if ('Immagine_URL' in item and pd.notna(item['Immagine_URL']) and str(item['Immagine_URL']).startswith('http')) else DEFAULT_IMG
-            st.image(img_url, width=35)
+            st.image(img_url, width=30)
         with c_desc:
             st.markdown(f"**{item['Prodotto']}** &nbsp; <span class='minsan-tag'>MINSAN: {item['MINSAN']}</span>", unsafe_allow_html=True)
         with c_del:
@@ -280,7 +434,7 @@ else:
     st.info("Il carrello è vuoto. Cerca un prodotto qui sopra per iniziare il confronto.")
 
 # ---------------------------------------------------------
-# 11. RISULTATI COMPARAZIONE (NATIVO - ZERO BUG HTML)
+# 11. RISULTATI COMPARAZIONE (CARD E-COMMERCE COMPATTE E MODERNE)
 # ---------------------------------------------------------
 if st.session_state.carrello:
     st.markdown("---")
@@ -323,48 +477,64 @@ if st.session_state.carrello:
     
     if risultati:
         cols_podium = st.columns(min(3, len(risultati)))
-        badges = ["🥇 1° Posto - Più Economico", "🥈 2° Posto", "🥉 3° Posto"]
+        badges_data = [
+            ("1° Posto - Più Economico", "gold", "best"),
+            ("2° Posto", "silver", ""),
+            ("3° Posto", "bronze", "")
+        ]
         
         for i in range(min(3, len(risultati))):
             res = risultati[i]
+            rank_label, badge_color, best_class = badges_data[i]
             
-            with cols_podium[i]:
-                with st.container(border=True):
-                    st.caption(f"**{badges[i]}**")
-                    st.subheader(res['farmacia'])
-                    
-                    st.metric(
-                        label="TOTALE SPESA", 
-                        value=f"€ {res['totale_complessivo']:.2f}"
-                    )
-                    
-                    st.divider()
-                    
-                    st.markdown(f"🛍️ **Prezzo prodotti:** € {res['totale_prodotti']:.2f}")
-                    if res['spese_spedizione'] == 0:
-                        st.markdown("🚚 **Spedizione:** :green[GRATIS]")
-                    else:
-                        st.markdown(f"🚚 **Spedizione:** + € {res['spese_spedizione']:.2f}")
-                    
-                    st.divider()
-                    
-                    if res['spese_spedizione'] > 0:
-                        st.warning(
-                            f"💡 **Soglia spedizione gratis:** Aggiungi ancora **€ {res['mancante_gratis']:.2f}** "
-                            f"di prodotti per azzerare la spedizione (soglia a € {res['soglia_gratis']:.2f})."
-                        )
-                    else:
-                        st.success("🎉 **Spedizione gratuita sbloccata!**")
-                        
-                    st.link_button(
-                        label=f"↗️ Acquista su {res['farmacia']}", 
-                        url=res['url'], 
-                        type="primary", 
-                        use_container_width=True
-                    )
-                    st.caption("ℹ️ *Verrai reindirizzato sul sito ufficiale della farmacia per selezionare e acquistare i tuoi prodotti.*")
+            # Formattazione spese di spedizione
+            if res['spese_spedizione'] == 0:
+                sped_label = "<span style='color:#166534;'>GRATIS</span>"
+                ship_box_html = '<div class="ship-alert free">🎉 <b>Spedizione GRATIS sbloccata!</b></div>'
+            else:
+                sped_label = f"+ € {res['spese_spedizione']:.2f}"
+                ship_box_html = f'''
+                    <div class="ship-alert">
+                        💡 Aggiungi <b>€ {res['mancante_gratis']:.2f}</b> per azzerare la spedizione (soglia € {res['soglia_gratis']:.2f}).
+                    </div>
+                '''
 
-        st.markdown("<br>", unsafe_allow_html=True)
+            with cols_podium[i]:
+                st.markdown(f"""
+                    <div class="card-result {best_class}">
+                        <span class="badge-rank {badge_color}">{rank_label}</span>
+                        <div class="card-farmacia-title">{res['farmacia']}</div>
+                        
+                        <!-- SCONTRINO CHIARO CON SOMMA -->
+                        <div class="receipt-box">
+                            <div class="receipt-line">
+                                <span>🛍️ Prezzo prodotti</span>
+                                <span>€ {res['totale_prodotti']:.2f}</span>
+                            </div>
+                            <div class="receipt-line">
+                                <span>🚚 Spedizione</span>
+                                <span>{sped_label}</span>
+                            </div>
+                            <div class="receipt-divider"></div>
+                            <div class="receipt-total">
+                                <span>💳 TOTALE</span>
+                                <span class="receipt-total-price">€ {res['totale_complessivo']:.2f}</span>
+                            </div>
+                        </div>
+
+                        <!-- INFO SPEDIZIONE -->
+                        {ship_box_html}
+
+                        <!-- PULSANTE E NOTE -->
+                        <a href="{res['url']}" target="_blank" class="btn-buy">
+                            ↗️ Acquista su {res['farmacia']}
+                        </a>
+                        <div class="btn-subtext">
+                            Verrai reindirizzato sul sito della farmacia per aggiungere i prodotti al carrello.
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
+                
         with st.expander("📊 Guarda la classifica completa di tutte le farmacie"):
             df_res = pd.DataFrame(risultati)[['farmacia', 'totale_prodotti', 'spese_spedizione', 'soglia_gratis', 'totale_complessivo']]
             df_res.columns = ['Farmacia', 'Totale Prodotti (€)', 'Spedizioni (€)', 'Soglia Gratis (€)', 'Totale Carrello (€)']
@@ -388,22 +558,22 @@ if st.session_state.carrello:
     
     with col_qr:
         st.markdown(f"""
-            <div style="text-align: center; background: white; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0;">
-                <img src="{qr_code_img}" style="width: 120px; height: 120px;"><br>
+            <div style="text-align: center; background: white; padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                <img src="{qr_code_img}" style="width: 110px; height: 110px;"><br>
                 <small style="color: #64748b; font-weight: 600;">Inquadra per aprire sul telefono</small>
             </div>
         """, unsafe_allow_html=True)
         
     with col_social:
         st.markdown(f"""
-            <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; flex-direction: column; gap: 8px;">
                 <a href="{whatsapp_url}" target="_blank" style="text-decoration:none;">
-                    <button style="width:100%; background-color:#25D366; color:white; border:none; padding:10px 16px; border-radius:8px; font-weight:700; cursor:pointer;">
+                    <button style="width:100%; background-color:#25D366; color:white; border:none; padding:10px 14px; border-radius:8px; font-weight:700; cursor:pointer;">
                         💬 Condividi Carrello su WhatsApp
                     </button>
                 </a>
                 <a href="{telegram_url}" target="_blank" style="text-decoration:none;">
-                    <button style="width:100%; background-color:#0088cc; color:white; border:none; padding:10px 16px; border-radius:8px; font-weight:700; cursor:pointer;">
+                    <button style="width:100%; background-color:#0088cc; color:white; border:none; padding:10px 14px; border-radius:8px; font-weight:700; cursor:pointer;">
                         ✈️ Condividi Carrello su Telegram
                     </button>
                 </a>
