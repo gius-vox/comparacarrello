@@ -3,6 +3,8 @@ import pandas as pd
 import os
 import urllib.parse
 import base64
+import io
+import qrcode
 
 # ---------------------------------------------------------
 # 1. CONFIGURAZIONE PAGINA
@@ -15,7 +17,7 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------
-# 2. HELPER LOGO BASE64 (Recupera il tuo logo reale)
+# 2. HELPER LOGO & QR CODE BASE64
 # ---------------------------------------------------------
 def get_image_base64(path):
     if os.path.exists(path):
@@ -25,6 +27,15 @@ def get_image_base64(path):
             return f"data:image/{ext};base64,{encoded}"
     return None
 
+def generate_qr_code_base64(data_string):
+    qr = qrcode.QRCode(version=1, box_size=4, border=2)
+    qr.add_data(data_string)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    buffered = io.BytesIO()
+    img.save(buffered, format="PNG")
+    return f"data:image/png;base64,{base64.b64encode(buffered.getvalue()).decode()}"
+
 logo_src = None
 for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
     logo_src = get_image_base64(name)
@@ -32,7 +43,7 @@ for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
         break
 
 # ---------------------------------------------------------
-# 3. DESIGN SYSTEM - GRADIENTE VERDE FARMACIA PURO
+# 3. DESIGN SYSTEM - VERDE FARMACIA + CARD COMPATTE
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -49,12 +60,12 @@ st.markdown("""
         max-width: 100% !important;
     }
     
-    /* HEADER VERDE FARMACIA GRADIENTE (DA VERDE SMERALDO A VERDE BRILLANTE) */
+    /* HEADER VERDE FARMACIA */
     .tp-header-container {
         background: linear-gradient(90deg, #047857 0%, #10b981 100%);
         margin-left: -5rem;
         margin-right: -5rem;
-        padding: 22px 5rem 24px 5rem;
+        padding: 20px 5rem 22px 5rem;
         box-shadow: 0 4px 18px rgba(0,0,0,0.12);
         border-bottom: 4px solid #ea580c;
         margin-bottom: 25px;
@@ -73,7 +84,7 @@ st.markdown("""
     }
 
     .tp-logo-img {
-        height: 60px;
+        height: 55px;
         width: auto;
         object-fit: contain;
         background: #ffffff;
@@ -83,7 +94,7 @@ st.markdown("""
     }
 
     .tp-brand-title {
-        font-size: 2.4rem;
+        font-size: 2.3rem;
         font-weight: 800;
         color: #ffffff;
         margin: 0;
@@ -97,19 +108,18 @@ st.markdown("""
 
     .tp-brand-tagline {
         color: #ecfdf5;
-        font-size: 0.9rem;
+        font-size: 0.88rem;
         font-weight: 500;
         margin-top: 2px;
     }
 
-    /* BANNER VALUE PROPOSITION */
     .tp-value-banner {
         background: rgba(255, 255, 255, 0.2);
         border: 1px solid rgba(255, 255, 255, 0.4);
         border-radius: 30px;
-        padding: 8px 18px;
+        padding: 6px 16px;
         color: #ffffff;
-        font-size: 0.88rem;
+        font-size: 0.85rem;
         font-weight: 600;
         display: inline-flex;
         align-items: center;
@@ -121,18 +131,18 @@ st.markdown("""
         background: #ffffff;
         border: 1px solid #e2e8f0;
         border-radius: 12px;
-        padding: 12px 20px;
+        padding: 10px 18px;
         margin-bottom: 25px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
     
     .pharmacy-bar-title {
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         text-transform: uppercase;
         letter-spacing: 0.8px;
         color: #64748b;
         font-weight: 700;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
     }
 
     .pharmacy-grid {
@@ -148,10 +158,10 @@ st.markdown("""
         gap: 6px;
         background: #f8fafc;
         border: 1px solid #cbd5e1;
-        padding: 4px 10px;
+        padding: 3px 10px;
         border-radius: 20px;
         font-weight: 600;
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         color: #334155;
     }
     .pharmacy-chip img {
@@ -160,55 +170,71 @@ st.markdown("""
         border-radius: 50%;
     }
 
-    /* CARD PODIO RISULTATI */
+    /* CARD PODIO RISULTATI COMPATTE */
     .result-card {
         background: white;
-        border-radius: 14px;
-        padding: 20px;
+        border-radius: 12px;
+        padding: 14px 16px;
         border: 1px solid #e2e8f0;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        box-shadow: 0 3px 10px rgba(0,0,0,0.03);
         text-align: center;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
     }
     .result-card.first {
         border: 2px solid #ea580c;
         background: #fffbf7;
-        box-shadow: 0 8px 20px rgba(234, 88, 12, 0.1);
+        box-shadow: 0 6px 16px rgba(234, 88, 12, 0.12);
     }
     .badge-rank {
         display: inline-block;
-        padding: 3px 10px;
-        border-radius: 12px;
-        font-size: 0.78rem;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.72rem;
         font-weight: 700;
-        margin-bottom: 10px;
+        margin-bottom: 6px;
     }
     .badge-rank.gold { background-color: #fef3c7; color: #92400e; }
     .badge-rank.silver { background-color: #f1f5f9; color: #475569; }
     .badge-rank.bronze { background-color: #ffedd5; color: #9a3412; }
 
     .price-tag {
-        font-size: 2.1rem;
+        font-size: 1.8rem;
         font-weight: 800;
         color: #0f172a;
-        margin: 6px 0;
+        margin: 2px 0;
+    }
+
+    .ship-info-box {
+        background-color: #f8fafc;
+        border-radius: 8px;
+        padding: 6px;
+        margin: 8px 0;
+        font-size: 0.75rem;
+        color: #475569;
+        border: 1px dashed #cbd5e1;
     }
 
     .ship-badge {
-        padding: 4px 10px;
+        padding: 3px 8px;
         border-radius: 6px;
-        font-size: 0.78rem;
-        font-weight: 600;
+        font-size: 0.72rem;
+        font-weight: 700;
         display: inline-block;
-        margin-top: 8px;
     }
     .ship-free { background-color: #dcfce7; color: #166534; }
     .ship-paid { background-color: #fef9c3; color: #854d0e; }
 
-    /* OVERRIDE BUTTON STREAMLIT */
+    /* TAG MINSAN ELEGANTE */
+    .minsan-tag {
+        background-color: #f1f5f9;
+        color: #0f766e;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.78rem;
+        font-family: monospace;
+        font-weight: 700;
+    }
+
+    /* STREAMLIT BUTTON OVERRIDE */
     .stButton>button[kind="primary"] {
         background-color: #ea580c !important;
         border-color: #ea580c !important;
@@ -254,9 +280,9 @@ def load_data():
 df_prodotti = load_data()
 
 # ---------------------------------------------------------
-# 6. HEADER CON IL TUO LOGO INTEGRATO
+# 6. HEADER PRINCIPALE
 # ---------------------------------------------------------
-logo_html = f'<img src="{logo_src}" class="tp-logo-img">' if logo_src else '<div style="font-size:2.4rem;">🛒</div>'
+logo_html = f'<img src="{logo_src}" class="tp-logo-img">' if logo_src else '<div style="font-size:2.2rem;">🛒</div>'
 
 st.markdown(f"""
     <div class="tp-header-container">
@@ -276,7 +302,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 7. STRISCIA PARTNER FARMACIE
+# 7. STRISCIA FARMACIE MONITORATE
 # ---------------------------------------------------------
 chips = "".join([
     f'<div class="pharmacy-chip"><img src="https://www.google.com/s2/favicons?domain={info["domain"]}&sz=32"><span>{nome}</span></div>'
@@ -301,6 +327,8 @@ if 'carrello' not in st.session_state:
 # ---------------------------------------------------------
 st.markdown("### 🔍 Cerca e aggiungi un prodotto")
 
+DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3028/3028549.png"  # Placeholder elegante farmacia
+
 if not df_prodotti.empty:
     c_cat, c_search = st.columns([1, 3], vertical_alignment="bottom")
     
@@ -318,14 +346,14 @@ if not df_prodotti.empty:
         minsan_sel = prod_selezionato.split("MINSAN: ")[-1]
         row_prod = df_prodotti[df_prodotti['MINSAN'] == minsan_sel].iloc[0]
         
-        img_url = row_prod['Immagine_URL'] if 'Immagine_URL' in row_prod and pd.notna(row_prod['Immagine_URL']) else "https://cdn-icons-png.flaticon.com/512/883/883407.png"
+        img_url = row_prod['Immagine_URL'] if ('Immagine_URL' in row_prod and pd.notna(row_prod['Immagine_URL']) and str(row_prod['Immagine_URL']).startswith('http')) else DEFAULT_IMG
         
         c_p_img, c_p_info, c_p_btn = st.columns([0.8, 3.2, 1], vertical_alignment="center")
         with c_p_img:
-            st.image(img_url, width=65)
+            st.image(img_url, width=60)
         with c_p_info:
             st.markdown(f"**{row_prod['Prodotto']}**")
-            st.caption(f"Codice MINSAN: `{row_prod['MINSAN']}` | Categoria: {row_prod.get('Categoria', 'Generale')}")
+            st.markdown(f"Codice MINSAN: <span class='minsan-tag'>{row_prod['MINSAN']}</span> | Categoria: {row_prod.get('Categoria', 'Generale')}", unsafe_allow_html=True)
         with c_p_btn:
             if st.button("➕ Aggiungi al Carrello", type="primary", use_container_width=True):
                 st.session_state.carrello.append(row_prod)
@@ -333,7 +361,7 @@ if not df_prodotti.empty:
                 st.rerun()
 
 # ---------------------------------------------------------
-# 10. CARRELLO UTENTE
+# 10. CARRELLO UTENTE (STRINGA HTML CORRETTA)
 # ---------------------------------------------------------
 st.markdown("---")
 st.markdown("### 🛍️ Il tuo Carrello")
@@ -342,10 +370,11 @@ if st.session_state.carrello:
     for idx, item in enumerate(st.session_state.carrello):
         c_img, c_desc, c_del = st.columns([0.5, 4, 1], vertical_alignment="center")
         with c_img:
-            img_url = item['Immagine_URL'] if 'Immagine_URL' in item and pd.notna(item['Immagine_URL']) else "https://cdn-icons-png.flaticon.com/512/883/883407.png"
+            img_url = item['Immagine_URL'] if ('Immagine_URL' in item and pd.notna(item['Immagine_URL']) and str(item['Immagine_URL']).startswith('http')) else DEFAULT_IMG
             st.image(img_url, width=35)
         with c_desc:
-            st.markdown(f"**{item['Prodotto']}** `<small style='color:#64748b;'>(MINSAN: {item['MINSAN']})</small>`", unsafe_allow_html=True)
+            # FIX: Corretto rendering del MINSAN senza la stringa HTML visibile a schermo
+            st.markdown(f"**{item['Prodotto']}** &nbsp; <span class='minsan-tag'>MINSAN: {item['MINSAN']}</span>", unsafe_allow_html=True)
         with c_del:
             if st.button("❌ Rimuovi", key=f"del_{idx}"):
                 st.session_state.carrello.pop(idx)
@@ -358,13 +387,14 @@ else:
     st.info("Il carrello è vuoto. Cerca un prodotto qui sopra per iniziare il confronto.")
 
 # ---------------------------------------------------------
-# 11. RISULTATI ED ESITO COMPARATORE
+# 11. RISULTATI COMPARAZIONE (CARD COMPATTE & TRASPARENZA SPEDIZIONE)
 # ---------------------------------------------------------
 if st.session_state.carrello:
     st.markdown("---")
     st.markdown("### 📊 Risultato Comparazione Spesa Completa")
     
     risultati = []
+    lista_minsan = [str(item['MINSAN']) for item in st.session_state.carrello]
     
     for farmacia, info in FARMACIE.items():
         totale_prodotti = 0.0
@@ -390,6 +420,7 @@ if st.session_state.carrello:
                 "farmacia": farmacia,
                 "totale_prodotti": totale_prodotti,
                 "spese_spedizione": spese_spedizione,
+                "soglia_gratis": info['soglia_gratis'],
                 "totale_complessivo": totale_complessivo,
                 "mancante_gratis": mancante_gratis,
                 "url": target_url
@@ -406,23 +437,24 @@ if st.session_state.carrello:
             rank_label, badge_color, card_class = badges[i]
             
             if res['mancante_gratis'] > 0:
-                ship_html = f'<div class="ship-badge ship-paid">🚚 +€ {res["mancante_gratis"]:.2f} per Sped. GRATIS</div>'
+                ship_html = f'<div class="ship-badge ship-paid">🚚 Sped: € {res["spese_spedizione"]:.2f} (+€ {res["mancante_gratis"]:.2f} per Gratis)</div>'
             else:
                 ship_html = '<div class="ship-badge ship-free">🎉 Spedizione GRATUITA</div>'
 
             with cols_podium[i]:
                 st.markdown(f"""
                     <div class="result-card {card_class}">
-                        <div>
-                            <span class="badge-rank {badge_color}">{rank_label}</span>
-                            <h3 style="margin: 4px 0; color: #0f172a; font-size: 1.25rem;">{res['farmacia']}</h3>
-                            <div class="price-tag">€ {res['totale_complessivo']:.2f}</div>
-                            <small style="color: #64748b;">Prodotti: € {res['totale_prodotti']:.2f} | Sped: € {res['spese_spedizione']:.2f}</small><br>
+                        <span class="badge-rank {badge_color}">{rank_label}</span>
+                        <h4 style="margin: 2px 0; color: #0f172a;">{res['farmacia']}</h4>
+                        <div class="price-tag">€ {res['totale_complessivo']:.2f}</div>
+                        <div style="font-size: 0.75rem; color: #64748b;">Prodotti: € {res['totale_prodotti']:.2f}</div>
+                        <div class="ship-info-box">
+                            📌 <b>Soglia Spedizione Gratis: € {res['soglia_gratis']:.2f}</b><br>
                             {ship_html}
                         </div>
-                        <div style="margin-top: 14px;">
+                        <div style="margin-top: 10px;">
                             <a href="{res['url']}" target="_blank" style="text-decoration:none;">
-                                <button style="width:100%; background-color:#ea580c; color:white; border:none; padding:10px; border-radius:8px; font-weight:700; cursor:pointer;">
+                                <button style="width:100%; background-color:#ea580c; color:white; border:none; padding:8px; border-radius:6px; font-weight:700; cursor:pointer; font-size:0.85rem;">
                                     🛒 Vai alla Farmacia
                                 </button>
                             </a>
@@ -431,6 +463,47 @@ if st.session_state.carrello:
                 """, unsafe_allow_html=True)
                 
         with st.expander("📊 Guarda la classifica completa di tutte le farmacie"):
-            df_res = pd.DataFrame(risultati)[['farmacia', 'totale_prodotti', 'spese_spedizione', 'totale_complessivo']]
-            df_res.columns = ['Farmacia', 'Totale Prodotti (€)', 'Spedizioni (€)', 'Totale Carrello (€)']
-            st.dataframe(df_res.style.format({'Totale Prodotti (€)': '{:.2f}', 'Spedizioni (€)': '{:.2f}', 'Totale Carrello (€)': '{:.2f}'}), use_container_width=True)
+            df_res = pd.DataFrame(risultati)[['farmacia', 'totale_prodotti', 'spese_spedizione', 'soglia_gratis', 'totale_complessivo']]
+            df_res.columns = ['Farmacia', 'Totale Prodotti (€)', 'Spedizioni (€)', 'Soglia Gratis (€)', 'Totale Carrello (€)']
+            st.dataframe(df_res.style.format({'Totale Prodotti (€)': '{:.2f}', 'Spedizioni (€)': '{:.2f}', 'Soglia Gratis (€)': '{:.2f}', 'Totale Carrello (€)': '{:.2f}'}), use_container_width=True)
+
+    # ---------------------------------------------------------
+    # 12. CONDIVISIONE CARRELLO & QR CODE MOBILE
+    # ---------------------------------------------------------
+    st.markdown("---")
+    st.markdown("### 📲 Condividi Carrello o Salvalo sul Cellulare")
+    
+    # Prepara il testo con i codici MINSAN
+    testo_condivisione = f"Ecco i codici MINSAN della mia spesa su Comparacarrello.it: {', '.join(lista_minsan)}"
+    text_encoded = urllib.parse.quote(testo_condivisione)
+    
+    whatsapp_url = f"https://api.whatsapp.com/send?text={text_encoded}"
+    telegram_url = f"https://t.me/share/url?url=https://comparacarrello.it&text={text_encoded}"
+    
+    qr_code_img = generate_qr_code_base64(testo_condivisione)
+    
+    col_qr, col_social = st.columns([1, 2], vertical_alignment="center")
+    
+    with col_qr:
+        st.markdown(f"""
+            <div style="text-align: center; background: white; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                <img src="{qr_code_img}" style="width: 120px; height: 120px;"><br>
+                <small style="color: #64748b; font-weight: 600;">Inquadra per aprire sul telefono</small>
+            </div>
+        """, unsafe_allow_html=True)
+        
+    with col_social:
+        st.markdown(f"""
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <a href="{whatsapp_url}" target="_blank" style="text-decoration:none;">
+                    <button style="width:100%; background-color:#25D366; color:white; border:none; padding:10px 16px; border-radius:8px; font-weight:700; cursor:pointer;">
+                        💬 Condividi Carrello su WhatsApp
+                    </button>
+                </a>
+                <a href="{telegram_url}" target="_blank" style="text-decoration:none;">
+                    <button style="width:100%; background-color:#0088cc; color:white; border:none; padding:10px 16px; border-radius:8px; font-weight:700; cursor:pointer;">
+                        ✈️ Condividi Carrello su Telegram
+                    </button>
+                </a>
+            </div>
+        """, unsafe_allow_html=True)
