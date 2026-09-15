@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------
-# 2. HELPER LOGO BASE64
+# 2. HELPER LOGO BASE64 (Recupera il tuo logo reale)
 # ---------------------------------------------------------
 def get_image_base64(path):
     if os.path.exists(path):
@@ -32,7 +32,7 @@ for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
         break
 
 # ---------------------------------------------------------
-# 3. DESIGN SYSTEM - GRIGIO ANTRACITE NEUTRO E TECNOLOGICO
+# 3. DESIGN SYSTEM - GRADIENTE VERDE FARMACIA PURO
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -49,9 +49,9 @@ st.markdown("""
         max-width: 100% !important;
     }
     
-    /* HEADER GRIGIO ANTRACITE (SLATE) - EQUILIBRATO E MODERNO */
+    /* HEADER VERDE FARMACIA GRADIENTE (DA VERDE SMERALDO A VERDE BRILLANTE) */
     .tp-header-container {
-        background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+        background: linear-gradient(90deg, #047857 0%, #10b981 100%);
         margin-left: -5rem;
         margin-right: -5rem;
         padding: 22px 5rem 24px 5rem;
@@ -96,7 +96,7 @@ st.markdown("""
     }
 
     .tp-brand-tagline {
-        color: #cbd5e1;
+        color: #ecfdf5;
         font-size: 0.9rem;
         font-weight: 500;
         margin-top: 2px;
@@ -104,11 +104,11 @@ st.markdown("""
 
     /* BANNER VALUE PROPOSITION */
     .tp-value-banner {
-        background: rgba(249, 115, 22, 0.15);
-        border: 1px solid rgba(249, 115, 22, 0.4);
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.4);
         border-radius: 30px;
         padding: 8px 18px;
-        color: #fdba74;
+        color: #ffffff;
         font-size: 0.88rem;
         font-weight: 600;
         display: inline-flex;
@@ -254,7 +254,7 @@ def load_data():
 df_prodotti = load_data()
 
 # ---------------------------------------------------------
-# 6. HEADER ANTRACITE CON LOGO INTEGRATO
+# 6. HEADER CON IL TUO LOGO INTEGRATO
 # ---------------------------------------------------------
 logo_html = f'<img src="{logo_src}" class="tp-logo-img">' if logo_src else '<div style="font-size:2.4rem;">🛒</div>'
 
