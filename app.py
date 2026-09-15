@@ -79,7 +79,7 @@ st.markdown("""
         margin-bottom: 6px;
     }
 
-    /* LOGO SPECIALE E GRANDE CENTRATO */
+    /* LOGO GRANDE E BEN VISIBILE CENTRATO */
     .brand-hero-img {
         height: 80px;
         width: auto;
@@ -106,7 +106,7 @@ st.markdown("""
         margin-top: 6px;
     }
 
-    /* BARRA VERDE CON IL NUOVO NUOVO SLOGAN/TORMENTONE */
+    /* BARRA VERDE CON IL NUOVO SLOGAN */
     .value-green-bar {
         background: linear-gradient(90deg, #047857 0%, #10b981 100%);
         margin-left: -5rem;
@@ -286,7 +286,7 @@ def load_data():
 df_prodotti = load_data()
 
 # ---------------------------------------------------------
-# 6. HEADER CENTRATO + BANNER CON I NUOVI SLOGAN
+# 6. HEADER CENTRATO + BANNER CON IL NUOVO SLOGAN
 # ---------------------------------------------------------
 logo_html = f'<img src="{logo_src}" class="brand-hero-img">' if logo_src else '<div style="font-size:3rem;">🛒</div>'
 
@@ -300,7 +300,7 @@ st.markdown(f"""
     </div>
 
     <div class="value-green-bar">
-        <div class="value-slogan-main">🛒 Con Comparacarrello fare la spesa in farmacia è bello!</div>
+        <div class="value-slogan-main">🛒 Con Comparacarrello fare la spesa online è bello!</div>
         <div class="value-slogan-sub">⚡ Zero stress per la tua scelta, trova i prodotti giusti ed in fretta!</div>
     </div>
 """, unsafe_allow_html=True)
@@ -344,7 +344,12 @@ if not df_prodotti.empty:
     
     with c_search:
         opzioni = df_filtrato.apply(lambda row: f"{row['Prodotto']} | MINSAN: {row['MINSAN']}", axis=1).tolist()
-        prod_selezionato = st.selectbox("Digita il nome del farmaco o il codice MINSAN:", [""] + opzioni)
+        prod_selezionato = st.selectbox(
+            "Digita il nome del farmaco o il codice MINSAN:", 
+            options=opzioni,
+            index=None,
+            placeholder="Cerca o seleziona un farmaco..."
+        )
 
     if prod_selezionato:
         minsan_sel = prod_selezionato.split("MINSAN: ")[-1]
