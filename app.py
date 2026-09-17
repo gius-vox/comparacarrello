@@ -311,7 +311,7 @@ def load_data():
     for filename in ["prodotti_1000_minsan.csv", "prodotti.csv"]:
         if os.path.exists(filename):
             try:
-                df = pd.read_csv(filename, dtype=str)
+                df = pd.read_csv(filename, dtype=str, on_bad_lines='skip')
                 df.columns = [c.strip() for c in df.columns]
                 df['MINSAN'] = df['MINSAN'].astype(str).str.strip()
                 if 'Categoria' not in df.columns:
