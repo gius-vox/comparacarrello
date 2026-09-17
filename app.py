@@ -43,7 +43,7 @@ for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
         break
 
 # ---------------------------------------------------------
-# 3. DESIGN SYSTEM - OTTIMIZZATO MOBILE E PC
+# 3. DESIGN SYSTEM - LOGO INGRANDITO
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -62,14 +62,13 @@ st.markdown("""
         max-width: 100% !important;
     }
     
-    /* BRAND HERO - OTTIMIZZATO MOBILE */
     .brand-hero-section {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         text-align: center;
-        padding: 2px 0px;
+        padding: 5px 0px;
         background: transparent;
         width: 100%;
     }
@@ -78,21 +77,22 @@ st.markdown("""
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-        margin-bottom: 2px;
+        gap: 12px;
+        margin-bottom: 4px;
         width: 100%;
         flex-direction: row !important;
     }
 
+    /* LOGO INGRANDITO A 70PX */
     .brand-hero-img {
-        max-height: 42px;
+        max-height: 70px !important;
         width: auto;
         object-fit: contain;
         display: block;
     }
 
     .brand-hero-title {
-        font-size: clamp(1.4rem, 5.5vw, 2.8rem) !important;
+        font-size: clamp(1.8rem, 6vw, 3.2rem) !important;
         font-weight: 800;
         color: #047857;
         margin: 0;
@@ -105,17 +105,16 @@ st.markdown("""
 
     .brand-hero-tagline {
         color: #475569;
-        font-size: clamp(0.78rem, 2.8vw, 1.05rem);
+        font-size: clamp(0.85rem, 3vw, 1.15rem);
         font-weight: 600;
-        margin-top: 2px;
+        margin-top: 4px;
     }
 
-    /* BANNER SLOGAN */
     .value-green-bar {
         background: linear-gradient(90deg, #047857 0%, #10b981 100%);
         margin-left: -0.8rem;
         margin-right: -0.8rem;
-        padding: 8px 10px;
+        padding: 10px;
         text-align: center;
         box-shadow: 0 4px 12px rgba(4, 120, 87, 0.15);
         border-bottom: 3px solid #ea580c;
@@ -125,18 +124,17 @@ st.markdown("""
     }
 
     .value-slogan-main {
-        font-size: clamp(0.85rem, 3.2vw, 1.15rem);
+        font-size: clamp(0.9rem, 3.5vw, 1.2rem);
         font-weight: 800;
     }
 
     .value-slogan-sub {
-        font-size: clamp(0.72rem, 2.5vw, 0.95rem);
+        font-size: clamp(0.75rem, 2.7vw, 1.0rem);
         font-weight: 600;
         color: #ecfdf5;
         margin-top: 2px;
     }
 
-    /* STRISCIA FARMACIE */
     .pharmacy-bar {
         background: #ffffff;
         border: 1px solid #e2e8f0;
@@ -173,7 +171,6 @@ st.markdown("""
     }
     .pharmacy-chip img { width: 14px; height: 14px; border-radius: 50%; }
 
-    /* CARD RISULTATI CON CONTO SEQUENZIALE */
     .result-card {
         background: white;
         border-radius: 14px;
@@ -209,7 +206,6 @@ st.markdown("""
         margin: 2px 0 12px 0;
     }
 
-    /* BOX SCONTRINO / SOMMA SEQUENZIALE */
     .calculation-receipt-box {
         background-color: #f8fafc;
         border: 1px solid #e2e8f0;
@@ -249,7 +245,6 @@ st.markdown("""
         color: #047857;
     }
 
-    /* NOTE SULLE SPEDIZIONI */
     .shipping-info-box {
         background-color: #fff7ed;
         border: 1px solid #ffedd5;
@@ -268,7 +263,6 @@ st.markdown("""
         color: #166534;
     }
 
-    /* AVVISO DI REINDIRIZZAMENTO SUL PULSANTE */
     .redirect-disclaimer {
         font-size: 0.72rem;
         color: #64748b;
@@ -304,7 +298,7 @@ FARMACIE = {
 }
 
 # ---------------------------------------------------------
-# 5. CARICAMENTO DATI ROBUSTO
+# 5. CARICAMENTO DATI
 # ---------------------------------------------------------
 @st.cache_data
 def load_data():
@@ -326,7 +320,7 @@ df_prodotti = load_data()
 # ---------------------------------------------------------
 # 6. HEADER CENTRATO + BANNER
 # ---------------------------------------------------------
-logo_html = f'<img src="{logo_src}" class="brand-hero-img">' if logo_src else '<div style="font-size:2.2rem;">🛒</div>'
+logo_html = f'<img src="{logo_src}" class="brand-hero-img">' if logo_src else '<div style="font-size:2.5rem;">🛒</div>'
 
 st.markdown(f"""
     <div class="brand-hero-section">
