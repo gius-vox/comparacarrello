@@ -43,7 +43,7 @@ for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
         break
 
 # ---------------------------------------------------------
-# 3. DESIGN SYSTEM - LOGO INGRANDITO
+# 3. DESIGN SYSTEM & STYLE
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -170,6 +170,19 @@ st.markdown("""
         color: #334155;
     }
     .pharmacy-chip img { width: 14px; height: 14px; border-radius: 50%; }
+
+    /* CATEGORIE IN EVIDENZA (CHIPS) */
+    .cat-container {
+        margin-bottom: 15px;
+    }
+    .cat-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
 
     .result-card {
         background: white;
@@ -353,24 +366,42 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 8. CARRELLO STATE
+# 8. CARRELLO STATE & CATEGORIA SELEZIONATA
 # ---------------------------------------------------------
 if 'carrello' not in st.session_state:
     st.session_state.carrello = []
 
+if 'categoria_selezionata' not in st.session_state:
+    st.session_state.categoria_selezionata = "Tutte le Categorie"
+
 # ---------------------------------------------------------
-# 9. RICERCA PRODOTTI
+# 9. RICERCA PRODOTTI + CATEGORIE IN EVIDENZA (CHIPS)
 # ---------------------------------------------------------
 st.markdown("### 🔍 Cerca e aggiungi un prodotto")
 
 DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3028/3028549.png"
 
 if not df_prodotti.empty:
+    # Generazione elenco categorie disponibili
+    cat_lista = ["Tutte le Categorie"] + sorted(list(df_prodotti['Categoria'].dropna().unique()))
+
+    # Sezione Categorie in evidenza (Chips rapido)
+    st.markdown('<div class="cat-title">🏷️ Macro-Categorie in Evidenza:</div>', unsafe_allow_html=True)
+    cols_cat = st.columns(min(len(cat_lista), 6))
+    for idx, c_name in enumerate(cat_lista[:6]):
+        with cols_cat[idx % 6]:
+            btn_type = "primary" if st.session_state.categoria_selezionata == c_name else "secondary"
+            if st.button(c_name, key=f"chip_cat_{idx}", type=btn_type, use_container_width=True):
+                st.session_state.categoria_selezionata = c_name
+                st.rerun()
+
     c_cat, c_search = st.columns([1, 3], vertical_alignment="bottom")
     
     with c_cat:
-        categorie = ["Tutte le Categorie"] + sorted(list(df_prodotti['Categoria'].dropna().unique()))
-        cat_selezionata = st.selectbox("Seleziona Categoria:", categorie)
+        # Tendina sincronizzata con le Chips in evidenza
+        index_sel = cat_lista.index(st.session_state.categoria_selezionata) if st.session_state.categoria_selezionata in cat_lista else 0
+        cat_selezionata = st.selectbox("Seleziona Categoria:", cat_lista, index=index_sel)
+        st.session_state.categoria_selezionata = cat_selezionata
     
     df_filtrato = df_prodotti if cat_selezionata == "Tutte le Categorie" else df_prodotti[df_prodotti['Categoria'] == cat_selezionata]
     
