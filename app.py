@@ -43,7 +43,7 @@ for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
         break
 
 # ---------------------------------------------------------
-# 3. DESIGN SYSTEM & STYLE CUSTOM (ADVANCED UI & HERO CONTAINER)
+# 3. DESIGN SYSTEM & STYLE CUSTOM (CON PILLOLE CATEGORIA AGGIORNATE)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -191,14 +191,35 @@ st.markdown("""
         margin-bottom: 25px;
     }
 
-    .search-hero-header {
-        font-size: 1.25rem;
-        font-weight: 800;
-        color: #0f172a;
-        margin-bottom: 14px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
+    /* STILE BOTTONI PILLOLA CATEGORIA */
+    div[data-testid="stHorizontalBlock"] button[kind="secondary"] {
+        background-color: #f1f5f9 !important;
+        color: #334155 !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 20px !important;
+        font-weight: 700 !important;
+        font-size: 0.88rem !important;
+        padding: 6px 14px !important;
+        transition: all 0.2s ease-in-out !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.03) !important;
+    }
+
+    div[data-testid="stHorizontalBlock"] button[kind="secondary"]:hover {
+        background-color: #e2e8f0 !important;
+        border-color: #047857 !important;
+        color: #047857 !important;
+        transform: translateY(-1px);
+    }
+
+    div[data-testid="stHorizontalBlock"] button[kind="primary"] {
+        background-color: #047857 !important;
+        color: #ffffff !important;
+        border: 1px solid #047857 !important;
+        border-radius: 20px !important;
+        font-weight: 800 !important;
+        font-size: 0.88rem !important;
+        padding: 6px 14px !important;
+        box-shadow: 0 4px 10px rgba(4, 120, 87, 0.25) !important;
     }
 
     /* BARRA DI RICERCA CUSTOM */
@@ -407,8 +428,8 @@ st.markdown(f"""
     </div>
 
     <div class="value-green-bar">
-        <div class="value-slogan-main">🛒 Con Comparacarrello fare la spesa online è più bello!</div>
-        <div class="value-slogan-sub">⚡ Zero stress per la tua scelta, troverai i prodotti giusti ed in fretta!</div>
+        <div class="value-slogan-main">Con Comparacarrello fare la spesa online è più bello!</div>
+        <div class="value-slogan-sub">Zero stress per la tua scelta, troverai i prodotti giusti ed in fretta!</div>
     </div>
 """, unsafe_allow_html=True)
 
@@ -437,24 +458,12 @@ if 'categoria_selezionata' not in st.session_state:
     st.session_state.categoria_selezionata = "Tutte le Categorie"
 
 # ---------------------------------------------------------
-# 9. RICERCA PRODOTTI E PILLOLE CATEGORIE (DESIGNED HERO CONTAINER)
+# 9. RICERCA PRODOTTI E PILLOLE CATEGORIE (DESIGN PULITO E MODERNO)
 # ---------------------------------------------------------
 DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3028/3028549.png"
 
-CAT_ICONS = {
-    "Tutte le Categorie": "✨",
-    "Farmaci da Banco": "💊",
-    "Integratori": "⚡",
-    "Omeopatia": "🌿",
-    "Fitoterapia": "🌱",
-    "Sali di Schussler": "🧪",
-    "Cosmetici": "🧴",
-    "Igiene e Benessere": "🧼",
-    "Veterinaria": "🐾"
-}
-
 st.markdown('<div class="search-hero-card">', unsafe_allow_html=True)
-st.markdown('<div class="search-hero-header">🔍 Cerca e Aggiungi Prodotto</div>', unsafe_allow_html=True)
+st.markdown('<div style="color: #047857; font-size: 1.35rem; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 16px;">Cerca e aggiungi un prodotto</div>', unsafe_allow_html=True)
 
 if not df_prodotti.empty:
     cat_presenti = sorted(list(df_prodotti['Categoria'].dropna().unique()))
@@ -463,25 +472,22 @@ if not df_prodotti.empty:
     # Sezione Pillole Categoria
     cols_chips = st.columns(min(len(cat_lista), 7))
     for idx, cat in enumerate(cat_lista[:7]):
-        icona = CAT_ICONS.get(cat, "📦")
-        label = f"{icona} {cat}"
-        
         is_active = (st.session_state.categoria_selezionata == cat)
         btn_type = "primary" if is_active else "secondary"
         
         with cols_chips[idx % 7]:
-            if st.button(label, key=f"pill_{idx}", type=btn_type, use_container_width=True):
+            if st.button(cat, key=f"pill_{idx}", type=btn_type, use_container_width=True):
                 st.session_state.categoria_selezionata = cat
                 st.rerun()
 
-    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
 
     # Filtro dinamico dei dati
     cat_attuale = st.session_state.categoria_selezionata
     df_filtrato = df_prodotti if cat_attuale == "Tutte le Categorie" else df_prodotti[df_prodotti['Categoria'] == cat_attuale]
 
     # Barra di Ricerca Unica Ingrandita
-    placeholder_txt = f"Cerca in '{cat_attuale}' per nome farmaco o MINSAN..." if cat_attuale != "Tutte le Categorie" else "Cerca tra tutti i farmaci per nome o codice MINSAN..."
+    placeholder_txt = f"Cerca in '{cat_attuale}' per nome farmaco o codice MINSAN..." if cat_attuale != "Tutte le Categorie" else "Cerca tra tutti i farmaci per nome o codice MINSAN..."
     
     opzioni = df_filtrato.apply(lambda row: f"{row['Prodotto']} | MINSAN: {row['MINSAN']}", axis=1).tolist()
     
@@ -507,9 +513,9 @@ if not df_prodotti.empty:
                 st.markdown(f'<div class="product-img-frame"><img src="{img_url}"></div>', unsafe_allow_html=True)
             with c_p_info:
                 st.markdown(f"<h4 style='margin:0; font-weight:800; color:#0f172a;'>{row_prod['Prodotto']}</h4>", unsafe_allow_html=True)
-                st.markdown(f"<div style='margin-top:4px;'>Codice MINSAN: <span class='minsan-tag'>{row_prod['MINSAN']}</span> | Categoria: <b>{row_prod.get('Categoria', 'Generale')}</b></div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='margin-top:4px; color:#475569; font-size:0.88rem;'>Codice MINSAN: <span class='minsan-tag'>{row_prod['MINSAN']}</span> | Categoria: <b style='color:#047857;'>{row_prod.get('Categoria', 'Generale')}</b></div>", unsafe_allow_html=True)
             with c_p_btn:
-                if st.button("➕ Aggiungi al Carrello", type="primary", use_container_width=True):
+                if st.button("Aggiungi al Carrello", type="primary", use_container_width=True):
                     st.session_state.carrello.append(row_prod.to_dict())
                     st.success("Aggiunto!")
                     st.rerun()
@@ -521,7 +527,7 @@ st.markdown('</div>', unsafe_allow_html=True)
 # 10. CARRELLO UTENTE
 # ---------------------------------------------------------
 st.markdown("---")
-st.markdown("### 🛍️ Il tuo Carrello")
+st.markdown("### Il tuo Carrello")
 
 if st.session_state.carrello:
     for idx, item in enumerate(st.session_state.carrello):
@@ -533,12 +539,12 @@ if st.session_state.carrello:
         with c_desc:
             st.markdown(f"**{item['Prodotto']}** &nbsp; <span class='minsan-tag'>MINSAN: {item['MINSAN']}</span>", unsafe_allow_html=True)
         with c_del:
-            if st.button("❌ Rimuovi", key=f"del_{idx}", use_container_width=True):
+            if st.button("Rimuovi", key=f"del_{idx}", use_container_width=True):
                 st.session_state.carrello.pop(idx)
                 st.rerun()
                 
     st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
-    if st.button("🗑️ Svuota Carrello"):
+    if st.button("Svuota Carrello"):
         st.session_state.carrello = []
         st.rerun()
 else:
@@ -549,7 +555,7 @@ else:
 # ---------------------------------------------------------
 if st.session_state.carrello:
     st.markdown("---")
-    st.markdown("### 📊 Risultato Comparazione Spesa Completa")
+    st.markdown("### Risultato Comparazione Spesa Completa")
     
     risultati = []
     lista_minsan = [str(item['MINSAN']) for item in st.session_state.carrello]
@@ -597,33 +603,33 @@ if st.session_state.carrello:
             
             if res['spese_spedizione'] == 0:
                 sped_str = "<span style='color:#15803d;'>GRATIS</span>"
-                info_ship_box = f'<div class="shipping-info-box free">🎉 <b>Spedizione gratuita sbloccata!</b> Hai superato la soglia minima.</div>'
+                info_ship_box = f'<div class="shipping-info-box free"><b>Spedizione gratuita sbloccata!</b> Hai superato la soglia minima.</div>'
             else:
                 sped_str = f"+ € {res['spese_spedizione']:.2f}"
-                info_ship_box = f'<div class="shipping-info-box">💡 <b>Vuoi azzerare la spedizione?</b><br>Aggiungi altri <b>€ {res["mancante_gratis"]:.2f}</b> di prodotti su {res["farmacia"]} per sbloccare la spedizione GRATIS (soglia a € {res["soglia_gratis"]:.2f}).</div>'
+                info_ship_box = f'<div class="shipping-info-box"><b>Vuoi azzerare la spedizione?</b><br>Aggiungi altri <b>€ {res["mancante_gratis"]:.2f}</b> di prodotti su {res["farmacia"]} per sbloccare la spedizione GRATIS (soglia a € {res["soglia_gratis"]:.2f}).</div>'
 
             html_card = f'''<div class="result-card {card_class}">
 <span class="badge-rank {badge_color}">{rank_label}</span>
 <div class="farmacia-name">{res["farmacia"]}</div>
 <div class="calculation-receipt-box">
-<div class="calc-row"><span>🛍️ Prezzo prodotti</span><span>€ {res["totale_prodotti"]:.2f}</span></div>
-<div class="calc-row"><span>🚚 Spese di spedizione</span><span>{sped_str}</span></div>
+<div class="calc-row"><span>Prezzo prodotti</span><span>€ {res["totale_prodotti"]:.2f}</span></div>
+<div class="calc-row"><span>Spese di spedizione</span><span>{sped_str}</span></div>
 <div class="calc-divider"></div>
-<div class="calc-total-row"><span>💳 TOTALE SPESA</span><span class="calc-total-amount">€ {res["totale_complessivo"]:.2f}</span></div>
+<div class="calc-total-row"><span>TOTALE SPESA</span><span class="calc-total-amount">€ {res["totale_complessivo"]:.2f}</span></div>
 </div>
 {info_ship_box}
 <div style="margin-top: 10px;">
 <a href="{res["url"]}" target="_blank" style="text-decoration:none;">
-<button style="width:100%; background-color:#ea580c; color:white; border:none; padding:11px 14px; border-radius:10px; font-weight:800; cursor:pointer; font-size:0.9rem; box-shadow:0 4px 10px rgba(234, 88, 12, 0.2);">↗️ Acquista su {res["farmacia"]}</button>
+<button style="width:100%; background-color:#ea580c; color:white; border:none; padding:11px 14px; border-radius:10px; font-weight:800; cursor:pointer; font-size:0.9rem; box-shadow:0 4px 10px rgba(234, 88, 12, 0.2);">Acquista su {res["farmacia"]}</button>
 </a>
-<div class="redirect-disclaimer">ℹ️ Verrai reindirizzato sul sito ufficiale della farmacia per selezionare e acquistare i tuoi prodotti.</div>
+<div class="redirect-disclaimer">Verrai reindirizzato sul sito ufficiale della farmacia per selezionare e acquistare i tuoi prodotti.</div>
 </div>
 </div>'''
 
             with cols_podium[i]:
                 st.markdown(html_card, unsafe_allow_html=True)
                 
-        with st.expander("📊 Guarda la classifica completa di tutte le farmacie"):
+        with st.expander("Guarda la classifica completa di tutte le farmacie"):
             df_res = pd.DataFrame(risultati)[['farmacia', 'totale_prodotti', 'spese_spedizione', 'soglia_gratis', 'totale_complessivo']]
             df_res.columns = ['Farmacia', 'Totale Prodotti (€)', 'Spedizioni (€)', 'Soglia Gratis (€)', 'Totale Carrello (€)']
             st.dataframe(df_res.style.format({'Totale Prodotti (€)': '{:.2f}', 'Spedizioni (€)': '{:.2f}', 'Soglia Gratis (€)': '{:.2f}', 'Totale Carrello (€)': '{:.2f}'}), use_container_width=True)
@@ -632,7 +638,7 @@ if st.session_state.carrello:
     # 12. CONDIVISIONE CARRELLO & QR CODE MOBILE
     # ---------------------------------------------------------
     st.markdown("---")
-    st.markdown("### 📲 Condividi Carrello o Salvalo sul Cellulare")
+    st.markdown("### Condividi Carrello o Salvalo sul Cellulare")
     
     testo_condivisione = f"Ecco i codici MINSAN della mia spesa su Comparacarrello.it: {', '.join(lista_minsan)}"
     text_encoded = urllib.parse.quote(testo_condivisione)
@@ -657,12 +663,12 @@ if st.session_state.carrello:
             <div style="display: flex; flex-direction: column; gap: 10px;">
                 <a href="{whatsapp_url}" target="_blank" style="text-decoration:none;">
                     <button style="width:100%; background-color:#25D366; color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; cursor:pointer; box-shadow:0 4px 10px rgba(37, 211, 102, 0.15);">
-                        💬 Condividi Carrello su WhatsApp
+                        Condividi Carrello su WhatsApp
                     </button>
                 </a>
                 <a href="{telegram_url}" target="_blank" style="text-decoration:none;">
                     <button style="width:100%; background-color:#0088cc; color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; cursor:pointer; box-shadow:0 4px 10px rgba(0, 136, 204, 0.15);">
-                        ✈️ Condividi Carrello su Telegram
+                        Condividi Carrello su Telegram
                     </button>
                 </a>
             </div>
