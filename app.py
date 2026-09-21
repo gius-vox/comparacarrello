@@ -43,7 +43,7 @@ for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
         break
 
 # ---------------------------------------------------------
-# 3. DESIGN SYSTEM & STYLE CUSTOM (SEARCH BAR INGRANDITA)
+# 3. DESIGN SYSTEM & STYLE CUSTOM (ADVANCED UI & HERO CONTAINER)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -51,24 +51,26 @@ st.markdown("""
     
     html, body, [class*="css"] {
         font-family: 'Plus Jakarta Sans', sans-serif;
-        background-color: #f8fafc;
+        background-color: #f1f5f9;
     }
 
     .block-container {
         padding-top: 1.2rem !important;
-        padding-bottom: 2rem !important;
+        padding-bottom: 2.5rem !important;
         padding-left: 0.8rem !important;
         padding-right: 0.8rem !important;
-        max-width: 100% !important;
+        max-width: 1200px !important;
+        margin: 0 auto;
     }
     
+    /* BRAND HERO HEADER */
     .brand-hero-section {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         text-align: center;
-        padding: 5px 0px;
+        padding: 8px 0px;
         background: transparent;
         width: 100%;
     }
@@ -83,7 +85,6 @@ st.markdown("""
         flex-direction: row !important;
     }
 
-    /* LOGO INGRANDITO A 70PX */
     .brand-hero-img {
         max-height: 70px !important;
         width: auto;
@@ -110,44 +111,46 @@ st.markdown("""
         margin-top: 4px;
     }
 
+    /* VALUE BANNER */
     .value-green-bar {
-        background: linear-gradient(90deg, #047857 0%, #10b981 100%);
-        margin-left: -0.8rem;
-        margin-right: -0.8rem;
-        padding: 10px;
+        background: linear-gradient(135deg, #047857 0%, #10b981 100%);
+        border-radius: 12px;
+        padding: 12px 16px;
         text-align: center;
-        box-shadow: 0 4px 12px rgba(4, 120, 87, 0.15);
-        border-bottom: 3px solid #ea580c;
-        margin-bottom: 15px;
+        box-shadow: 0 4px 14px rgba(4, 120, 87, 0.15);
+        border-bottom: 4px solid #ea580c;
+        margin-bottom: 20px;
         color: #ffffff;
-        border-radius: 4px;
     }
 
     .value-slogan-main {
-        font-size: clamp(0.9rem, 3.5vw, 1.2rem);
+        font-size: clamp(0.95rem, 3.5vw, 1.2rem);
         font-weight: 800;
     }
 
     .value-slogan-sub {
-        font-size: clamp(0.75rem, 2.7vw, 1.0rem);
+        font-size: clamp(0.78rem, 2.7vw, 0.98rem);
         font-weight: 600;
         color: #ecfdf5;
         margin-top: 2px;
     }
 
+    /* STRISCIA FARMACIE MONITORATE */
     .pharmacy-bar {
         background: #ffffff;
         border: 1px solid #e2e8f0;
         border-radius: 12px;
-        padding: 12px 12px;
-        margin-bottom: 20px;
+        padding: 12px 16px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
     
     .pharmacy-bar-title {
         font-size: 0.72rem;
         text-transform: uppercase;
         color: #64748b;
-        font-weight: 700;
+        font-weight: 800;
+        letter-spacing: 0.5px;
         margin-bottom: 8px;
     }
 
@@ -163,29 +166,82 @@ st.markdown("""
         gap: 6px;
         background: #f8fafc;
         border: 1px solid #cbd5e1;
-        padding: 4px 10px;
+        padding: 5px 12px;
         border-radius: 20px;
         font-weight: 600;
         font-size: 0.78rem;
         color: #334155;
+        transition: all 0.2s ease;
     }
+
+    .pharmacy-chip:hover {
+        border-color: #047857;
+        background: #ffffff;
+    }
+
     .pharmacy-chip img { width: 14px; height: 14px; border-radius: 50%; }
 
-    /* BARRA DI RICERCA INGRANDITA E ACCATTIVANTE */
+    /* HERO SEARCH CONTAINER CARD */
+    .search-hero-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 22px;
+        border: 1px solid #cbd5e1;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+        margin-bottom: 25px;
+    }
+
+    .search-hero-header {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* BARRA DI RICERCA CUSTOM */
     div[data-baseweb="select"] > div {
         background-color: #ffffff !important;
         border: 2px solid #047857 !important;
-        border-radius: 14px !important;
+        border-radius: 12px !important;
         min-height: 52px !important;
-        box-shadow: 0 4px 14px rgba(4, 120, 87, 0.08) !important;
-        font-size: 1.05rem !important;
+        box-shadow: 0 4px 12px rgba(4, 120, 87, 0.08) !important;
+        font-size: 1.02rem !important;
         font-weight: 600 !important;
         transition: all 0.2s ease-in-out !important;
     }
 
-    div[data-baseweb="select"] > div:hover {
+    div[data-baseweb="select"] > div:hover, div[data-baseweb="select"] > div:focus-within {
         border-color: #ea580c !important;
         box-shadow: 0 6px 18px rgba(234, 88, 12, 0.12) !important;
+    }
+
+    /* CARD ANTEPRIMA PRODOTTO SELEZIONATO */
+    .product-preview-card {
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        border-left: 5px solid #047857;
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-top: 16px;
+    }
+
+    .product-img-frame {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .product-img-frame img {
+        max-height: 70px;
+        object-fit: contain;
     }
 
     /* CARD RISULTATI PODIO */
@@ -198,6 +254,7 @@ st.markdown("""
         text-align: center;
         margin-bottom: 15px;
     }
+    
     .result-card.first {
         border: 2px solid #ea580c;
         background: #ffffff;
@@ -380,10 +437,8 @@ if 'categoria_selezionata' not in st.session_state:
     st.session_state.categoria_selezionata = "Tutte le Categorie"
 
 # ---------------------------------------------------------
-# 9. RICERCA PRODOTTI E PILLOLE CATEGORIE
+# 9. RICERCA PRODOTTI E PILLOLE CATEGORIE (DESIGNED HERO CONTAINER)
 # ---------------------------------------------------------
-st.markdown("### 🔍 Cerca e aggiungi un prodotto")
-
 DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3028/3028549.png"
 
 CAT_ICONS = {
@@ -397,6 +452,9 @@ CAT_ICONS = {
     "Igiene e Benessere": "🧼",
     "Veterinaria": "🐾"
 }
+
+st.markdown('<div class="search-hero-card">', unsafe_allow_html=True)
+st.markdown('<div class="search-hero-header">🔍 Cerca e Aggiungi Prodotto</div>', unsafe_allow_html=True)
 
 if not df_prodotti.empty:
     cat_presenti = sorted(list(df_prodotti['Categoria'].dropna().unique()))
@@ -415,6 +473,8 @@ if not df_prodotti.empty:
             if st.button(label, key=f"pill_{idx}", type=btn_type, use_container_width=True):
                 st.session_state.categoria_selezionata = cat
                 st.rerun()
+
+    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
     # Filtro dinamico dei dati
     cat_attuale = st.session_state.categoria_selezionata
@@ -441,18 +501,21 @@ if not df_prodotti.empty:
             row_prod = riga_query.iloc[0]
             img_url = row_prod['Immagine_URL'] if ('Immagine_URL' in row_prod and pd.notna(row_prod['Immagine_URL']) and str(row_prod['Immagine_URL']).startswith('http')) else DEFAULT_IMG
             
-            st.markdown("<br>", unsafe_allow_html=True)
-            c_p_img, c_p_info, c_p_btn = st.columns([0.8, 3.2, 1], vertical_alignment="center")
+            st.markdown('<div class="product-preview-card">', unsafe_allow_html=True)
+            c_p_img, c_p_info, c_p_btn = st.columns([0.8, 3.2, 1.2], vertical_alignment="center")
             with c_p_img:
-                st.image(img_url, width=65)
+                st.markdown(f'<div class="product-img-frame"><img src="{img_url}"></div>', unsafe_allow_html=True)
             with c_p_info:
-                st.markdown(f"### {row_prod['Prodotto']}")
-                st.markdown(f"Codice MINSAN: <span class='minsan-tag'>{row_prod['MINSAN']}</span> | Categoria: <b>{row_prod.get('Categoria', 'Generale')}</b>", unsafe_allow_html=True)
+                st.markdown(f"<h4 style='margin:0; font-weight:800; color:#0f172a;'>{row_prod['Prodotto']}</h4>", unsafe_allow_html=True)
+                st.markdown(f"<div style='margin-top:4px;'>Codice MINSAN: <span class='minsan-tag'>{row_prod['MINSAN']}</span> | Categoria: <b>{row_prod.get('Categoria', 'Generale')}</b></div>", unsafe_allow_html=True)
             with c_p_btn:
                 if st.button("➕ Aggiungi al Carrello", type="primary", use_container_width=True):
                     st.session_state.carrello.append(row_prod.to_dict())
                     st.success("Aggiunto!")
                     st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------------------------------------------------------
 # 10. CARRELLO UTENTE
@@ -462,17 +525,19 @@ st.markdown("### 🛍️ Il tuo Carrello")
 
 if st.session_state.carrello:
     for idx, item in enumerate(st.session_state.carrello):
-        c_img, c_desc, c_del = st.columns([0.5, 4, 1], vertical_alignment="center")
+        img_url = item['Immagine_URL'] if ('Immagine_URL' in item and pd.notna(item['Immagine_URL']) and str(item['Immagine_URL']).startswith('http')) else DEFAULT_IMG
+        
+        c_img, c_desc, c_del = st.columns([0.6, 4, 1], vertical_alignment="center")
         with c_img:
-            img_url = item['Immagine_URL'] if ('Immagine_URL' in item and pd.notna(item['Immagine_URL']) and str(item['Immagine_URL']).startswith('http')) else DEFAULT_IMG
-            st.image(img_url, width=35)
+            st.markdown(f'<div class="product-img-frame" style="padding: 2px;"><img src="{img_url}" style="max-height: 40px;"></div>', unsafe_allow_html=True)
         with c_desc:
             st.markdown(f"**{item['Prodotto']}** &nbsp; <span class='minsan-tag'>MINSAN: {item['MINSAN']}</span>", unsafe_allow_html=True)
         with c_del:
-            if st.button("❌ Rimuovi", key=f"del_{idx}"):
+            if st.button("❌ Rimuovi", key=f"del_{idx}", use_container_width=True):
                 st.session_state.carrello.pop(idx)
                 st.rerun()
                 
+    st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
     if st.button("🗑️ Svuota Carrello"):
         st.session_state.carrello = []
         st.rerun()
@@ -549,7 +614,7 @@ if st.session_state.carrello:
 {info_ship_box}
 <div style="margin-top: 10px;">
 <a href="{res["url"]}" target="_blank" style="text-decoration:none;">
-<button style="width:100%; background-color:#ea580c; color:white; border:none; padding:10px 12px; border-radius:8px; font-weight:700; cursor:pointer; font-size:0.88rem;">↗️ Acquista su {res["farmacia"]}</button>
+<button style="width:100%; background-color:#ea580c; color:white; border:none; padding:11px 14px; border-radius:10px; font-weight:800; cursor:pointer; font-size:0.9rem; box-shadow:0 4px 10px rgba(234, 88, 12, 0.2);">↗️ Acquista su {res["farmacia"]}</button>
 </a>
 <div class="redirect-disclaimer">ℹ️ Verrai reindirizzato sul sito ufficiale della farmacia per selezionare e acquistare i tuoi prodotti.</div>
 </div>
@@ -581,9 +646,9 @@ if st.session_state.carrello:
     
     with col_qr:
         st.markdown(f"""
-            <div style="text-align: center; background: white; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0;">
+            <div style="text-align: center; background: white; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
                 <img src="{qr_code_img}" style="width: 120px; height: 120px;"><br>
-                <small style="color: #64748b; font-weight: 600;">Inquadra per aprire sul telefono</small>
+                <small style="color: #64748b; font-weight: 700;">Inquadra per aprire sul telefono</small>
             </div>
         """, unsafe_allow_html=True)
         
@@ -591,12 +656,12 @@ if st.session_state.carrello:
         st.markdown(f"""
             <div style="display: flex; flex-direction: column; gap: 10px;">
                 <a href="{whatsapp_url}" target="_blank" style="text-decoration:none;">
-                    <button style="width:100%; background-color:#25D366; color:white; border:none; padding:10px 16px; border-radius:8px; font-weight:700; cursor:pointer;">
+                    <button style="width:100%; background-color:#25D366; color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; cursor:pointer; box-shadow:0 4px 10px rgba(37, 211, 102, 0.15);">
                         💬 Condividi Carrello su WhatsApp
                     </button>
                 </a>
                 <a href="{telegram_url}" target="_blank" style="text-decoration:none;">
-                    <button style="width:100%; background-color:#0088cc; color:white; border:none; padding:10px 16px; border-radius:8px; font-weight:700; cursor:pointer;">
+                    <button style="width:100%; background-color:#0088cc; color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; cursor:pointer; box-shadow:0 4px 10px rgba(0, 136, 204, 0.15);">
                         ✈️ Condividi Carrello su Telegram
                     </button>
                 </a>
