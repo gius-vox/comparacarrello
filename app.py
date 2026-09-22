@@ -140,7 +140,6 @@ st.markdown("### Cerca e aggiungi un prodotto")
 if df_prodotti.empty:
     st.error("⚠️ Nessun database prodotti trovato. Esegui lo scraper per popolare il catalogo.")
 else:
-    # Filtro macro-categorie tramite pulsanti o tab pulite
     cat_selezionata = st.radio(
         "Filtra per Categoria:",
         ["Tutte le Categorie", "Farmaci da Banco (SOP/OTC)", "Integratori e Vitamine", "Fitoterapia e Omeopatia", "Cosmesi e Dermocosmesi", "Veterinaria", "Mamma e Bambino"],
@@ -155,7 +154,6 @@ else:
         df_filtrato = df_prodotti[df_prodotti['Categoria'] == cat_selezionata]
         placeholder_txt = f"Cerca in '{cat_selezionata}' per nome farmaco o codice MINSAN..."
 
-    # Barra di ricerca testuale libera ad alte prestazioni per 10.000+ elementi
     query_testo = st.text_input(
         "Digita il nome del farmaco, brand o codice MINSAN:",
         placeholder=placeholder_txt,
@@ -191,7 +189,6 @@ else:
                 st.caption(f"Categoria: {p_data['Categoria']} | MINSAN: {p_data['MINSAN']}")
             with col_btn:
                 if st.button("➕ Aggiungi al carrello", key=f"add_{p_data['MINSAN']}"):
-                    # Verifica se già presente
                     gia_presente = any(item['MINSAN'] == p_data['MINSAN'] for item in st.session_state.carrello)
                     if not gia_presente:
                         st.session_state.carrello.append(p_data.to_dict())
@@ -209,7 +206,6 @@ st.markdown("### 🛒 Il tuo Carrello & Comparazione")
 if not st.session_state.carrello:
     st.info("Il tuo carrello è vuoto. Cerca e aggiungi almeno un prodotto per comparare i prezzi tra le farmacie online.")
 else:
-    # Mostra lista prodotti nel carrello con opzione di rimozione
     for idx, item in enumerate(st.session_state.carrello):
         col_c1, col_c2 = st.columns([5, 1])
         with col_c1:
@@ -222,10 +218,7 @@ else:
     st.markdown("---")
     st.markdown("### 🏆 Risultato Comparazione per Farmacia")
     
-    # Calcolo spesa totale + costi di spedizione stimati
     risultati_farmacie = []
-    
-    # Costi spedizione indicativi di mercato per test
     spese_spedizione = {
         "Farmacia Igea": 4.90, "Farmaè": 3.90, "Dr Max": 4.50, "RedCare": 5.00,
         "Farmacia Loreto": 4.90, "1000Farmacie": 3.50, "Top Farmacia": 4.90, "eFarma": 4.50, "Farmacosmo": 4.90
@@ -233,15 +226,14 @@ else:
 
     for farmacia in FARMACIE_DISPONIBILI:
         totale_prodotti = 0.0
-        disponibile_tutto = True
         
-        for item in farmacia_item := st.session_state.carrello:
+        for item in st.session_state.carrello:
             prezzo_str = str(item.get(farmacia, "0"))
             try:
                 prezzo_num = float(prezzo_str)
                 totale_prodotti += prezzo_num
             except ValueError:
-                disponibile_tutto = False
+                pass
                 
         sped = spese_spedizione.get(farmacia, 4.90)
         totale_complessivo = round(totale_prodotti + sped, 2)
@@ -255,7 +247,6 @@ else:
 
     df_risultati = pd.DataFrame(risultati_farmacie).sort_values(by="Totale Complessivo (€)")
     
-    # Tabella pulita ed elegante dei risultati
     st.dataframe(
         df_risultati.set_index("Farmacia"),
         use_container_width=True
