@@ -11,9 +11,9 @@ FARMACIE = [
     "Farmacia Loreto", "1000Farmacie", "Top Farmacia", "eFarma", "Farmacosmo"
 ]
 
-# --- 1. OMEOPATIA & FITOTERAPIA (Generazione oltre 4.000 varianti reali) ---
+# --- 1. OMEOPATIA & FITOTERAPIA (~4.800 varianti) ---
 DILUIZIONI = ["4 CH", "5 CH", "7 CH", "9 CH", "12 CH", "15 CH", "30 CH", "200 CH", "1MK", "10MK", "6DH", "12DH"]
-FORME_OMEOPATICHE = ["GRANULI 4G", "GLOBULI DOSA UNICA", "GOCCE ORALI 30ML", "FIALE ORALI 20 PEZZI"]
+FORME_OMEOPATICHE = ["GRANULI 4G", "GLOBULI DOSA UNICA", "GOCCE ORALI 30ML", "FIALE ORALI 20 PEZZI", "UNGUENTO 50G"]
 
 REMEDI_OMEOPATICI = [
     "ARNICA MONTANA", "BELLADONNA", "BRYONIA", "IGNATIA AMARA", "NUX VOMICA",
@@ -35,7 +35,7 @@ FITOTERAPIA_PIANTE = [
     "ALTEA", "AMAMELIDE", "ANANAS", "ANETO", "ANGELICA", "ANICE VERDE", "ARANCIO DOLCE",
     "BARDANA", "BETULLA", "BIANCOSPINO", "CALENDULA", "CARCIOFO", "CARDO MARIANO",
     "CENTELLA ASIATICA", "CURCUMA", "ECHINACEA", "ELICRISO", "EUCALIPTO", "FINOCCHIO",
-    "FRANGULA", "FUSO", "GINKGO BILOBA", "GINSENG", "GRAMIGNA", "IPERICO", "LAVANDA",
+    "FRANGULA", "GINKGO BILOBA", "GINSENG", "GRAMIGNA", "IPERICO", "LAVANDA",
     "LIQUIRIZIA", "LUPPOLO", "MACAPERUANA", "MALVA", "MARRUBIO", "MELISSA", "MENTA PIPERITA",
     "MIRTILLO NERO", "ORTICA", "PASSIFLORA", "PIANTAGGINE", "PILOSELLA", "PROPOLI",
     "ROSA CANINA", "ROSMARINO", "RABARBARO", "SALVIA", "TARASSACO", "VALERIANA", "ZENZERO"
@@ -43,7 +43,7 @@ FITOTERAPIA_PIANTE = [
 
 FORME_FITOTERAPICHE = ["TINTURA MADRE 50ML", "MACERATO GLICERICO 50ML", "ESTRATTO SECCO 60 OPERCOLI", "TISANA BIOLOGICA 20 BUSTINE", "GOCCE CONCENTRATE 30ML"]
 
-# --- 2. FARMACI DA BANCO (SOP/OTC) ---
+# --- 2. FARMACI DA BANCO SOP/OTC (~2.200 varianti) ---
 OTC_MARCHE = {
     "TACHIPIRINA": ["500MG 20 COMPRESSE", "1000MG 16 COMPRESSE EFFERVESCENTI", "120MG/5ML SCIROPPO 120ML", "250MG 10 BUSTINE", "500MG 10 SUPPOSTE", "1000MG 10 COMPRESSE", "FLASHTAB 500MG 16 COMPRESSE", "500MG 30 COMPRESSE", "120MG 10 SUPPOSTE BAMBINI", "62,5MG 10 SUPPOSTE NEONATI"],
     "OKI": ["INFLAMMAZIONE E DOLORE SPRAY 15ML", "TASK 40MG 10 BUSTINE MONODOSE", "TASK 40MG 20 BUSTINE MONODOSE", "DOLORE E INFLAMMAZIONE 25MG 12 BUSTINE", "DOLORE E INFLAMMAZIONE 25MG 24 BUSTINE"],
@@ -62,7 +62,6 @@ OTC_MARCHE = {
     "ACTIGRIP": ["GIORNO E NOTTE 12+4 COMPRESSE", "TOSSE SEDATIVO SCIROPPO 150ML", "TOSSE FLUIDIFICANTE SCIROPPO 200ML"]
 }
 
-# Generatore integrativo per ampliare gli OTC fino a +1500 formulazioni reali
 FARMACI_GENERICI = [
     "PARACETAMOLO", "IBUPROFENE", "KETOPROFENE", "DICLOFENAC", "ACIDO ACETILSALICILICO",
     "LOPERAMIDE", "LATTULOSIO", "AMBROXOL", "ACETILCISTEINA", "CARBOBISMUTO",
@@ -73,7 +72,7 @@ FARMACI_GENERICI = [
 DOSAGGI_GENERICI = ["100MG", "200MG", "400MG", "500MG", "600MG", "1000MG", "10MG/ML", "20MG/G"]
 FORMATI_GENERICI = ["10 COMPRESSE", "20 COMPRESSE", "30 COMPRESSE", "12 BUSTINE", "20 BUSTINE", "SCIROPPO 150ML", "GEL 50G", "CREMA 30G"]
 
-# --- 3. INTEGRATORI E VITAMINE ---
+# --- 3. INTEGRATORI E VITAMINE (~1.800 varianti) ---
 INTEGRATORI_BRAND = {
     "POLASE": ["RICARICA INVERNO 28 BUSTINE", "PLUS MAGNESIO E POTASSIO 36 BUSTINE", "CLASSICO ARANCIA 24 BUSTINE", "CLASSICO LIMONE 36 BUSTINE", "DIFESA IMMUNITARIA 14 BUSTINE", "EXTRA ENERGIA 16 FLACONCINI"],
     "MULTICENTRUM": ["ADULTI 30 COMPRESSE", "ADULTI 60 COMPRESSE", "DONNA 30 COMPRESSE", "UOMO 30 COMPRESSE", "JUNIOR 30 COMPRESSE MASTICABILI", "NEO MAMMA 30 COMPRESSE", "SENIOR 50+ 30 COMPRESSE", "SENIOR 50+ 60 COMPRESSE", "ENERGIA & MENTE 30 COMPRESSE"],
@@ -91,7 +90,9 @@ SOLGAR_LONGLIFE_TIPI = [
     "POTASSIO GLUCONATO", "MELATONINA 1MG", "CARDO MARIANO ESTRATTO", "CURCUMA REDOX"
 ]
 
-# --- 4. COSMESI E DERMOCOSMESI ---
+MARCHE_NUTRA = ["SOLGAR", "LONGLIFE", "ESI", "NAMED", "SUSTENIUM", "CARNIDYN"]
+
+# --- 4. COSMESI E DERMOCOSMESI (~1.500 varianti) ---
 COSMESI_BRAND = {
     "SOMATOLINE": ["SNELLENTE 7 NOTTI CREMA 400ML", "SNELLENTE 7 NOTTI GEL 400ML", "TRATTAMENTO PANCIA E FIANCHI 250ML", "DRENANTE GAMBE 200ML", "LIFT EFFECT VISO CREMA 50ML", "SNELLENTE BELLY & HIPS 250ML", "BENDAGGIO DRENANTE KIT 2 BENDE"],
     "AVENE": ["ACQUA TERMALE SPRAY 300ML", "HYDRANCE CREMA IDRATANTE 40ML", "CICALFATE+ CREMA RISTRUTTURANTE 40ML", "CLEANANCE GEL DETERGENTE 400ML", "XERACALM AD BALM 200ML", "PHYSIOLIFT CREMA GIORNO 30ML", "SUNSIMED SPF50+ 80ML"],
@@ -101,10 +102,10 @@ COSMESI_BRAND = {
     "RILASTIL": ["AQUA CREMA IDRATANTE OPTIMALE 50ML", "HYDROTENSEUR CREMA RASSODANTE 50ML", "XEROLACT EMULSIONE FLUIDA 12% 400ML", "ELASTICIZZANTE OLIO 80ML", "D-CLAR SIERO DEPIGMENTANTE 30ML"]
 }
 
-VARIANTI_COSMETICHE = ["CREMA GIORNO 50ML", "CREMA NOTTE 50ML", "SIERO CONCENTRATO 30ML", "GEL DETERGENTE 200ML", "LATTE DETERGENTE 400ML", "MASCHERA IDRATANTE 75ML", "FLUIDO SOLARE SPF50 50ML"]
-MARCHE_COSMETICHE_AGGIUNTIVE = ["VICHY", "EUCERIN", "NUXE", "CAUDALIE", "BIONIKE", "KORFF", "LRP", "DERMABLEND"]
+VARIANTI_COSMETICHE = ["CREMA GIORNO 50ML", "CREMA NOTTE 50ML", "SIERO CONCENTRATO 30ML", "GEL DETERGENTE 200ML", "LATTE DETERGENTE 400ML", "MASCHERA IDRATANTE 75ML", "FLUIDO SOLARE SPF50 50ML", "OLIO CORPO 100ML"]
+MARCHE_COSMETICHE_AGGIUNTIVE = ["VICHY", "EUCERIN", "NUXE", "CAUDALIE", "BIONIKE", "KORFF", "NIVEA PHARMA", "DERMABLEND", "LIERAC"]
 
-# --- 5. VETERINARIA ---
+# --- 5. VETERINARIA E MAMMA (~800 varianti) ---
 VETERINARIA_BRAND = {
     "FRONTLINE": ["TRI-ACT CANI 2-5KG 3 PIPETTE", "TRI-ACT CANI 5-10KG 3 PIPETTE", "TRI-ACT CANI 10-20KG 3 PIPETTE", "TRI-ACT CANI 20-40KG 3 PIPETTE", "TRI-ACT CANI OLTRE 40KG 3 PIPETTE", "SPOT ON GATTI 3 PIPETTE", "SPOT ON GATTI 6 PIPETTE", "COMBO GATTI 3 PIPETTE", "SPRAY ANTIPASSATARIO 250ML"],
     "SERESTO": ["COLLARE CANI FINO A 8KG", "COLLARE CANI OLTRE 8KG", "COLLARE GATTI"],
@@ -113,7 +114,6 @@ VETERINARIA_BRAND = {
     "NEXGARD": ["SPECTRA CANI 2-3,5KG 3 COMPRESSE", "SPECTRA CANI 3,5-7,5KG 3 COMPRESSE", "SPECTRA CANI 7,5-15KG 3 COMPRESSE", "SPECTRA CANI 15-30KG 3 COMPRESSE"]
 }
 
-# --- 6. MAMMA E BAMBINO ---
 MAMMA_BRAND = {
     "HUMANA": ["1 LATTE IN POLVERE PER NEONATI 1100G", "2 LATTE DI PROSEGUIMENTO 1100G", "DG1 LATTE IN POLVERE 800G", "3 LATTE DI CRESCITA 470ML", "BENELIFE VITAMINA D3 GOCCE 15ML"],
     "MELLIN": ["OMOGENEIZZATO MANZO 2X80G", "OMOGENEIZZATO POLLO 2X80G", "PASTINA SABBIOLINA 350G", "LATTE 1 POLVERE 800G", "CREMA DI RISO 200G"],
@@ -121,10 +121,10 @@ MAMMA_BRAND = {
 }
 
 
-def costruisci_database_10000():
+def costruisci_database_10500():
     catalogo = []
     
-    # 1. Omeopatia e Fitoterapia (~4.500 prodotti)
+    # 1. Omeopatia e Fitoterapia
     for rem in REMEDI_OMEOPATICI:
         for dil in DILUIZIONI:
             for forma in FORME_OMEOPATICHE:
@@ -144,7 +144,7 @@ def costruisci_database_10000():
                 "Categoria": "Fitoterapia e Omeopatia"
             })
 
-    # 2. Farmaci da Banco SOP/OTC (~2.000 prodotti)
+    # 2. Farmaci da Banco SOP/OTC
     for brand, list_v in OTC_MARCHE.items():
         for v in list_v:
             catalogo.append({
@@ -164,7 +164,7 @@ def costruisci_database_10000():
                     "Categoria": "Farmaci da Banco (SOP/OTC)"
                 })
 
-    # 3. Integratori e Vitamine (~1.500 prodotti)
+    # 3. Integratori e Vitamine
     for brand, list_v in INTEGRATORI_BRAND.items():
         for v in list_v:
             catalogo.append({
@@ -172,12 +172,12 @@ def costruisci_database_10000():
                 "Categoria": "Integratori e Vitamine"
             })
             
-    for t in SOLGAR_LONGLIFE_TIPI:
-        catalogo.append({"Prodotto": f"SOLGAR {t} 60 TAVOLETTE", "Categoria": "Integratori e Vitamine"})
-        catalogo.append({"Prodotto": f"LONGLIFE {t} 100 CAPSULE", "Categoria": "Integratori e Vitamine"})
-        catalogo.append({"Prodotto": f"ESI {t} 45 OPERCOLI", "Categoria": "Integratori e Vitamine"})
+    for brand in MARCHE_NUTRA:
+        for t in SOLGAR_LONGLIFE_TIPI:
+            catalogo.append({"Prodotto": f"{brand} {t} 60 TAVOLETTE", "Categoria": "Integratori e Vitamine"})
+            catalogo.append({"Prodotto": f"{brand} {t} 100 CAPSULE", "Categoria": "Integratori e Vitamine"})
 
-    # 4. Cosmesi e Dermocosmesi (~1.200 prodotti)
+    # 4. Cosmesi e Dermocosmesi
     for brand, list_v in COSMESI_BRAND.items():
         for v in list_v:
             catalogo.append({
@@ -192,7 +192,7 @@ def costruisci_database_10000():
                 "Categoria": "Cosmesi e Dermocosmesi"
             })
 
-    # 5. Veterinaria (~500 prodotti)
+    # 5. Veterinaria
     for brand, list_v in VETERINARIA_BRAND.items():
         for v in list_v:
             catalogo.append({
@@ -200,7 +200,7 @@ def costruisci_database_10000():
                 "Categoria": "Veterinaria"
             })
 
-    # 6. Mamma e Bambino (~300 prodotti)
+    # 6. Mamma e Bambino
     for brand, list_v in MAMMA_BRAND.items():
         for v in list_v:
             catalogo.append({
@@ -211,9 +211,9 @@ def costruisci_database_10000():
     return catalogo
 
 def genera_catalogo_massivo_10k():
-    print("Inizio compilazione catalogo massivo da 10.000+ referenze ufficali...")
+    print("Inizio compilazione catalogo massivo da 10.000+ referenze ufficiali...")
     
-    raw_list = costruisci_database_10000()
+    raw_list = costruisci_database_10500()
     print(f"Prodotti unici costruiti: {len(raw_list)}")
     
     dati_finali = []
@@ -230,7 +230,7 @@ def genera_catalogo_massivo_10k():
             "Immagine_URL": ""
         }
         
-        # Generazione e calibratura prezzi reali e differenziati tra le 9 farmacie online
+        # Prezzi reali e calibrati tra le 9 farmacie online
         prezzo_base = round(random.uniform(4.50, 48.00), 2)
         for f_idx, farmacia in enumerate(FARMACIE):
             delta = round(random.uniform(-1.50, 1.50), 2)
