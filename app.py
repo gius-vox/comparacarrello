@@ -17,7 +17,7 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------
-# 2. HELPER LOGO & QR CODE BASE64
+# 2. HELPER LOGO & QR CODE BASE64 & PLACEHOLDER IMMAGINE
 # ---------------------------------------------------------
 def get_image_base64(path):
     if os.path.exists(path):
@@ -42,8 +42,17 @@ for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
     if logo_src:
         break
 
+# SVG Placeholder professionale per prodotti privi di immagine
+DEFAULT_SVG_IMG = (
+    "data:image/svg+xml;utf8,"
+    "<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'>"
+    "<rect x='2' y='6' width='20' height='12' rx='2'/>"
+    "<path d='M12 10v4M10 12h4'/>"
+    "</svg>"
+)
+
 # ---------------------------------------------------------
-# 3. DESIGN SYSTEM & STYLE CUSTOM (CON PILLOLE CATEGORIA AGGIORNATE)
+# 3. DESIGN SYSTEM & STYLE CUSTOM (HERO & UI PULITA)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -51,7 +60,7 @@ st.markdown("""
     
     html, body, [class*="css"] {
         font-family: 'Plus Jakarta Sans', sans-serif;
-        background-color: #f1f5f9;
+        background-color: #f8fafc;
     }
 
     .block-container {
@@ -63,16 +72,15 @@ st.markdown("""
         margin: 0 auto;
     }
     
-    /* BRAND HERO HEADER */
-    .brand-hero-section {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+    /* MODERN PROFESSIONAL BRAND HERO HEADER */
+    .brand-hero-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+        border: 1px solid #cbd5e1;
+        border-radius: 16px;
+        padding: 24px 20px;
         text-align: center;
-        padding: 8px 0px;
-        background: transparent;
-        width: 100%;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     }
 
     .brand-hero-logo-box {
@@ -80,20 +88,20 @@ st.markdown("""
         align-items: center;
         justify-content: center;
         gap: 12px;
-        margin-bottom: 4px;
+        margin-bottom: 8px;
         width: 100%;
         flex-direction: row !important;
     }
 
     .brand-hero-img {
-        max-height: 70px !important;
+        max-height: 65px !important;
         width: auto;
         object-fit: contain;
         display: block;
     }
 
     .brand-hero-title {
-        font-size: clamp(1.8rem, 6vw, 3.2rem) !important;
+        font-size: clamp(1.8rem, 5vw, 3.0rem) !important;
         font-weight: 800;
         color: #047857;
         margin: 0;
@@ -105,34 +113,17 @@ st.markdown("""
     .brand-hero-title span { color: #ea580c; }
 
     .brand-hero-tagline {
-        color: #475569;
-        font-size: clamp(0.85rem, 3vw, 1.15rem);
-        font-weight: 600;
+        color: #334155;
+        font-size: clamp(0.9rem, 3vw, 1.15rem);
+        font-weight: 700;
+        margin-top: 6px;
+    }
+
+    .brand-hero-subtagline {
+        color: #64748b;
+        font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+        font-weight: 500;
         margin-top: 4px;
-    }
-
-    /* VALUE BANNER */
-    .value-green-bar {
-        background: linear-gradient(135deg, #047857 0%, #10b981 100%);
-        border-radius: 12px;
-        padding: 12px 16px;
-        text-align: center;
-        box-shadow: 0 4px 14px rgba(4, 120, 87, 0.15);
-        border-bottom: 4px solid #ea580c;
-        margin-bottom: 20px;
-        color: #ffffff;
-    }
-
-    .value-slogan-main {
-        font-size: clamp(0.95rem, 3.5vw, 1.2rem);
-        font-weight: 800;
-    }
-
-    .value-slogan-sub {
-        font-size: clamp(0.78rem, 2.7vw, 0.98rem);
-        font-weight: 600;
-        color: #ecfdf5;
-        margin-top: 2px;
     }
 
     /* STRISCIA FARMACIE MONITORATE */
@@ -198,8 +189,8 @@ st.markdown("""
         border: 1px solid #cbd5e1 !important;
         border-radius: 20px !important;
         font-weight: 700 !important;
-        font-size: 0.88rem !important;
-        padding: 6px 14px !important;
+        font-size: 0.85rem !important;
+        padding: 6px 12px !important;
         transition: all 0.2s ease-in-out !important;
         box-shadow: 0 2px 4px rgba(0,0,0,0.03) !important;
     }
@@ -217,8 +208,8 @@ st.markdown("""
         border: 1px solid #047857 !important;
         border-radius: 20px !important;
         font-weight: 800 !important;
-        font-size: 0.88rem !important;
-        padding: 6px 14px !important;
+        font-size: 0.85rem !important;
+        padding: 6px 12px !important;
         box-shadow: 0 4px 10px rgba(4, 120, 87, 0.25) !important;
     }
 
@@ -258,10 +249,13 @@ st.markdown("""
         align-items: center;
         justify-content: center;
         box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+        width: 60px;
+        height: 60px;
     }
 
     .product-img-frame img {
-        max-height: 70px;
+        max-height: 50px;
+        max-width: 50px;
         object-fit: contain;
     }
 
@@ -394,8 +388,35 @@ FARMACIE = {
 }
 
 # ---------------------------------------------------------
-# 5. CARICAMENTO DATI
+# 5. CARICAMENTO DATI E NORMALIZZAZIONE CATEGORIE
 # ---------------------------------------------------------
+# Mappa di pulizia/standardizzazione delle macro-categorie
+MAPPA_CATEGORIE = {
+    "sali di schüssler": "Fitoterapia e Omeopatia",
+    "sali di schussler": "Fitoterapia e Omeopatia",
+    "omeopatia": "Fitoterapia e Omeopatia",
+    "fitoterapia": "Fitoterapia e Omeopatia",
+    "farmaci da banco": "Farmaci da Banco (SOP/OTC)",
+    "sop/otc": "Farmaci da Banco (SOP/OTC)",
+    "integratori": "Integratori e Vitamine",
+    "vitamine": "Integratori e Vitamine",
+    "cosmesi": "Cosmesi e Dermocosmesi",
+    "dermocosmesi": "Cosmesi e Dermocosmesi",
+    "mamma e bambino": "Mamma e Bambino",
+    "veterinaria": "Veterinaria",
+    "dispositivi medici": "Dispositivi Medici"
+}
+
+def normalizza_categoria(cat_val):
+    if not cat_val or pd.isna(cat_val):
+        return "Farmaci da Banco (SOP/OTC)"
+    c_str = str(cat_val).strip()
+    c_low = c_str.lower()
+    for key, macro in MAPPA_CATEGORIE.items():
+        if key in c_low:
+            return macro
+    return c_str.title()
+
 @st.cache_data
 def load_data():
     for filename in ["prodotti_1000_minsan.csv", "prodotti.csv"]:
@@ -405,7 +426,9 @@ def load_data():
                 df.columns = [c.strip() for c in df.columns]
                 df['MINSAN'] = df['MINSAN'].astype(str).str.strip()
                 if 'Categoria' not in df.columns:
-                    df['Categoria'] = 'Generale'
+                    df['Categoria'] = 'Farmaci da Banco (SOP/OTC)'
+                else:
+                    df['Categoria'] = df['Categoria'].apply(normalizza_categoria)
                 return df
             except Exception:
                 pass
@@ -414,22 +437,18 @@ def load_data():
 df_prodotti = load_data()
 
 # ---------------------------------------------------------
-# 6. HEADER CENTRATO + BANNER
+# 6. HEADER PROFESSIONALE & COMPATTO
 # ---------------------------------------------------------
 logo_html = f'<img src="{logo_src}" class="brand-hero-img">' if logo_src else '<div style="font-size:2.5rem;">🛒</div>'
 
 st.markdown(f"""
-    <div class="brand-hero-section">
+    <div class="brand-hero-card">
         <div class="brand-hero-logo-box">
             {logo_html}
             <h1 class="brand-hero-title">Compara<span>carrello.it</span></h1>
         </div>
-        <div class="brand-hero-tagline">Il motore di ricerca per la tua spesa in farmacia al miglior prezzo totale</div>
-    </div>
-
-    <div class="value-green-bar">
-        <div class="value-slogan-main">Con Comparacarrello fare la spesa online è più bello!</div>
-        <div class="value-slogan-sub">Zero stress per la tua scelta, troverai i prodotti giusti ed in fretta!</div>
+        <div class="brand-hero-tagline">Compara i prezzi di oltre 10.000 farmaci e prodotti da banco nelle migliori farmacie online</div>
+        <div class="brand-hero-subtagline">Calcoliamo in tempo reale il totale del tuo carrello incluse le spese di spedizione</div>
     </div>
 """, unsafe_allow_html=True)
 
@@ -458,10 +477,8 @@ if 'categoria_selezionata' not in st.session_state:
     st.session_state.categoria_selezionata = "Tutte le Categorie"
 
 # ---------------------------------------------------------
-# 9. RICERCA PRODOTTI E PILLOLE CATEGORIE (DESIGN PULITO E MODERNO)
+# 9. RICERCA PRODOTTI E PILLOLE CATEGORIE
 # ---------------------------------------------------------
-DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3028/3028549.png"
-
 st.markdown('<div class="search-hero-card">', unsafe_allow_html=True)
 st.markdown('<div style="color: #047857; font-size: 1.35rem; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 16px;">Cerca e aggiungi un prodotto</div>', unsafe_allow_html=True)
 
@@ -486,7 +503,7 @@ if not df_prodotti.empty:
     cat_attuale = st.session_state.categoria_selezionata
     df_filtrato = df_prodotti if cat_attuale == "Tutte le Categorie" else df_prodotti[df_prodotti['Categoria'] == cat_attuale]
 
-    # Barra di Ricerca Unica Ingrandita
+    # Barra di Ricerca Unica
     placeholder_txt = f"Cerca in '{cat_attuale}' per nome farmaco o codice MINSAN..." if cat_attuale != "Tutte le Categorie" else "Cerca tra tutti i farmaci per nome o codice MINSAN..."
     
     opzioni = df_filtrato.apply(lambda row: f"{row['Prodotto']} | MINSAN: {row['MINSAN']}", axis=1).tolist()
@@ -505,7 +522,7 @@ if not df_prodotti.empty:
         
         if not riga_query.empty:
             row_prod = riga_query.iloc[0]
-            img_url = row_prod['Immagine_URL'] if ('Immagine_URL' in row_prod and pd.notna(row_prod['Immagine_URL']) and str(row_prod['Immagine_URL']).startswith('http')) else DEFAULT_IMG
+            img_url = row_prod['Immagine_URL'] if ('Immagine_URL' in row_prod and pd.notna(row_prod['Immagine_URL']) and str(row_prod['Immagine_URL']).startswith('http')) else DEFAULT_SVG_IMG
             
             st.markdown('<div class="product-preview-card">', unsafe_allow_html=True)
             c_p_img, c_p_info, c_p_btn = st.columns([0.8, 3.2, 1.2], vertical_alignment="center")
@@ -513,7 +530,7 @@ if not df_prodotti.empty:
                 st.markdown(f'<div class="product-img-frame"><img src="{img_url}"></div>', unsafe_allow_html=True)
             with c_p_info:
                 st.markdown(f"<h4 style='margin:0; font-weight:800; color:#0f172a;'>{row_prod['Prodotto']}</h4>", unsafe_allow_html=True)
-                st.markdown(f"<div style='margin-top:4px; color:#475569; font-size:0.88rem;'>Codice MINSAN: <span class='minsan-tag'>{row_prod['MINSAN']}</span> | Categoria: <b style='color:#047857;'>{row_prod.get('Categoria', 'Generale')}</b></div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='margin-top:4px; color:#475569; font-size:0.88rem;'>Codice MINSAN: <span class='minsan-tag'>{row_prod['MINSAN']}</span> | Categoria: <b style='color:#047857;'>{row_prod.get('Categoria', 'Farmaci da Banco')}</b></div>", unsafe_allow_html=True)
             with c_p_btn:
                 if st.button("Aggiungi al Carrello", type="primary", use_container_width=True):
                     st.session_state.carrello.append(row_prod.to_dict())
@@ -531,11 +548,11 @@ st.markdown("### Il tuo Carrello")
 
 if st.session_state.carrello:
     for idx, item in enumerate(st.session_state.carrello):
-        img_url = item['Immagine_URL'] if ('Immagine_URL' in item and pd.notna(item['Immagine_URL']) and str(item['Immagine_URL']).startswith('http')) else DEFAULT_IMG
+        img_url = item['Immagine_URL'] if ('Immagine_URL' in item and pd.notna(item['Immagine_URL']) and str(item['Immagine_URL']).startswith('http')) else DEFAULT_SVG_IMG
         
         c_img, c_desc, c_del = st.columns([0.6, 4, 1], vertical_alignment="center")
         with c_img:
-            st.markdown(f'<div class="product-img-frame" style="padding: 2px;"><img src="{img_url}" style="max-height: 40px;"></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="product-img-frame" style="padding: 2px;"><img src="{img_url}"></div>', unsafe_allow_html=True)
         with c_desc:
             st.markdown(f"**{item['Prodotto']}** &nbsp; <span class='minsan-tag'>MINSAN: {item['MINSAN']}</span>", unsafe_allow_html=True)
         with c_del:
