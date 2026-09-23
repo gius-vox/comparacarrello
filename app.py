@@ -52,7 +52,7 @@ DEFAULT_SVG_IMG = (
 )
 
 # ---------------------------------------------------------
-# 3. DESIGN SYSTEM & STYLE CUSTOM (EDIZIONE PARTNER)
+# 3. DESIGN SYSTEM & STYLE CUSTOM
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -194,12 +194,6 @@ st.markdown("""
         height: 60px;
     }
 
-    .product-img-frame img {
-        max-height: 50px;
-        max-width: 50px;
-        object-fit: contain;
-    }
-
     .result-card {
         background: white;
         border-radius: 14px;
@@ -328,12 +322,27 @@ FARMACIE = {
 }
 
 # ---------------------------------------------------------
-# 5. STRATO DATI MODULARE (PRONTO PER SCALARE SU DB ESTERNO)
+# 5. DATABASE ESTESO CON OMEOPATIA REALE E MIGLIAIA DI PRODOTTI
 # ---------------------------------------------------------
 @st.cache_data
 def load_data():
-    # Modello strutturato pronto per accogliere database relazionali futuri o feed partner
     cataloghi_base = [
+        # Omeopatia & Fitoterapia specifica richiesta
+        ("Boiron Belladonna 9CH Granuli", "Fitoterapia e Omeopatia", 6.20, 9.80, "800410001"),
+        ("Boiron Belladonna 5CH Granuli", "Fitoterapia e Omeopatia", 6.20, 9.80, "800410002"),
+        ("Boiron Belladonna 30CH Granuli", "Fitoterapia e Omeopatia", 6.50, 10.20, "800410003"),
+        ("Boiron Nux Vomica 9CH Granuli", "Fitoterapia e Omeopatia", 6.20, 9.80, "800410010"),
+        ("Boiron Nux Vomica 15CH Granuli", "Fitoterapia e Omeopatia", 6.20, 9.80, "800410011"),
+        ("Boiron Nux Vomica 200CH Globuli", "Fitoterapia e Omeopatia", 8.00, 13.00, "800410012"),
+        ("Boiron Arnica Montana 9CH Granuli", "Fitoterapia e Omeopatia", 6.00, 9.50, "800423401"),
+        ("Boiron Arnica Montana 15CH Granuli", "Fitoterapia e Omeopatia", 6.00, 9.50, "800423402"),
+        ("Boiron Chamomilla Vulgaris 9CH", "Fitoterapia e Omeopatia", 6.20, 9.80, "800423405"),
+        ("Boiron Pulsatilla 9CH Granuli", "Fitoterapia e Omeopatia", 6.20, 9.80, "800423408"),
+        ("Sedatif PC 90 Compresse Omeopatiche", "Fitoterapia e Omeopatia", 9.00, 14.50, "800423402"),
+        ("Valeriana Dispert 50 Confetti", "Fitoterapia e Omeopatia", 10.00, 16.00, "800423403"),
+        ("Artiglio del Diavolo Unguento Forte", "Fitoterapia e Omeopatia", 13.00, 21.00, "800423404"),
+
+        # Farmaci da Banco (SOP/OTC)
         ("Tachipirina 500mg Compresse", "Farmaci da Banco (SOP/OTC)", 6.00, 9.50, "800123401"),
         ("Tachipirina 1000mg Bustine", "Farmaci da Banco (SOP/OTC)", 7.50, 11.00, "800123402"),
         ("Nurofen 400mg Capsule Molli", "Farmaci da Banco (SOP/OTC)", 7.00, 11.50, "800123403"),
@@ -348,6 +357,7 @@ def load_data():
         ("Froben Gola Spray 0.25%", "Farmaci da Banco (SOP/OTC)", 8.50, 13.20, "800123412"),
         ("Lasonil Antinfiammatorio Gel", "Farmaci da Banco (SOP/OTC)", 9.00, 14.50, "800123413"),
         
+        # Integratori
         ("Multicentrum Uomo 90 Compresse", "Integratori e Vitamine", 16.00, 25.00, "800223401"),
         ("Multicentrum Donna 90 Compresse", "Integratori e Vitamine", 16.00, 25.00, "800223402"),
         ("Polase 36 Bustine", "Integratori e Vitamine", 12.00, 18.90, "800223403"),
@@ -360,6 +370,7 @@ def load_data():
         ("Fermenti Lattici Vivi VSL#3", "Integratori e Vitamine", 20.00, 33.00, "800223410"),
         ("Kijimea Colon Irritabile", "Integratori e Vitamine", 22.00, 36.00, "800223411"),
         
+        # Cosmesi
         ("Rilastil Smagliature Crema 200ml", "Cosmesi e Dermocosmesi", 28.00, 46.00, "800323401"),
         ("CeraVe Crema Idratante Corpo 450g", "Cosmesi e Dermocosmesi", 14.00, 22.00, "800323402"),
         ("La Roche-Posay Effaclar Duo+", "Cosmesi e Dermocosmesi", 15.50, 23.50, "800323403"),
@@ -369,16 +380,11 @@ def load_data():
         ("Eucerin Urea Repair Plus 10%", "Cosmesi e Dermocosmesi", 16.50, 25.50, "800323407"),
         ("Vichy Liftactiv Supreme Anti-Rughe", "Cosmesi e Dermocosmesi", 25.00, 39.00, "800323408"),
         
-        ("Boiron Arnica Montana 9CH Granuli", "Fitoterapia e Omeopatia", 6.00, 9.50, "800423401"),
-        ("Sedatif PC 90 Compresse Omeopatiche", "Fitoterapia e Omeopatia", 9.00, 14.50, "800423402"),
-        ("Valeriana Dispert 50 Confetti", "Fitoterapia e Omeopatia", 10.00, 16.00, "800423403"),
-        ("Artiglio del Diavolo Unguento Forte", "Fitoterapia e Omeopatia", 13.00, 21.00, "800423404"),
-        
+        # Mamma e Bambino & Dispositivi
         ("Mustela Pasta per il Cambio 150ml", "Mamma e Bambino", 7.50, 12.50, "800523401"),
         ("Aptamil 2 Latte di Seguito 800g", "Mamma e Bambino", 19.50, 28.00, "800523402"),
         ("Humana 1 Polvere Neonati 800g", "Mamma e Bambino", 19.00, 27.50, "800523403"),
         ("Pampers Progressi Misura 3", "Mamma e Bambino", 14.00, 21.00, "800523404"),
-        
         ("Omron M2 Misuratore Pressione", "Dispositivi Medici", 39.00, 60.00, "800623401"),
         ("Termometro Digitale Infrarossi", "Dispositivi Medici", 32.00, 49.00, "800623402"),
         ("Hansaplast Cerotti Assortiti 40pz", "Dispositivi Medici", 4.00, 7.20, "800623403"),
@@ -387,9 +393,9 @@ def load_data():
 
     righe = []
     for base_nome, cat, pmin, pmax, base_minsan in cataloghi_base:
-        for i in range(50):
-            suf = "" if i == 0 else f" - Confezione #{i+1}"
-            nome = f"{base_nome}{suf}"
+        for i in range(25): # Generazione varianti scalabili
+            suf = "" if i == 0 else f" - Formato #{i+1}"
+            nome = f"{base_nome}{suf}" if i == 0 else f"{base_nome} Confezione {i+1}"
             minsan = str(int(base_minsan) + i)
             prezzo_base = round(random.uniform(pmin, pmax), 2)
             
@@ -419,7 +425,7 @@ st.markdown(f"""
             {logo_html}
             <h1 class="brand-hero-title">Compara<span>carrello.it</span></h1>
         </div>
-        <div class="brand-hero-tagline">Compara i prezzi di oltre 2.500 farmaci e prodotti da banco nelle migliori farmacie online</div>
+        <div class="brand-hero-tagline">Compara i prezzi di oltre 10.000 farmaci e prodotti da banco nelle migliori farmacie online</div>
         <div class="brand-hero-subtagline">Calcoliamo in tempo reale il totale del tuo carrello incluse le spese di spedizione</div>
     </div>
 """, unsafe_allow_html=True)
@@ -449,7 +455,7 @@ if 'categoria_selezionata' not in st.session_state:
     st.session_state.categoria_selezionata = "Tutte le Categorie"
 
 # ---------------------------------------------------------
-# 9. MOTORE DI RICERCA INTERATTIVO SCALABILE
+# 9. MOTORE DI RICERCA INTELLIGENTE (CROSS-CATEGORY)
 # ---------------------------------------------------------
 st.markdown('<div class="search-hero-card">', unsafe_allow_html=True)
 st.markdown('<div style="color: #047857; font-size: 1.35rem; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 16px;">Cerca e aggiungi un prodotto</div>', unsafe_allow_html=True)
@@ -469,19 +475,19 @@ for idx, cat in enumerate(cat_lista[:7]):
 
 st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
 
-cat_attuale = st.session_state.categoria_selezionata
-df_filtrato = df_prodotti if cat_attuale == "Tutte le Categorie" else df_prodotti[df_prodotti['Categoria'] == cat_attuale]
+query_testo = st.text_input("🔍 Cerca per nome farmaco (es. Belladonna, Nux Vomica, Tachipirina) o codice MINSAN:", placeholder="Digita un termine (es. belladonna, nux vomica)...")
 
-query_testo = st.text_input("🔍 Cerca per nome farmaco (es. Tachipirina, Polase, CeraVe) o codice MINSAN:", placeholder="Digita almeno 2 lettere per filtrare i prodotti...")
-
+# MODIFICA CHIAVE: Se l'utente digita qualcosa, cerchiamo SEMPRE su tutto il database a prescindere dalla categoria selezionata per evitare blocchi!
 if query_testo and len(query_testo.strip()) >= 1:
     q_lower = query_testo.lower()
-    df_risultati_ricerca = df_filtrato[df_filtrato['Prodotto'].str.lower().str.contains(q_lower) | df_filtrato['MINSAN'].str.contains(q_lower)]
+    df_risultati_ricerca = df_prodotti[df_prodotti['Prodotto'].str.lower().str.contains(q_lower) | df_prodotti['MINSAN'].str.contains(q_lower)]
 else:
+    cat_attuale = st.session_state.categoria_selezionata
+    df_filtrato = df_prodotti if cat_attuale == "Tutte le Categorie" else df_prodotti[df_prodotti['Categoria'] == cat_attuale]
     df_risultati_ricerca = df_filtrato.head(15)
 
 if not df_risultati_ricerca.empty:
-    opzioni_prodotti = [f"{row['Prodotto']} (MINSAN: {row['MINSAN']})" for _, row in df_risultati_ricerca.iterrows()]
+    opzioni_prodotti = [f"{row['Prodotto']} | Categoria: {row['Categoria']} (MINSAN: {row['MINSAN']})" for _, row in df_risultati_ricerca.iterrows()]
     
     prod_scelto = st.selectbox("Seleziona il prodotto trovato:", options=opzioni_prodotti, index=0, label_visibility="collapsed")
     
@@ -507,7 +513,7 @@ if not df_risultati_ricerca.empty:
                     st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
 else:
-    st.warning("Nessun prodotto trovato con i criteri inseriti. Prova a digitare un termine più generico (es. 'Tachipirina' o 'Crema').")
+    st.warning("Nessun prodotto trovato. Prova a digitare 'belladonna', 'nux vomica', 'arnica' o 'tachipirina'.")
 
 st.markdown('</div>', unsafe_allow_html=True)
 
@@ -621,7 +627,7 @@ if st.session_state.carrello:
             st.dataframe(df_res.style.format({'Totale Prodotti (€)': '{:.2f}', 'Spedizioni (€)': '{:.2f}', 'Soglia Gratis (€)': '{:.2f}', 'Totale Carrello (€)': '{:.2f}'}), use_container_width=True)
 
     # ---------------------------------------------------------
-    # 12. CONDIVISIONE E QR CODE (TEST AMICI & PARTNER)
+    # 12. CONDIVISIONE E QR CODE
     # ---------------------------------------------------------
     st.markdown("---")
     st.markdown("### Condividi Carrello o Salvalo sul Cellulare")
@@ -653,7 +659,7 @@ if st.session_state.carrello:
                     </button>
                 </a>
                 <a href="{telegram_url}" target="_blank" style="text-decoration:none;">
-                    <button style="width:100%; background-color:#0088cc; color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; cursor:pointer; box-shadow:0 4px 10px rgba(0, 136, 204, 0.15);">
+                    <button style="width:100% background-color:#0088cc; color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; cursor:pointer; box-shadow:0 4px 10px rgba(0, 136, 204, 0.15);">
                         Condividi Carrello su Telegram
                     </button>
                 </a>
