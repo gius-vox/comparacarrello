@@ -195,7 +195,7 @@ else:
                         st.success("Aggiunto!")
                         st.rerun()
                     else:
-                        st.info("Il prodotto è già nel carrello.")
+                        st.info("El producto ya está en el carrito.")
 
 # ---------------------------------------------------------
 # 9. VISUALIZZAZIONE CARRELLO E COMPARAZIONE PREZZI
@@ -253,7 +253,8 @@ else:
     )
 
     migliore = df_risultati.iloc[0]
-    st.success(f"🎉 **La farmacia più economica per il tuo carrello è {migliore['Farmacia']}** con un totale complessivo di **€ {migliore['Totale Complessivo (€)']:,.2f}** (inclusi i costi di spedizione)!")
+    tot_migliore = migliore['Totale Complessivo (€)']
+    st.success(f"🎉 **La farmacia più economica per il tuo carrello è {migliore['Farmacia']}** con un totale complessivo di **€ {tot_migliore:.2f}** (inclusi i costi di spedizione)!")
 
     if st.button("Svuota Carrello"):
         st.session_state.carrello = []
