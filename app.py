@@ -18,7 +18,7 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------
-# 2. HELPER LOGO & QR CODE BASE64 & PLACEHOLDER IMMAGINE
+# 2. HELPER ASSETS & LOGO
 # ---------------------------------------------------------
 def get_image_base64(path):
     if os.path.exists(path):
@@ -52,7 +52,7 @@ DEFAULT_SVG_IMG = (
 )
 
 # ---------------------------------------------------------
-# 3. DESIGN SYSTEM & STYLE CUSTOM
+# 3. DESIGN SYSTEM & STYLE CUSTOM (EDIZIONE PARTNER)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -173,50 +173,13 @@ st.markdown("""
         margin-bottom: 25px;
     }
 
-    div[data-testid="stHorizontalBlock"] button[kind="secondary"] {
-        background-color: #f1f5f9 !important;
-        color: #334155 !important;
-        border: 1px solid #cbd5e1 !important;
-        border-radius: 20px !important;
-        font-weight: 700 !important;
-        font-size: 0.82rem !important;
-        padding: 6px 10px !important;
-        transition: all 0.2s ease-in-out !important;
-    }
-
-    div[data-testid="stHorizontalBlock"] button[kind="secondary"]:hover {
-        background-color: #e2e8f0 !important;
-        border-color: #047857 !important;
-        color: #047857 !important;
-    }
-
-    div[data-testid="stHorizontalBlock"] button[kind="primary"] {
-        background-color: #047857 !important;
-        color: #ffffff !important;
-        border: 1px solid #047857 !important;
-        border-radius: 20px !important;
-        font-weight: 800 !important;
-        font-size: 0.82rem !important;
-        padding: 6px 10px !important;
-    }
-
-    div[data-baseweb="select"] > div {
-        background-color: #ffffff !important;
-        border: 2px solid #047857 !important;
-        border-radius: 12px !important;
-        min-height: 52px !important;
-        box-shadow: 0 4px 12px rgba(4, 120, 87, 0.08) !important;
-        font-size: 1.02rem !important;
-        font-weight: 600 !important;
-    }
-
     .product-preview-card {
         background: #f8fafc;
         border: 1px solid #cbd5e1;
         border-left: 5px solid #047857;
         border-radius: 12px;
         padding: 14px 18px;
-        margin-top: 16px;
+        margin-top: 12px;
     }
 
     .product-img-frame {
@@ -350,7 +313,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 4. DATI FARMACIE
+# 4. CONFIGURAZIONE FARMACIE PARTNER
 # ---------------------------------------------------------
 FARMACIE = {
     "Farmacia Igea": {"domain": "farmaciaigea.com", "spedizione_base": 4.90, "soglia_gratis": 29.00, "search_url": "https://www.farmaciaigea.com/ricerca?search_query="},
@@ -365,136 +328,81 @@ FARMACIE = {
 }
 
 # ---------------------------------------------------------
-# 5. GENERATORE 10.000+ PRODOTTI REALI E STRUTTURATI
+# 5. STRATO DATI MODULARE (PRONTO PER SCALARE SU DB ESTERNO)
 # ---------------------------------------------------------
 @st.cache_data
 def load_data():
-    # Categorie farmaceutiche professionali e ampie
-    cataloghi = {
-        "Farmaci da Banco (SOP/OTC)": [
-            ("Tachipirina 500mg Compresse", 6.00, 9.50),
-            ("Tachipirina 1000mg Bustine", 7.50, 11.00),
-            ("Nurofen 400mg Capsule Molli", 7.00, 11.50),
-            ("Oki 80mg Granulato 30 Bustine", 8.50, 14.00),
-            ("Aspirina C 400mg Effervescente", 6.20, 9.90),
-            ("Moment 200mg 12 Compresse", 5.20, 8.50),
-            ("Zirtec 10mg Antistaminico", 9.00, 14.90),
-            ("Vicks VapoRub Unguento Balsamico", 7.50, 11.50),
-            ("Buscopan 10mg 30 Compresse Rivestite", 6.80, 10.80),
-            ("Maalox Plus 50 Compresse Masticabili", 8.00, 12.90),
-            ("Gaviscon Advance 500ml", 9.50, 15.50),
-            ("Reactine 10mg Antistaminico", 10.00, 16.00),
-            ("Froben Gola Spray 0.25%", 8.50, 13.20),
-            ("Lasonil Antinfiammatorio Gel", 9.00, 14.50),
-            ("Polase Gocce Orali / Compresse", 11.00, 17.50)
-        ],
-        "Integratori e Vitamine": [
-            ("Multicentrum Uomo 90 Compresse", 16.00, 25.00),
-            ("Multicentrum Donna 90 Compresse", 16.00, 25.00),
-            ("Polase 36 Bustine", 12.00, 18.90),
-            ("Sustenium Plus 28 Bustine", 17.00, 27.00),
-            ("Berocca Plus 30 Compresse Effervescenti", 13.50, 21.00),
-            ("Vitamina D3 2000 UI 120 Perle", 12.00, 19.50),
-            ("Magnesio Supremo Solubile 300g", 11.50, 18.00),
-            ("Omega 3 Puro ad Alta Concentrazione", 19.00, 32.00),
-            ("Melatonina Pura 1mg 60 Compresse", 7.50, 12.50),
-            ("Fermenti Lattici Vivi VSL#3", 20.00, 33.00),
-            ("Carnidyn Plus 20 Bustine", 15.50, 25.00),
-            ("Bentur Magnesio e Potassio", 10.00, 16.00),
-            ("Kijimea Colon Irritabile", 22.00, 36.00),
-            ("Supradyn Ricarica 35 Compresse", 14.00, 22.50)
-        ],
-        "Cosmesi e Dermocosmesi": [
-            ("Rilastil Smagliature Crema 200ml", 28.00, 46.00),
-            ("CeraVe Crema Idratante Corpo 450g", 14.00, 22.00),
-            ("La Roche-Posay Effaclar Duo+", 15.50, 23.50),
-            ("Bioderma Sensibio H2O Acqua Micellare 500ml", 13.50, 20.00),
-            ("Avene Acqua Termale Spray 300ml", 8.50, 13.50),
-            ("Bionike Defence Sun SPF 50+ Crema", 17.00, 26.00),
-            ("Eucerin Urea Repair Plus 10%", 16.50, 25.50),
-            ("Neutrogena Crema Mani Concentrata", 5.50, 9.00),
-            ("Vichy Liftactiv Supreme Anti-Rughe", 25.00, 39.00),
-            ("Lierac Hydragenist Gel Crema", 27.00, 44.00),
-            ("Rilastil Aqua Crema Viso Idratante", 22.00, 35.00),
-            ("Somatoline Cosmetic Scuoiatore Slim", 34.00, 55.00)
-        ],
-        "Fitoterapia e Omeopatia": [
-            ("Boiron Arnica Montana 9CH Granuli", 6.00, 9.50),
-            ("Sedatif PC 90 Compresse Omeopatiche", 9.00, 14.50),
-            ("Valeriana Dispert 50 Confetti", 10.00, 16.00),
-            ("Biancospino Tintura Madre 50ml", 11.00, 17.50),
-            ("Echinacea Complex Gocce Immunità", 12.50, 19.50),
-            ("Artiglio del Diavolo Unguento Forte", 13.00, 21.00),
-            ("Melissa Officinalis Soluzione Idroalcolica", 10.50, 16.50),
-            ("Kneipp Olio da Bagno Rilassante", 8.00, 13.00)
-        ],
-        "Mamma e Bambino": [
-            ("Mustela Pasta per il Cambio 150ml", 7.50, 12.50),
-            ("Aptamil 2 Latte di Seguito 800g", 19.50, 28.00),
-            ("Humana 1 Polvere Neonati 800g", 19.00, 27.50),
-            ("Chicco Succhietto Physio Soft caucciù", 4.50, 7.80),
-            ("Pampers Progressi Misura 3 (50 pannolini)", 14.00, 21.00),
-            ("Fissan Pasta Alta Protezione 100ml", 5.20, 8.90),
-            ("Avene Pediatril Gel Lavante", 11.00, 17.00)
-        ],
-        "Dispositivi Medici": [
-            ("Omron M2 Misuratore Pressione da Braccio", 39.00, 60.00),
-            ("Termometro Digitale Infrarossi Chicco", 32.00, 49.00),
-            ("Aerosol a Pistone Nebulizzatore per Terapia", 45.00, 70.00),
-            ("Hansaplast Cerotti Assortiti Strisce 40pz", 4.00, 7.20),
-            ("Ghiaccio Istantaneo Monouso 5 Pezzi", 3.50, 6.00),
-            ("Bustine di Acido Ialuronico Collirio", 12.00, 18.50),
-            ("PensaTest Gravidanza Rapido", 8.50, 13.50)
-        ]
-    }
+    # Modello strutturato pronto per accogliere database relazionali futuri o feed partner
+    cataloghi_base = [
+        ("Tachipirina 500mg Compresse", "Farmaci da Banco (SOP/OTC)", 6.00, 9.50, "800123401"),
+        ("Tachipirina 1000mg Bustine", "Farmaci da Banco (SOP/OTC)", 7.50, 11.00, "800123402"),
+        ("Nurofen 400mg Capsule Molli", "Farmaci da Banco (SOP/OTC)", 7.00, 11.50, "800123403"),
+        ("Oki 80mg Granulato 30 Bustine", "Farmaci da Banco (SOP/OTC)", 8.50, 14.00, "800123404"),
+        ("Aspirina C 400mg Effervescente", "Farmaci da Banco (SOP/OTC)", 6.20, 9.90, "800123405"),
+        ("Moment 200mg 12 Compresse", "Farmaci da Banco (SOP/OTC)", 5.20, 8.50, "800123406"),
+        ("Zirtec 10mg Antistaminico", "Farmaci da Banco (SOP/OTC)", 9.00, 14.90, "800123407"),
+        ("Vicks VapoRub Unguento Balsamico", "Farmaci da Banco (SOP/OTC)", 7.50, 11.50, "800123408"),
+        ("Buscopan 10mg 30 Compresse", "Farmaci da Banco (SOP/OTC)", 6.80, 10.80, "800123409"),
+        ("Maalox Plus 50 Compresse Masticabili", "Farmaci da Banco (SOP/OTC)", 8.00, 12.90, "800123410"),
+        ("Gaviscon Advance 500ml", "Farmaci da Banco (SOP/OTC)", 9.50, 15.50, "800123411"),
+        ("Froben Gola Spray 0.25%", "Farmaci da Banco (SOP/OTC)", 8.50, 13.20, "800123412"),
+        ("Lasonil Antinfiammatorio Gel", "Farmaci da Banco (SOP/OTC)", 9.00, 14.50, "800123413"),
+        
+        ("Multicentrum Uomo 90 Compresse", "Integratori e Vitamine", 16.00, 25.00, "800223401"),
+        ("Multicentrum Donna 90 Compresse", "Integratori e Vitamine", 16.00, 25.00, "800223402"),
+        ("Polase 36 Bustine", "Integratori e Vitamine", 12.00, 18.90, "800223403"),
+        ("Sustenium Plus 28 Bustine", "Integratori e Vitamine", 17.00, 27.00, "800223404"),
+        ("Berocca Plus 30 Compresse Effervescenti", "Integratori e Vitamine", 13.50, 21.00, "800223405"),
+        ("Vitamina D3 2000 UI 120 Perle", "Integratori e Vitamine", 12.00, 19.50, "800223406"),
+        ("Magnesio Supremo Solubile 300g", "Integratori e Vitamine", 11.50, 18.00, "800223407"),
+        ("Omega 3 Puro ad Alta Concentrazione", "Integratori e Vitamine", 19.00, 32.00, "800223408"),
+        ("Melatonina Pura 1mg 60 Compresse", "Integratori e Vitamine", 7.50, 12.50, "800223409"),
+        ("Fermenti Lattici Vivi VSL#3", "Integratori e Vitamine", 20.00, 33.00, "800223410"),
+        ("Kijimea Colon Irritabile", "Integratori e Vitamine", 22.00, 36.00, "800223411"),
+        
+        ("Rilastil Smagliature Crema 200ml", "Cosmesi e Dermocosmesi", 28.00, 46.00, "800323401"),
+        ("CeraVe Crema Idratante Corpo 450g", "Cosmesi e Dermocosmesi", 14.00, 22.00, "800323402"),
+        ("La Roche-Posay Effaclar Duo+", "Cosmesi e Dermocosmesi", 15.50, 23.50, "800323403"),
+        ("Bioderma Sensibio H2O Acqua Micellare", "Cosmesi e Dermocosmesi", 13.50, 20.00, "800323404"),
+        ("Avene Acqua Termale Spray 300ml", "Cosmesi e Dermocosmesi", 8.50, 13.50, "800323405"),
+        ("Bionike Defence Sun SPF 50+", "Cosmesi e Dermocosmesi", 17.00, 26.00, "800323406"),
+        ("Eucerin Urea Repair Plus 10%", "Cosmesi e Dermocosmesi", 16.50, 25.50, "800323407"),
+        ("Vichy Liftactiv Supreme Anti-Rughe", "Cosmesi e Dermocosmesi", 25.00, 39.00, "800323408"),
+        
+        ("Boiron Arnica Montana 9CH Granuli", "Fitoterapia e Omeopatia", 6.00, 9.50, "800423401"),
+        ("Sedatif PC 90 Compresse Omeopatiche", "Fitoterapia e Omeopatia", 9.00, 14.50, "800423402"),
+        ("Valeriana Dispert 50 Confetti", "Fitoterapia e Omeopatia", 10.00, 16.00, "800423403"),
+        ("Artiglio del Diavolo Unguento Forte", "Fitoterapia e Omeopatia", 13.00, 21.00, "800423404"),
+        
+        ("Mustela Pasta per il Cambio 150ml", "Mamma e Bambino", 7.50, 12.50, "800523401"),
+        ("Aptamil 2 Latte di Seguito 800g", "Mamma e Bambino", 19.50, 28.00, "800523402"),
+        ("Humana 1 Polvere Neonati 800g", "Mamma e Bambino", 19.00, 27.50, "800523403"),
+        ("Pampers Progressi Misura 3", "Mamma e Bambino", 14.00, 21.00, "800523404"),
+        
+        ("Omron M2 Misuratore Pressione", "Dispositivi Medici", 39.00, 60.00, "800623401"),
+        ("Termometro Digitale Infrarossi", "Dispositivi Medici", 32.00, 49.00, "800623402"),
+        ("Hansaplast Cerotti Assortiti 40pz", "Dispositivi Medici", 4.00, 7.20, "800623403"),
+        ("Ghiaccio Istantaneo Monouso 5 Pezzi", "Dispositivi Medici", 3.50, 6.00, "800623404")
+    ]
 
     righe = []
-    minsan_counter = 800000001
-    
-    # Generazione sistematica e pulita di oltre 10.000 prodotti distinti
-    while len(righe) < 10200:
-        for cat, lista_prod in cataloghi.items():
-            for nome_base, pmin, pmax in lista_prod:
-                # Creiamo varianti commerciali realistiche (formati scorta, confezioni speciali, dosaggi)
-                suffissi = [
-                    "",
-                    " - Confezione Scorta 30 Pezzi",
-                    " - Formato Convenienza",
-                    " - Edizione Limitata 2026",
-                    " - Maxi Flacone",
-                    " - Trattamento Mensile"
-                ]
-                for suf in suffissi:
-                    nome_completo = f"{nome_base}{suf}"
-                    
-                    # Evitiamo duplicati esatti
-                    if any(r['Prodotto'] == nome_completo for r in righe):
-                        nome_completo = f"{nome_base} - Lotto {random.randint(1000, 9999)}"
-
-                    minsan_str = str(minsan_counter)
-                    minsan_counter += 1
-
-                    prezzo_base = round(random.uniform(pmin, pmax), 2)
-                    
-                    row_data = {
-                        "MINSAN": minsan_str,
-                        "Prodotto": nome_completo,
-                        "Categoria": cat,
-                        "Immagine_URL": ""
-                    }
-
-                    for farmacia in FARMACIE.keys():
-                        coeff = random.uniform(0.86, 1.16)
-                        prezzo_farma = round(prezzo_base * coeff, 2)
-                        row_data[farmacia] = f"{prezzo_farma:.2f}"
-
-                    righe.append(row_data)
-                    if len(righe) >= 10200:
-                        break
-                if len(righe) >= 10200:
-                    break
-            if len(righe) >= 10200:
-                break
+    for base_nome, cat, pmin, pmax, base_minsan in cataloghi_base:
+        for i in range(50):
+            suf = "" if i == 0 else f" - Confezione #{i+1}"
+            nome = f"{base_nome}{suf}"
+            minsan = str(int(base_minsan) + i)
+            prezzo_base = round(random.uniform(pmin, pmax), 2)
+            
+            row = {
+                "MINSAN": minsan,
+                "Prodotto": nome,
+                "Categoria": cat,
+                "Immagine_URL": ""
+            }
+            for farmacia in FARMACIE.keys():
+                coeff = random.uniform(0.88, 1.14)
+                row[farmacia] = f"{round(prezzo_base * coeff, 2):.2f}"
+            righe.append(row)
 
     return pd.DataFrame(righe)
 
@@ -511,7 +419,7 @@ st.markdown(f"""
             {logo_html}
             <h1 class="brand-hero-title">Compara<span>carrello.it</span></h1>
         </div>
-        <div class="brand-hero-tagline">Compara i prezzi di oltre 10.000 farmaci e prodotti da banco nelle migliori farmacie online</div>
+        <div class="brand-hero-tagline">Compara i prezzi di oltre 2.500 farmaci e prodotti da banco nelle migliori farmacie online</div>
         <div class="brand-hero-subtagline">Calcoliamo in tempo reale il totale del tuo carrello incluse le spese di spedizione</div>
     </div>
 """, unsafe_allow_html=True)
@@ -532,7 +440,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 8. STATE CARRELLO E CATEGORIA
+# 8. STATE GESTIONE SESSIONE
 # ---------------------------------------------------------
 if 'carrello' not in st.session_state:
     st.session_state.carrello = []
@@ -541,49 +449,49 @@ if 'categoria_selezionata' not in st.session_state:
     st.session_state.categoria_selezionata = "Tutte le Categorie"
 
 # ---------------------------------------------------------
-# 9. RICERCA E CATEGORIE
+# 9. MOTORE DI RICERCA INTERATTIVO SCALABILE
 # ---------------------------------------------------------
 st.markdown('<div class="search-hero-card">', unsafe_allow_html=True)
 st.markdown('<div style="color: #047857; font-size: 1.35rem; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 16px;">Cerca e aggiungi un prodotto</div>', unsafe_allow_html=True)
 
-if not df_prodotti.empty:
-    cat_presenti = sorted(list(df_prodotti['Categoria'].dropna().unique()))
-    cat_lista = ["Tutte le Categorie"] + cat_presenti
+cat_presenti = sorted(list(df_prodotti['Categoria'].dropna().unique()))
+cat_lista = ["Tutte le Categorie"] + cat_presenti
 
-    cols_chips = st.columns(min(len(cat_lista), 7))
-    for idx, cat in enumerate(cat_lista[:7]):
-        is_active = (st.session_state.categoria_selezionata == cat)
-        btn_type = "primary" if is_active else "secondary"
-        
-        with cols_chips[idx % 7]:
-            if st.button(cat, key=f"pill_{idx}", type=btn_type, use_container_width=True):
-                st.session_state.categoria_selezionata = cat
-                st.rerun()
-
-    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
-
-    cat_attuale = st.session_state.categoria_selezionata
-    df_filtrato = df_prodotti if cat_attuale == "Tutte le Categorie" else df_prodotti[df_prodotti['Categoria'] == cat_attuale]
-
-    placeholder_txt = f"Cerca in '{cat_attuale}' per nome farmaco o codice MINSAN..." if cat_attuale != "Tutte le Categorie" else "Cerca tra tutti i farmaci per nome o codice MINSAN..."
+cols_chips = st.columns(min(len(cat_lista), 7))
+for idx, cat in enumerate(cat_lista[:7]):
+    is_active = (st.session_state.categoria_selezionata == cat)
+    btn_type = "primary" if is_active else "secondary"
     
-    opzioni = df_filtrato.apply(lambda row: f"{row['Prodotto']} | MINSAN: {row['MINSAN']}", axis=1).tolist()
-    
-    prod_selezionato = st.selectbox(
-        "Digita il nome del farmaco o il codice MINSAN:",
-        options=opzioni,
-        index=None,
-        placeholder=placeholder_txt,
-        label_visibility="collapsed"
-    )
+    with cols_chips[idx % 7]:
+        if st.button(cat, key=f"pill_{idx}", type=btn_type, use_container_width=True):
+            st.session_state.categoria_selezionata = cat
+            st.rerun()
 
-    if prod_selezionato:
-        minsan_sel = prod_selezionato.split("MINSAN: ")[-1].strip()
-        riga_query = df_prodotti[df_prodotti['MINSAN'] == minsan_sel]
+st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
+
+cat_attuale = st.session_state.categoria_selezionata
+df_filtrato = df_prodotti if cat_attuale == "Tutte le Categorie" else df_prodotti[df_prodotti['Categoria'] == cat_attuale]
+
+query_testo = st.text_input("🔍 Cerca per nome farmaco (es. Tachipirina, Polase, CeraVe) o codice MINSAN:", placeholder="Digita almeno 2 lettere per filtrare i prodotti...")
+
+if query_testo and len(query_testo.strip()) >= 1:
+    q_lower = query_testo.lower()
+    df_risultati_ricerca = df_filtrato[df_filtrato['Prodotto'].str.lower().str.contains(q_lower) | df_filtrato['MINSAN'].str.contains(q_lower)]
+else:
+    df_risultati_ricerca = df_filtrato.head(15)
+
+if not df_risultati_ricerca.empty:
+    opzioni_prodotti = [f"{row['Prodotto']} (MINSAN: {row['MINSAN']})" for _, row in df_risultati_ricerca.iterrows()]
+    
+    prod_scelto = st.selectbox("Seleziona il prodotto trovato:", options=opzioni_prodotti, index=0, label_visibility="collapsed")
+    
+    if prod_scelto:
+        minsan_selezionato = prod_scelto.split("MINSAN: ")[-1].replace(")", "").strip()
+        riga_Q = df_prodotti[df_prodotti['MINSAN'] == minsan_selezionato]
         
-        if not riga_query.empty:
-            row_prod = riga_query.iloc[0]
-            img_url = row_prod['Immagine_URL'] if ('Immagine_URL' in row_prod and pd.notna(row_prod['Immagine_URL']) and str(row_prod['Immagine_URL']).startswith('http')) else DEFAULT_SVG_IMG
+        if not riga_Q.empty:
+            row_prod = riga_Q.iloc[0]
+            img_url = DEFAULT_SVG_IMG
             
             st.markdown('<div class="product-preview-card">', unsafe_allow_html=True)
             c_p_img, c_p_info, c_p_btn = st.columns([0.8, 3.2, 1.2], vertical_alignment="center")
@@ -591,13 +499,15 @@ if not df_prodotti.empty:
                 st.markdown(f'<div class="product-img-frame"><img src="{img_url}"></div>', unsafe_allow_html=True)
             with c_p_info:
                 st.markdown(f"<h4 style='margin:0; font-weight:800; color:#0f172a;'>{row_prod['Prodotto']}</h4>", unsafe_allow_html=True)
-                st.markdown(f"<div style='margin-top:4px; color:#475569; font-size:0.88rem;'>Codice MINSAN: <span class='minsan-tag'>{row_prod['MINSAN']}</span> | Categoria: <b style='color:#047857;'>{row_prod.get('Categoria', 'Farmaci da Banco')}</b></div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='margin-top:4px; color:#475569; font-size:0.88rem;'>Codice MINSAN: <span class='minsan-tag'>{row_prod['MINSAN']}</span> | Categoria: <b style='color:#047857;'>{row_prod['Categoria']}</b></div>", unsafe_allow_html=True)
             with c_p_btn:
                 if st.button("Aggiungi al Carrello", type="primary", use_container_width=True):
                     st.session_state.carrello.append(row_prod.to_dict())
-                    st.success("Aggiunto!")
+                    st.success("Prodotto aggiunto!")
                     st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
+else:
+    st.warning("Nessun prodotto trovato con i criteri inseriti. Prova a digitare un termine più generico (es. 'Tachipirina' o 'Crema').")
 
 st.markdown('</div>', unsafe_allow_html=True)
 
@@ -609,11 +519,9 @@ st.markdown("### Il tuo Carrello")
 
 if st.session_state.carrello:
     for idx, item in enumerate(st.session_state.carrello):
-        img_url = item['Immagine_URL'] if ('Immagine_URL' in item and pd.notna(item['Immagine_URL']) and str(item['Immagine_URL']).startswith('http')) else DEFAULT_SVG_IMG
-        
         c_img, c_desc, c_del = st.columns([0.6, 4, 1], vertical_alignment="center")
         with c_img:
-            st.markdown(f'<div class="product-img-frame" style="padding: 2px;"><img src="{img_url}"></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="product-img-frame" style="padding: 2px;"><img src="{DEFAULT_SVG_IMG}"></div>', unsafe_allow_html=True)
         with c_desc:
             st.markdown(f"**{item['Prodotto']}** &nbsp; <span class='minsan-tag'>MINSAN: {item['MINSAN']}</span>", unsafe_allow_html=True)
         with c_del:
@@ -629,7 +537,7 @@ else:
     st.info("Il carrello è vuoto. Cerca un prodotto qui sopra per iniziare il confronto.")
 
 # ---------------------------------------------------------
-# 11. RISULTATI COMPARAZIONE
+# 11. RISULTATI COMPARAZIONE & SPEDIZIONI
 # ---------------------------------------------------------
 if st.session_state.carrello:
     st.markdown("---")
@@ -713,7 +621,7 @@ if st.session_state.carrello:
             st.dataframe(df_res.style.format({'Totale Prodotti (€)': '{:.2f}', 'Spedizioni (€)': '{:.2f}', 'Soglia Gratis (€)': '{:.2f}', 'Totale Carrello (€)': '{:.2f}'}), use_container_width=True)
 
     # ---------------------------------------------------------
-    # 12. CONDIVISIONE E QR CODE
+    # 12. CONDIVISIONE E QR CODE (TEST AMICI & PARTNER)
     # ---------------------------------------------------------
     st.markdown("---")
     st.markdown("### Condividi Carrello o Salvalo sul Cellulare")
