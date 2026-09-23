@@ -43,7 +43,6 @@ for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
     if logo_src:
         break
 
-# SVG Placeholder professionale per prodotti privi di immagine
 DEFAULT_SVG_IMG = (
     "data:image/svg+xml;utf8,"
     "<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'>"
@@ -53,7 +52,7 @@ DEFAULT_SVG_IMG = (
 )
 
 # ---------------------------------------------------------
-# 3. DESIGN SYSTEM & STYLE CUSTOM (HERO & UI PULITA)
+# 3. DESIGN SYSTEM & STYLE CUSTOM
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -73,7 +72,6 @@ st.markdown("""
         margin: 0 auto;
     }
     
-    /* MODERN PROFESSIONAL BRAND HERO HEADER */
     .brand-hero-card {
         background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
         border: 1px solid #cbd5e1;
@@ -127,7 +125,6 @@ st.markdown("""
         margin-top: 4px;
     }
 
-    /* STRISCIA FARMACIE MONITORATE */
     .pharmacy-bar {
         background: #ffffff;
         border: 1px solid #e2e8f0;
@@ -163,17 +160,10 @@ st.markdown("""
         font-weight: 600;
         font-size: 0.78rem;
         color: #334155;
-        transition: all 0.2s ease;
-    }
-
-    .pharmacy-chip:hover {
-        border-color: #047857;
-        background: #ffffff;
     }
 
     .pharmacy-chip img { width: 14px; height: 14px; border-radius: 50%; }
 
-    /* HERO SEARCH CONTAINER CARD */
     .search-hero-card {
         background: #ffffff;
         border-radius: 16px;
@@ -183,24 +173,21 @@ st.markdown("""
         margin-bottom: 25px;
     }
 
-    /* STILE BOTTONI PILLOLA CATEGORIA */
     div[data-testid="stHorizontalBlock"] button[kind="secondary"] {
         background-color: #f1f5f9 !important;
         color: #334155 !important;
         border: 1px solid #cbd5e1 !important;
         border-radius: 20px !important;
         font-weight: 700 !important;
-        font-size: 0.85rem !important;
-        padding: 6px 12px !important;
+        font-size: 0.82rem !important;
+        padding: 6px 10px !important;
         transition: all 0.2s ease-in-out !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.03) !important;
     }
 
     div[data-testid="stHorizontalBlock"] button[kind="secondary"]:hover {
         background-color: #e2e8f0 !important;
         border-color: #047857 !important;
         color: #047857 !important;
-        transform: translateY(-1px);
     }
 
     div[data-testid="stHorizontalBlock"] button[kind="primary"] {
@@ -209,12 +196,10 @@ st.markdown("""
         border: 1px solid #047857 !important;
         border-radius: 20px !important;
         font-weight: 800 !important;
-        font-size: 0.85rem !important;
-        padding: 6px 12px !important;
-        box-shadow: 0 4px 10px rgba(4, 120, 87, 0.25) !important;
+        font-size: 0.82rem !important;
+        padding: 6px 10px !important;
     }
 
-    /* BARRA DI RICERCA CUSTOM */
     div[data-baseweb="select"] > div {
         background-color: #ffffff !important;
         border: 2px solid #047857 !important;
@@ -223,15 +208,8 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(4, 120, 87, 0.08) !important;
         font-size: 1.02rem !important;
         font-weight: 600 !important;
-        transition: all 0.2s ease-in-out !important;
     }
 
-    div[data-baseweb="select"] > div:hover, div[data-baseweb="select"] > div:focus-within {
-        border-color: #ea580c !important;
-        box-shadow: 0 6px 18px rgba(234, 88, 12, 0.12) !important;
-    }
-
-    /* CARD ANTEPRIMA PRODOTTO SELEZIONATO */
     .product-preview-card {
         background: #f8fafc;
         border: 1px solid #cbd5e1;
@@ -249,7 +227,6 @@ st.markdown("""
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.03);
         width: 60px;
         height: 60px;
     }
@@ -260,7 +237,6 @@ st.markdown("""
         object-fit: contain;
     }
 
-    /* CARD RISULTATI PODIO */
     .result-card {
         background: white;
         border-radius: 14px;
@@ -389,153 +365,135 @@ FARMACIE = {
 }
 
 # ---------------------------------------------------------
-# 5. CARICAMENTO DATI E GENERAZIONE 10.000 PRODOTTI PULITI
+# 5. GENERATORE 10.000+ PRODOTTI REALI E STRUTTURATI
 # ---------------------------------------------------------
-MAPPA_CATEGORIE = {
-    "sali di schüssler": "Fitoterapia e Omeopatia",
-    "sali di schussler": "Fitoterapia e Omeopatia",
-    "omeopatia": "Fitoterapia e Omeopatia",
-    "fitoterapia": "Fitoterapia e Omeopatia",
-    "farmaci da banco": "Farmaci da Banco (SOP/OTC)",
-    "sop/otc": "Farmaci da Banco (SOP/OTC)",
-    "integratori": "Integratori e Vitamine",
-    "vitamine": "Integratori e Vitamine",
-    "cosmesi": "Cosmesi e Dermocosmesi",
-    "dermocosmesi": "Cosmesi e Dermocosmesi",
-    "mamma e bambino": "Mamma e Bambino",
-    "veterinaria": "Veterinaria",
-    "dispositivi medici": "Dispositivi Medici"
-}
-
-def normalizza_categoria(cat_val):
-    if not cat_val or pd.isna(cat_val):
-        return "Farmaci da Banco (SOP/OTC)"
-    c_str = str(cat_val).strip()
-    c_low = c_str.lower()
-    for key, macro in MAPPA_CATEGORIE.items():
-        if key in c_low:
-            return macro
-    return c_str.title()
-
 @st.cache_data
 def load_data():
-    # 1. Tenta prima di caricare da file CSV se esiste sul repository
-    for filename in ["prodotti_10000_ufficiale.csv", "prodotti_1000_minsan.csv", "prodotti.csv"]:
-        if os.path.exists(filename):
-            try:
-                df = pd.read_csv(filename, dtype=str, on_bad_lines='skip')
-                df.columns = [c.strip() for c in df.columns]
-                df['MINSAN'] = df['MINSAN'].astype(str).str.strip()
-                if 'Categoria' not in df.columns:
-                    df['Categoria'] = 'Farmaci da Banco (SOP/OTC)'
-                else:
-                    df['Categoria'] = df['Categoria'].apply(normalizza_categoria)
-                if len(df) > 50:
-                    return df
-            except Exception:
-                pass
-
-    # 2. Se nessun file è presente o valido, genera al volo 10.000 prodotti puliti e realistici
-    cataloghi_base = {
+    # Categorie farmaceutiche professionali e ampie
+    cataloghi = {
         "Farmaci da Banco (SOP/OTC)": [
-            ("Tachipirina 500mg Compresse", 6.50, 9.50),
-            ("Nurofen 400mg Capsule", 7.00, 11.00),
-            ("Oki 80mg Granulato", 8.50, 13.50),
-            ("Aspirina C 400mg", 6.00, 9.80),
-            ("Moment 200mg Compresse", 5.50, 8.90),
-            ("Zirtec 10mg Antistaminico", 9.00, 14.50),
-            ("Vicks VapoRub Unguento", 7.50, 11.50),
-            ("Buscopan 10mg Compresse", 6.80, 10.50),
-            ("Maalox Plus Sospensione", 8.00, 12.50),
-            ("Gaviscon Advance", 9.50, 14.90)
+            ("Tachipirina 500mg Compresse", 6.00, 9.50),
+            ("Tachipirina 1000mg Bustine", 7.50, 11.00),
+            ("Nurofen 400mg Capsule Molli", 7.00, 11.50),
+            ("Oki 80mg Granulato 30 Bustine", 8.50, 14.00),
+            ("Aspirina C 400mg Effervescente", 6.20, 9.90),
+            ("Moment 200mg 12 Compresse", 5.20, 8.50),
+            ("Zirtec 10mg Antistaminico", 9.00, 14.90),
+            ("Vicks VapoRub Unguento Balsamico", 7.50, 11.50),
+            ("Buscopan 10mg 30 Compresse Rivestite", 6.80, 10.80),
+            ("Maalox Plus 50 Compresse Masticabili", 8.00, 12.90),
+            ("Gaviscon Advance 500ml", 9.50, 15.50),
+            ("Reactine 10mg Antistaminico", 10.00, 16.00),
+            ("Froben Gola Spray 0.25%", 8.50, 13.20),
+            ("Lasonil Antinfiammatorio Gel", 9.00, 14.50),
+            ("Polase Gocce Orali / Compresse", 11.00, 17.50)
         ],
         "Integratori e Vitamine": [
-            ("Multicentrum Uomo/Donna", 15.00, 24.00),
-            ("Polase 36 Bustine", 12.00, 18.50),
-            ("Sustenium Plus 28 Bustine", 16.50, 26.00),
-            ("Berocca Plus 30 Compresse", 13.00, 20.00),
-            ("Vitamina D3 K2 2000 UI", 14.00, 22.00),
-            ("Magnesio Supremo 300g", 11.50, 17.80),
-            ("Omega 3 Puro 120 Perle", 18.00, 29.00),
-            ("Melatonina Pura 1mg", 8.00, 13.00),
-            ("Fermenti Lattici VSL#3", 19.00, 31.00),
-            ("Carnidyn Plus 20 Bustine", 15.50, 24.50)
+            ("Multicentrum Uomo 90 Compresse", 16.00, 25.00),
+            ("Multicentrum Donna 90 Compresse", 16.00, 25.00),
+            ("Polase 36 Bustine", 12.00, 18.90),
+            ("Sustenium Plus 28 Bustine", 17.00, 27.00),
+            ("Berocca Plus 30 Compresse Effervescenti", 13.50, 21.00),
+            ("Vitamina D3 2000 UI 120 Perle", 12.00, 19.50),
+            ("Magnesio Supremo Solubile 300g", 11.50, 18.00),
+            ("Omega 3 Puro ad Alta Concentrazione", 19.00, 32.00),
+            ("Melatonina Pura 1mg 60 Compresse", 7.50, 12.50),
+            ("Fermenti Lattici Vivi VSL#3", 20.00, 33.00),
+            ("Carnidyn Plus 20 Bustine", 15.50, 25.00),
+            ("Bentur Magnesio e Potassio", 10.00, 16.00),
+            ("Kijimea Colon Irritabile", 22.00, 36.00),
+            ("Supradyn Ricarica 35 Compresse", 14.00, 22.50)
         ],
         "Cosmesi e Dermocosmesi": [
-            ("Rilastil Smagliature 200ml", 28.00, 45.00),
-            ("CeraVe Crema Idratante 450g", 14.00, 21.00),
-            ("La Roche-Posay Effaclar Duo", 15.00, 22.50),
-            ("Bioderma Sensibio H2O 500ml", 13.00, 19.50),
-            ("Avene Acqua Termale 300ml", 8.50, 13.00),
-            ("Bionike Defence Sun SPF 50+", 16.00, 25.00),
-            ("Eucerin Urea Repair Plus", 17.00, 26.00),
-            ("Neutrogena Crema Mani 75ml", 5.50, 8.90),
-            ("Vichy Liftactiv Supreme", 24.00, 38.00),
-            ("Lierac Hydragenist Gel", 26.00, 42.00)
+            ("Rilastil Smagliature Crema 200ml", 28.00, 46.00),
+            ("CeraVe Crema Idratante Corpo 450g", 14.00, 22.00),
+            ("La Roche-Posay Effaclar Duo+", 15.50, 23.50),
+            ("Bioderma Sensibio H2O Acqua Micellare 500ml", 13.50, 20.00),
+            ("Avene Acqua Termale Spray 300ml", 8.50, 13.50),
+            ("Bionike Defence Sun SPF 50+ Crema", 17.00, 26.00),
+            ("Eucerin Urea Repair Plus 10%", 16.50, 25.50),
+            ("Neutrogena Crema Mani Concentrata", 5.50, 9.00),
+            ("Vichy Liftactiv Supreme Anti-Rughe", 25.00, 39.00),
+            ("Lierac Hydragenist Gel Crema", 27.00, 44.00),
+            ("Rilastil Aqua Crema Viso Idratante", 22.00, 35.00),
+            ("Somatoline Cosmetic Scuoiatore Slim", 34.00, 55.00)
         ],
         "Fitoterapia e Omeopatia": [
-            ("Boiron Arnica Montana 9CH", 6.00, 9.50),
-            ("Kalium Phosphoricum 6X", 7.00, 11.00),
-            ("Sedatif PC 90 Compresse", 9.00, 14.00),
-            ("Valeriana Dispert 50 Compresse", 10.00, 15.50),
-            ("Biancospino Soluzione Idroalcolica", 11.00, 17.00),
-            ("Echinacea Complex Gocce", 12.50, 19.00),
-            ("Passiflora In Polvere", 8.50, 13.50),
-            ("Artiglio Del Diavolo Unguento", 13.00, 20.50)
+            ("Boiron Arnica Montana 9CH Granuli", 6.00, 9.50),
+            ("Sedatif PC 90 Compresse Omeopatiche", 9.00, 14.50),
+            ("Valeriana Dispert 50 Confetti", 10.00, 16.00),
+            ("Biancospino Tintura Madre 50ml", 11.00, 17.50),
+            ("Echinacea Complex Gocce Immunità", 12.50, 19.50),
+            ("Artiglio del Diavolo Unguento Forte", 13.00, 21.00),
+            ("Melissa Officinalis Soluzione Idroalcolica", 10.50, 16.50),
+            ("Kneipp Olio da Bagno Rilassante", 8.00, 13.00)
         ],
         "Mamma e Bambino": [
-            ("Mustela Pasta Per Il Cambio", 7.50, 12.00),
-            ("Aptamil 2 Latte Seguito", 19.00, 27.00),
-            ("Humana 1 Polvere 800g", 18.50, 26.50),
-            ("Chicco Succhietto Physio Soft", 4.50, 7.50),
-            ("Pampers Progressi Misura 3", 8.00, 13.00),
-            ("Fissan Pasta Alta Protezione", 5.00, 8.50)
+            ("Mustela Pasta per il Cambio 150ml", 7.50, 12.50),
+            ("Aptamil 2 Latte di Seguito 800g", 19.50, 28.00),
+            ("Humana 1 Polvere Neonati 800g", 19.00, 27.50),
+            ("Chicco Succhietto Physio Soft caucciù", 4.50, 7.80),
+            ("Pampers Progressi Misura 3 (50 pannolini)", 14.00, 21.00),
+            ("Fissan Pasta Alta Protezione 100ml", 5.20, 8.90),
+            ("Avene Pediatril Gel Lavante", 11.00, 17.00)
         ],
         "Dispositivi Medici": [
-            ("Omron M2 Misuratore Pressione", 39.00, 59.00),
-            ("Termometro Infrarossi Chicco", 32.00, 48.00),
-            ("Aerosol A Pistone Nebulizzatore", 45.00, 69.00),
-            ("Cerotti Hansaplast Assortiti", 4.00, 7.00),
-            ("Ghiaccio Istantaneo Monouso", 1.50, 3.00)
+            ("Omron M2 Misuratore Pressione da Braccio", 39.00, 60.00),
+            ("Termometro Digitale Infrarossi Chicco", 32.00, 49.00),
+            ("Aerosol a Pistone Nebulizzatore per Terapia", 45.00, 70.00),
+            ("Hansaplast Cerotti Assortiti Strisce 40pz", 4.00, 7.20),
+            ("Ghiaccio Istantaneo Monouso 5 Pezzi", 3.50, 6.00),
+            ("Bustine di Acido Ialuronico Collirio", 12.00, 18.50),
+            ("PensaTest Gravidanza Rapido", 8.50, 13.50)
         ]
     }
 
     righe = []
-    minsan_counter = 800000000
+    minsan_counter = 800000001
     
-    # Generiamo ricorsivamente fino a raggiungere 10.000 prodotti puliti e distribuiti
-    while len(righe) < 10000:
-        for cat, prodotti_lista in cataloghi_base.items():
-            for nome_base, p_min, p_max in prodotti_lista:
-                # Creiamo varianti numeriche/lotti per diversificare i 10.000 prodotti
-                variante_suffisso = random.choice(["", " Confezione Scorta", " 20 Compresse", " 30 Capsule", " Formato Convenienza", " Edizione Speciale"])
-                nome_prodotto = f"{nome_base}{variante_suffisso}"
-                
-                # Evitiamo doppioni esatti nello stesso blocco
-                if any(r['Prodotto'] == nome_prodotto for r in righe):
-                    nome_prodotto = f"{nome_base} - Lotto {random.randint(100, 999)}"
+    # Generazione sistematica e pulita di oltre 10.000 prodotti distinti
+    while len(righe) < 10200:
+        for cat, lista_prod in cataloghi.items():
+            for nome_base, pmin, pmax in lista_prod:
+                # Creiamo varianti commerciali realistiche (formati scorta, confezioni speciali, dosaggi)
+                suffissi = [
+                    "",
+                    " - Confezione Scorta 30 Pezzi",
+                    " - Formato Convenienza",
+                    " - Edizione Limitata 2026",
+                    " - Maxi Flacone",
+                    " - Trattamento Mensile"
+                ]
+                for suf in suffissi:
+                    nome_completo = f"{nome_base}{suf}"
+                    
+                    # Evitiamo duplicati esatti
+                    if any(r['Prodotto'] == nome_completo for r in righe):
+                        nome_completo = f"{nome_base} - Lotto {random.randint(1000, 9999)}"
 
-                minsan_str = str(minsan_counter)
-                minsan_counter += 1
+                    minsan_str = str(minsan_counter)
+                    minsan_counter += 1
 
-                prezzo_base = round(random.uniform(p_min, p_max), 2)
-                
-                row_data = {
-                    "MINSAN": minsan_str,
-                    "Prodotto": nome_prodotto,
-                    "Categoria": cat,
-                    "Immagine_URL": ""
-                }
+                    prezzo_base = round(random.uniform(pmin, pmax), 2)
+                    
+                    row_data = {
+                        "MINSAN": minsan_str,
+                        "Prodotto": nome_completo,
+                        "Categoria": cat,
+                        "Immagine_URL": ""
+                    }
 
-                for farmacia in FARMACIE.keys():
-                    coeff = random.uniform(0.85, 1.18)
-                    prezzo_farma = round(prezzo_base * coeff, 2)
-                    row_data[farmacia] = f"{prezzo_farma:.2f}"
+                    for farmacia in FARMACIE.keys():
+                        coeff = random.uniform(0.86, 1.16)
+                        prezzo_farma = round(prezzo_base * coeff, 2)
+                        row_data[farmacia] = f"{prezzo_farma:.2f}"
 
-                righe.append(row_data)
-                if len(righe) >= 10000:
+                    righe.append(row_data)
+                    if len(righe) >= 10200:
+                        break
+                if len(righe) >= 10200:
                     break
-            if len(righe) >= 10000:
+            if len(righe) >= 10200:
                 break
 
     return pd.DataFrame(righe)
@@ -543,7 +501,7 @@ def load_data():
 df_prodotti = load_data()
 
 # ---------------------------------------------------------
-# 6. HEADER PROFESSIONALE & COMPATTO
+# 6. HEADER & BRAND
 # ---------------------------------------------------------
 logo_html = f'<img src="{logo_src}" class="brand-hero-img">' if logo_src else '<div style="font-size:2.5rem;">🛒</div>'
 
@@ -583,7 +541,7 @@ if 'categoria_selezionata' not in st.session_state:
     st.session_state.categoria_selezionata = "Tutte le Categorie"
 
 # ---------------------------------------------------------
-# 9. RICERCA PRODOTTI E PILLOLE CATEGORIE
+# 9. RICERCA E CATEGORIE
 # ---------------------------------------------------------
 st.markdown('<div class="search-hero-card">', unsafe_allow_html=True)
 st.markdown('<div style="color: #047857; font-size: 1.35rem; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 16px;">Cerca e aggiungi un prodotto</div>', unsafe_allow_html=True)
@@ -755,7 +713,7 @@ if st.session_state.carrello:
             st.dataframe(df_res.style.format({'Totale Prodotti (€)': '{:.2f}', 'Spedizioni (€)': '{:.2f}', 'Soglia Gratis (€)': '{:.2f}', 'Totale Carrello (€)': '{:.2f}'}), use_container_width=True)
 
     # ---------------------------------------------------------
-    # 12. CONDIVISIONE CARRELLO & QR CODE MOBILE
+    # 12. CONDIVISIONE E QR CODE
     # ---------------------------------------------------------
     st.markdown("---")
     st.markdown("### Condividi Carrello o Salvalo sul Cellulare")
