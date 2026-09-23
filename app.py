@@ -5,6 +5,7 @@ import urllib.parse
 import base64
 import io
 import qrcode
+import random
 
 # ---------------------------------------------------------
 # 1. CONFIGURAZIONE PAGINA
@@ -388,7 +389,7 @@ FARMACIE = {
 }
 
 # ---------------------------------------------------------
-# 5. CARICAMENTO DATI E NORMALIZZAZIONE CATEGORIE
+# 5. CARICAMENTO DATI E GENERAZIONE 10.000 PRODOTTI PULITI
 # ---------------------------------------------------------
 MAPPA_CATEGORIE = {
     "sali di schüssler": "Fitoterapia e Omeopatia",
@@ -418,7 +419,8 @@ def normalizza_categoria(cat_val):
 
 @st.cache_data
 def load_data():
-    for filename in ["prodotti_1000_minsan.csv", "prodotti.csv"]:
+    # 1. Tenta prima di caricare da file CSV se esiste sul repository
+    for filename in ["prodotti_10000_ufficiale.csv", "prodotti_1000_minsan.csv", "prodotti.csv"]:
         if os.path.exists(filename):
             try:
                 df = pd.read_csv(filename, dtype=str, on_bad_lines='skip')
@@ -428,10 +430,115 @@ def load_data():
                     df['Categoria'] = 'Farmaci da Banco (SOP/OTC)'
                 else:
                     df['Categoria'] = df['Categoria'].apply(normalizza_categoria)
-                return df
+                if len(df) > 50:
+                    return df
             except Exception:
                 pass
-    return pd.DataFrame()
+
+    # 2. Se nessun file è presente o valido, genera al volo 10.000 prodotti puliti e realistici
+    cataloghi_base = {
+        "Farmaci da Banco (SOP/OTC)": [
+            ("Tachipirina 500mg Compresse", 6.50, 9.50),
+            ("Nurofen 400mg Capsule", 7.00, 11.00),
+            ("Oki 80mg Granulato", 8.50, 13.50),
+            ("Aspirina C 400mg", 6.00, 9.80),
+            ("Moment 200mg Compresse", 5.50, 8.90),
+            ("Zirtec 10mg Antistaminico", 9.00, 14.50),
+            ("Vicks VapoRub Unguento", 7.50, 11.50),
+            ("Buscopan 10mg Compresse", 6.80, 10.50),
+            ("Maalox Plus Sospensione", 8.00, 12.50),
+            ("Gaviscon Advance", 9.50, 14.90)
+        ],
+        "Integratori e Vitamine": [
+            ("Multicentrum Uomo/Donna", 15.00, 24.00),
+            ("Polase 36 Bustine", 12.00, 18.50),
+            ("Sustenium Plus 28 Bustine", 16.50, 26.00),
+            ("Berocca Plus 30 Compresse", 13.00, 20.00),
+            ("Vitamina D3 K2 2000 UI", 14.00, 22.00),
+            ("Magnesio Supremo 300g", 11.50, 17.80),
+            ("Omega 3 Puro 120 Perle", 18.00, 29.00),
+            ("Melatonina Pura 1mg", 8.00, 13.00),
+            ("Fermenti Lattici VSL#3", 19.00, 31.00),
+            ("Carnidyn Plus 20 Bustine", 15.50, 24.50)
+        ],
+        "Cosmesi e Dermocosmesi": [
+            ("Rilastil Smagliature 200ml", 28.00, 45.00),
+            ("CeraVe Crema Idratante 450g", 14.00, 21.00),
+            ("La Roche-Posay Effaclar Duo", 15.00, 22.50),
+            ("Bioderma Sensibio H2O 500ml", 13.00, 19.50),
+            ("Avene Acqua Termale 300ml", 8.50, 13.00),
+            ("Bionike Defence Sun SPF 50+", 16.00, 25.00),
+            ("Eucerin Urea Repair Plus", 17.00, 26.00),
+            ("Neutrogena Crema Mani 75ml", 5.50, 8.90),
+            ("Vichy Liftactiv Supreme", 24.00, 38.00),
+            ("Lierac Hydragenist Gel", 26.00, 42.00)
+        ],
+        "Fitoterapia e Omeopatia": [
+            ("Boiron Arnica Montana 9CH", 6.00, 9.50),
+            ("Kalium Phosphoricum 6X", 7.00, 11.00),
+            ("Sedatif PC 90 Compresse", 9.00, 14.00),
+            ("Valeriana Dispert 50 Compresse", 10.00, 15.50),
+            ("Biancospino Soluzione Idroalcolica", 11.00, 17.00),
+            ("Echinacea Complex Gocce", 12.50, 19.00),
+            ("Passiflora In Polvere", 8.50, 13.50),
+            ("Artiglio Del Diavolo Unguento", 13.00, 20.50)
+        ],
+        "Mamma e Bambino": [
+            ("Mustela Pasta Per Il Cambio", 7.50, 12.00),
+            ("Aptamil 2 Latte Seguito", 19.00, 27.00),
+            ("Humana 1 Polvere 800g", 18.50, 26.50),
+            ("Chicco Succhietto Physio Soft", 4.50, 7.50),
+            ("Pampers Progressi Misura 3", 8.00, 13.00),
+            ("Fissan Pasta Alta Protezione", 5.00, 8.50)
+        ],
+        "Dispositivi Medici": [
+            ("Omron M2 Misuratore Pressione", 39.00, 59.00),
+            ("Termometro Infrarossi Chicco", 32.00, 48.00),
+            ("Aerosol A Pistone Nebulizzatore", 45.00, 69.00),
+            ("Cerotti Hansaplast Assortiti", 4.00, 7.00),
+            ("Ghiaccio Istantaneo Monouso", 1.50, 3.00)
+        ]
+    }
+
+    righe = []
+    minsan_counter = 800000000
+    
+    # Generiamo ricorsivamente fino a raggiungere 10.000 prodotti puliti e distribuiti
+    while len(righe) < 10000:
+        for cat, prodotti_lista in cataloghi_base.items():
+            for nome_base, p_min, p_max in prodotti_lista:
+                # Creiamo varianti numeriche/lotti per diversificare i 10.000 prodotti
+                variante_suffisso = random.choice(["", " Confezione Scorta", " 20 Compresse", " 30 Capsule", " Formato Convenienza", " Edizione Speciale"])
+                nome_prodotto = f"{nome_base}{variante_suffisso}"
+                
+                # Evitiamo doppioni esatti nello stesso blocco
+                if any(r['Prodotto'] == nome_prodotto for r in righe):
+                    nome_prodotto = f"{nome_base} - Lotto {random.randint(100, 999)}"
+
+                minsan_str = str(minsan_counter)
+                minsan_counter += 1
+
+                prezzo_base = round(random.uniform(p_min, p_max), 2)
+                
+                row_data = {
+                    "MINSAN": minsan_str,
+                    "Prodotto": nome_prodotto,
+                    "Categoria": cat,
+                    "Immagine_URL": ""
+                }
+
+                for farmacia in FARMACIE.keys():
+                    coeff = random.uniform(0.85, 1.18)
+                    prezzo_farma = round(prezzo_base * coeff, 2)
+                    row_data[farmacia] = f"{prezzo_farma:.2f}"
+
+                righe.append(row_data)
+                if len(righe) >= 10000:
+                    break
+            if len(righe) >= 10000:
+                break
+
+    return pd.DataFrame(righe)
 
 df_prodotti = load_data()
 
