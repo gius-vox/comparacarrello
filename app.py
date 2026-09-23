@@ -382,8 +382,8 @@ def load_data():
             ("Maalox", [("Plus 50 Compresse Masticabili", 8.00, 12.00), ("Plus Sospensione Orale 200ml", 9.50, 14.00), ("Reflurapid 20 Bustine", 12.00, 17.50)]),
             ("Gaviscon", [("Advance Mada 500ml", 10.00, 15.00), ("12 Bustine Gusto Menta", 8.50, 12.50), ("Bruciore e Indigestione", 9.00, 13.50)]),
             ("Reactine", [("Antistaminico 10mg 6 Compresse", 8.50, 12.00), ("Cetirizina + Pseudoefedrina", 11.00, 16.00)]),
-            ("Froben", [("Gola Spray 0.25% 15ml", 8.50, 12.80), ("Gola Forte 16 Pastiglie", 7.50, 11.00), ("Antinfiammatorio Gel", 9.50, 14.00)],
-        ),
+            ("Froben", [("Gola Spray 0.25% 15ml", 8.50, 12.80), ("Gola Forte 16 Pastiglie", 7.50, 11.00), ("Antinfiammatorio Gel", 9.50, 14.00)])
+        ],
         "Integratori e Vitamine": [
             ("Multicentrum", [("Uomo 90 Compresse", 16.00, 24.00), ("Donna 90 Compresse", 16.00, 24.00), ("Select 50+ 60 Compresse", 18.00, 26.50), ("Junior 30 Compresse", 12.00, 17.50)]),
             ("Polase", [("36 Bustine Effervescenti", 12.00, 17.90), ("Extra 28 Bustine", 14.50, 21.00), ("Now 20 Compresse", 11.00, 16.00)]),
@@ -394,7 +394,7 @@ def load_data():
             ("Omega 3", [("Puro Concentrato 120 Perle", 19.00, 29.00), ("EPA/DHA ad Alto Titolo", 22.00, 32.50)]),
             ("Melatonina", [("Pura 1mg 60 Compresse", 7.50, 11.50), ("Retard Notte Serena", 9.50, 14.00), ("Gocce 30ml", 8.00, 12.00)]),
             ("Fermenti Lattici", [("VSL#3 10 Bustine", 20.00, 32.00), ("Enterogermina 20 Flaconcini", 14.00, 19.90), ("Codex 20 Capsule", 12.50, 17.80)]),
-            ("Kijimea", [("Colon Irritabile 28 Capsule", 22.00, 34.00), ("Pro K50 capsule", 26.00, 39.00)]
+            ("Kijimea", [("Colon Irritabile 28 Capsule", 22.00, 34.00), ("Pro K50 capsule", 26.00, 39.00)])
         ],
         "Cosmesi e Dermocosmesi": [
             ("Rilastil", [("Smagliature Crema 200ml", 28.00, 44.00), ("Aqua Crema Idratante Viso", 22.00, 33.00), ("Progression HD Crema", 35.00, 52.00)]),
@@ -404,7 +404,7 @@ def load_data():
             ("Avene", [("Acqua Termale Spray 300ml", 8.50, 12.80), ("Cleanance Gel Detergente", 14.00, 20.00)]),
             ("Bionike", [("Defence Sun SPF 50+ Spray", 17.00, 25.00), ("Balsamo Labbra Repair", 5.00, 7.50)]),
             ("Eucerin", [("Urea Repair Plus 10% Lozione", 16.50, 24.50), ("Hyaluron-Filler Crema", 28.00, 42.00)]),
-            ("Vichy", [("Liftactiv Supreme Antirughe", 25.00, 37.00), ("Mineral 89 Booster 50ml", 21.00, 31.00)]
+            ("Vichy", [("Liftactiv Supreme Antirughe", 25.00, 37.00), ("Mineral 89 Booster 50ml", 21.00, 31.00)])
         ],
         "Fitoterapia e Omeopatia": [
             ("Boiron", [("Arnica Montana 9CH Granuli", 6.00, 9.00), ("Sedatif PC 90 Compresse", 9.00, 13.50), ("Oscillococcinum 30 Dosi", 24.00, 36.00)]),
@@ -434,7 +434,6 @@ def load_data():
     for cat, marche in database_sorgente.items():
         for brand, prodotti in marche:
             for desc, pmin, pmax in prodotti:
-                # Creiamo varianti multiple per ogni referenza per rendere il catalogo ricchissimo e senza vuoti
                 suffissi_varianti = [
                     "",
                     " - Formato Scorta",
@@ -444,13 +443,11 @@ def load_data():
                 ]
                 
                 for idx_suf, suf in enumerate(suffissi_varianti):
-                    # Variazione di prezzo leggera per le varianti
                     coeff_suf = 1.0 + (idx_suf * 0.15)
                     p_min_v = pmin * coeff_suf
                     p_max_v = pmax * coeff_suf
                     
                     nome_completo = f"{brand} {desc}{suf}"
-                    
                     minsan_str = str(minsan_counter)
                     minsan_counter += 1
 
