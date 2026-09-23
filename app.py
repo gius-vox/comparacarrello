@@ -5,7 +5,7 @@ import urllib.parse
 import base64
 import io
 import qrcode
-import random
+from farmaci_db import FARMACIE, carica_database_prodotti
 
 # ---------------------------------------------------------
 # 1. CONFIGURAZIONE PAGINA
@@ -350,129 +350,16 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 4. DATI FARMACIE
-# ---------------------------------------------------------
-FARMACIE = {
-    "Farmacia Igea": {"domain": "farmaciaigea.com", "spedizione_base": 4.90, "soglia_gratis": 29.00, "search_url": "https://www.farmaciaigea.com/ricerca?search_query="},
-    "Farmaè": {"domain": "farmae.it", "spedizione_base": 3.90, "soglia_gratis": 19.90, "search_url": "https://www.farmae.it/catalogsearch/result/?q="},
-    "Dr Max": {"domain": "drmax.it", "spedizione_base": 4.50, "soglia_gratis": 24.90, "search_url": "https://www.drmax.it/catalogsearch/result/?q="},
-    "RedCare": {"domain": "redcare.it", "spedizione_base": 3.95, "soglia_gratis": 18.00, "search_url": "https://www.redcare.it/search.htm?q="},
-    "Farmacia Loreto": {"domain": "farmacialoreto.it", "spedizione_base": 4.90, "soglia_gratis": 29.90, "search_url": "https://farmacialoreto.it/catalogsearch/result/?q="},
-    "1000Farmacie": {"domain": "1000farmacie.it", "spedizione_base": 2.90, "soglia_gratis": 29.00, "search_url": "https://www.1000farmacie.it/search?q="},
-    "Top Farmacia": {"domain": "topfarmacia.it", "spedizione_base": 4.90, "soglia_gratis": 19.90, "search_url": "https://www.topfarmacia.it/catalogsearch/result/?q="},
-    "eFarma": {"domain": "efarma.com", "spedizione_base": 4.90, "soglia_gratis": 29.90, "search_url": "https://www.efarma.com/catalogsearch/result/?q="},
-    "Farmacosmo": {"domain": "farmacosmo.it", "spedizione_base": 3.90, "soglia_gratis": 29.90, "search_url": "https://www.farmacosmo.it/ricerca?controller=search&s="}
-}
-
-# ---------------------------------------------------------
-# 5. MOTORE PROFESSIONALE DI GENERAZIONE CATALOGO (12.000+ PRODOTTI)
+# 4. CARICAMENTO DATAFRAME PRODOTTI
 # ---------------------------------------------------------
 @st.cache_data
-def load_data():
-    database_sorgente = {
-        "Farmaci da Banco (SOP/OTC)": [
-            ("Tachipirina", [("500mg 20 Compresse", 6.00, 8.50), ("1000mg 16 Bustine", 7.50, 10.50), ("Sciroppo Bambini 120ml", 8.00, 11.00), ("Supposte 500mg", 6.50, 9.00)]),
-            ("Nurofen", [("400mg 12 Capsule Molli", 7.00, 10.50), ("Febbre e Dolore 200mg", 6.00, 9.00), ("Imidol Gel Dolori", 9.00, 13.50), ("Sciroppo Arancia", 8.50, 12.00)]),
-            ("Oki", [("80mg Granulato 30 Bustine", 8.50, 13.00), ("Gola Spray 15ml", 7.00, 10.00), ("Task 40mg Compresse", 9.00, 13.50)]),
-            ("Aspirina", [("C 400mg Effervescente", 6.20, 9.50), ("Fast 500mg Granulato", 5.80, 8.90), ("Protect 100mg", 11.00, 16.00)]),
-            ("Moment", [("200mg 12 Compresse Rivestite", 5.20, 8.00), ("Act 400mg 12 Compresse", 7.50, 10.80), ("Capsule Molli", 8.00, 11.50)]),
-            ("Zirtec", [("10mg Antistaminico 7 Compresse", 8.00, 11.50), ("10mg 20 Compresse", 14.00, 19.50), ("Gocce Orali 10ml", 11.00, 15.50)]),
-            ("Vicks", [("VapoRub Unguento Balsamico 50g", 7.50, 11.00), ("Med Pastiglie Limone", 4.50, 7.00), ("Sinex Spray Nasale", 8.50, 12.50)]),
-            ("Buscopan", [("10mg 30 Compresse Rivestite", 6.80, 10.20), ("Antispastico 20 Confetti", 7.20, 10.80), ("Compositum Supposte", 9.00, 13.00)]),
-            ("Maalox", [("Plus 50 Compresse Masticabili", 8.00, 12.00), ("Plus Sospensione Orale 200ml", 9.50, 14.00), ("Reflurapid 20 Bustine", 12.00, 17.50)]),
-            ("Gaviscon", [("Advance Mada 500ml", 10.00, 15.00), ("12 Bustine Gusto Menta", 8.50, 12.50), ("Bruciore e Indigestione", 9.00, 13.50)]),
-            ("Reactine", [("Antistaminico 10mg 6 Compresse", 8.50, 12.00), ("Cetirizina + Pseudoefedrina", 11.00, 16.00)]),
-            ("Froben", [("Gola Spray 0.25% 15ml", 8.50, 12.80), ("Gola Forte 16 Pastiglie", 7.50, 11.00), ("Antinfiammatorio Gel", 9.50, 14.00)])
-        ],
-        "Integratori e Vitamine": [
-            ("Multicentrum", [("Uomo 90 Compresse", 16.00, 24.00), ("Donna 90 Compresse", 16.00, 24.00), ("Select 50+ 60 Compresse", 18.00, 26.50), ("Junior 30 Compresse", 12.00, 17.50)]),
-            ("Polase", [("36 Bustine Effervescenti", 12.00, 17.90), ("Extra 28 Bustine", 14.50, 21.00), ("Now 20 Compresse", 11.00, 16.00)]),
-            ("Sustenium", [("Plus 28 Bustine Energia", 17.00, 26.00), ("Bioritmo Uomo/Donna", 14.00, 20.50), ("Imunodifesa 14 Flaconcini", 13.00, 18.90)]),
-            ("Berocca", [("Plus 30 Compresse Effervescenti", 13.50, 19.90),("Performance 60 Compresse", 19.00, 27.50)]),
-            ("Vitamina D3", [("2000 UI 120 Perle", 12.00, 18.50), ("1000 UI Spray Sublinguale", 10.00, 15.00), ("K2 + D3 ad Alta Dosaggio", 15.00, 22.00)]),
-            ("Magnesio Supremo", [("Solubile Polvere 300g", 11.50, 17.50), ("Donna Benessere 150g", 13.00, 19.00), ("Compresse 100pz", 14.00, 20.50)]),
-            ("Omega 3", [("Puro Concentrato 120 Perle", 19.00, 29.00), ("EPA/DHA ad Alto Titolo", 22.00, 32.50)]),
-            ("Melatonina", [("Pura 1mg 60 Compresse", 7.50, 11.50), ("Retard Notte Serena", 9.50, 14.00), ("Gocce 30ml", 8.00, 12.00)]),
-            ("Fermenti Lattici", [("VSL#3 10 Bustine", 20.00, 32.00), ("Enterogermina 20 Flaconcini", 14.00, 19.90), ("Codex 20 Capsule", 12.50, 17.80)]),
-            ("Kijimea", [("Colon Irritabile 28 Capsule", 22.00, 34.00), ("Pro K50 capsule", 26.00, 39.00)])
-        ],
-        "Cosmesi e Dermocosmesi": [
-            ("Rilastil", [("Smagliature Crema 200ml", 28.00, 44.00), ("Aqua Crema Idratante Viso", 22.00, 33.00), ("Progression HD Crema", 35.00, 52.00)]),
-            ("CeraVe", [("Crema Idratante Corpo 450g", 14.00, 21.00), ("Detergente Idratante 473ml", 15.00, 22.00), ("Crema Mani Riparatrice", 6.50, 9.50)]),
-            ("La Roche-Posay", [("Effaclar Duo+ Anti-Imperfezioni", 15.50, 22.50),("Anthelios SPF 50+ Crema Solare", 18.00, 26.00), ("Toleriane Sensitive", 16.00, 23.50)]),
-            ("Bioderma", [("Sensibio H2O Acqua Micellare 500ml", 13.50, 19.50), ("Cicabio Creme 40ml", 9.00, 13.50)]),
-            ("Avene", [("Acqua Termale Spray 300ml", 8.50, 12.80), ("Cleanance Gel Detergente", 14.00, 20.00)]),
-            ("Bionike", [("Defence Sun SPF 50+ Spray", 17.00, 25.00), ("Balsamo Labbra Repair", 5.00, 7.50)]),
-            ("Eucerin", [("Urea Repair Plus 10% Lozione", 16.50, 24.50), ("Hyaluron-Filler Crema", 28.00, 42.00)]),
-            ("Vichy", [("Liftactiv Supreme Antirughe", 25.00, 37.00), ("Mineral 89 Booster 50ml", 21.00, 31.00)])
-        ],
-        "Fitoterapia e Omeopatia": [
-            ("Boiron", [("Arnica Montana 9CH Granuli", 6.00, 9.00), ("Sedatif PC 90 Compresse", 9.00, 13.50), ("Oscillococcinum 30 Dosi", 24.00, 36.00)]),
-            ("Valeriana", [("Dispert 50 Confetti", 10.00, 15.00), ("Tintura Madre 50ml", 11.00, 16.50)]),
-            ("Echinacea", [("Complex Gocce 50ml", 12.50, 18.50), ("Capsule Immunità", 13.00, 19.00)]),
-            ("Artiglio del Diavolo", [("Unguento Forte 100ml", 13.00, 19.50), ("Maxi Gel 250ml", 16.00, 24.00)])
-        ],
-        "Mamma e Bambino": [
-            ("Mustela", [("Pasta per il Cambio 150ml", 7.50, 11.50), ("Gel Lavante Dolce 500ml", 10.50, 15.50), ("Olio Massaggio", 9.00, 13.50)]),
-            ("Aptamil", [("2 Latte di Seguito 800g", 19.50, 27.00), ("3 Crescita Liquido 1L", 3.20, 4.80)]),
-            ("Humana", [("1 Polvere Neonati 800g", 19.00, 26.50), ("Biscotto Infantile", 4.50, 6.80)]),
-            ("Pampers", [("Progressi Misura 3 (50pz)", 14.00, 20.00), ("Baby-Dry Misura 4", 13.50, 19.50)]),
-            ("Fissan", [("Pasta Alta Protezione 100ml", 5.20, 8.00), ("Bagno ai Primi Mesi", 6.00, 9.00)]
-        ],
-        "Dispositivi Medici": [
-            ("Omron", [("M2 Misuratore Pressione da Braccio", 39.00, 58.00), ("M7 Intelli IT Bluetooth", 79.00, 115.00)]),
-            ("Chicco", [("Termometro Infrarossi Easy Touch", 32.00, 46.00), ("Succhietto Physio Soft", 4.50, 7.00)]),
-            ("Aerosol", [("A Pistone Nebulizzatore", 45.00, 68.00), ("Ultrasuoni Portatile", 65.00, 95.00)]),
-            ("Hansaplast", [("Cerotti Assortiti Strisce 40pz", 4.00, 6.80), ("Benda Elastica", 3.50, 5.50)]),
-            ("Ghiaccio", [("Istantaneo Monouso 5 Pezzi", 3.50, 5.50), ("Borsa Ghiaccio Riutilizzabile", 6.00, 9.00)]
-        ]
-    }
+def get_data():
+    return carica_database_prodotti()
 
-    righe = []
-    minsan_counter = 800100000
-
-    for cat, marche in database_sorgente.items():
-        for brand, prodotti in marche:
-            for desc, pmin, pmax in prodotti:
-                suffissi_varianti = [
-                    "",
-                    " - Formato Scorta",
-                    " - Confezione Doppia",
-                    " - Edizione Promozionale",
-                    " - Maxi Confezione"
-                ]
-                
-                for idx_suf, suf in enumerate(suffissi_varianti):
-                    coeff_suf = 1.0 + (idx_suf * 0.15)
-                    p_min_v = pmin * coeff_suf
-                    p_max_v = pmax * coeff_suf
-                    
-                    nome_completo = f"{brand} {desc}{suf}"
-                    minsan_str = str(minsan_counter)
-                    minsan_counter += 1
-
-                    prezzo_base = round(random.uniform(p_min_v, p_max_v), 2)
-                    
-                    row_data = {
-                        "MINSAN": minsan_str,
-                        "Prodotto": nome_completo,
-                        "Categoria": cat,
-                        "Immagine_URL": ""
-                    }
-
-                    for farmacia in FARMACIE.keys():
-                        coeff_farma = random.uniform(0.85, 1.18)
-                        prezzo_farma = round(prezzo_base * coeff_farma, 2)
-                        row_data[farmacia] = f"{prezzo_farma:.2f}"
-
-                    righe.append(row_data)
-
-    return pd.DataFrame(righe)
-
-df_prodotti = load_data()
+df_prodotti = get_data()
 
 # ---------------------------------------------------------
-# 6. HEADER & BRAND
+# 5. HEADER & BRAND
 # ---------------------------------------------------------
 logo_html = f'<img src="{logo_src}" class="brand-hero-img">' if logo_src else '<div style="font-size:2.5rem;">🛒</div>'
 
@@ -488,7 +375,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 7. STRISCIA FARMACIE MONITORATE
+# 6. STRISCIA FARMACIE MONITORATE
 # ---------------------------------------------------------
 chips = "".join([
     f'<div class="pharmacy-chip"><img src="https://www.google.com/s2/favicons?domain={info["domain"]}&sz=32"><span>{nome}</span></div>'
@@ -503,7 +390,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 8. STATE CARRELLO E CATEGORIA
+# 7. STATE CARRELLO E CATEGORIA
 # ---------------------------------------------------------
 if 'carrello' not in st.session_state:
     st.session_state.carrello = []
@@ -512,7 +399,7 @@ if 'categoria_selezionata' not in st.session_state:
     st.session_state.categoria_selezionata = "Tutte le Categorie"
 
 # ---------------------------------------------------------
-# 9. RICERCA E CATEGORIE
+# 8. RICERCA E CATEGORIE
 # ---------------------------------------------------------
 st.markdown('<div class="search-hero-card">', unsafe_allow_html=True)
 st.markdown('<div style="color: #047857; font-size: 1.35rem; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 16px;">Cerca e aggiungi un prodotto</div>', unsafe_allow_html=True)
@@ -573,7 +460,7 @@ if not df_prodotti.empty:
 st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 10. CARRELLO UTENTE
+# 9. CARRELLO UTENTE
 # ---------------------------------------------------------
 st.markdown("---")
 st.markdown("### Il tuo Carrello")
@@ -600,7 +487,7 @@ else:
     st.info("Il carrello è vuoto. Cerca un prodotto qui sopra per iniziare il confronto.")
 
 # ---------------------------------------------------------
-# 11. RISULTATI COMPARAZIONE
+# 10. RISULTATI COMPARAZIONE
 # ---------------------------------------------------------
 if st.session_state.carrello:
     st.markdown("---")
@@ -684,7 +571,7 @@ if st.session_state.carrello:
             st.dataframe(df_res.style.format({'Totale Prodotti (€)': '{:.2f}', 'Spedizioni (€)': '{:.2f}', 'Soglia Gratis (€)': '{:.2f}', 'Totale Carrello (€)': '{:.2f}'}), use_container_width=True)
 
     # ---------------------------------------------------------
-    # 12. CONDIVISIONE E QR CODE
+    # 11. CONDIVISIONE E QR CODE
     # ---------------------------------------------------------
     st.markdown("---")
     st.markdown("### Condividi Carrello o Salvalo sul Cellulare")
@@ -705,7 +592,7 @@ if st.session_state.carrello:
                 <img src="{qr_code_img}" style="width: 120px; height: 120px;"><br>
                 <small style="color: #64748b; font-weight: 700;">Inquadra per aprire sul telefono</small>
             </div>
-        """, unsafe_allow_html=True)
+        """, unsafe_allow_html=Group=True if False else 1) # Pulito
         
     with col_social:
         st.markdown(f"""
