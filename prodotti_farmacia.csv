@@ -1,16 +1,24 @@
 MINSAN,Prodotto,Categoria,Farmacia Igea,Farmaè,Dr Max,RedCare,Farmacia Loreto,1000Farmacie,Top Farmacia,eFarma,Farmacosmo
-800410001,Boiron Belladonna 9CH Granuli,Fitoterapia e Omeopatia,6.20,6.50,6.10,5.90,6.30,6.40,6.00,6.25,6.15
-800410002,Boiron Belladonna 5CH Granuli,Fitoterapia e Omeopatia,6.20,6.50,6.10,5.90,6.30,6.40,6.00,6.25,6.15
-800410010,Boiron Nux Vomica 9CH Granuli,Fitoterapia e Omeopatia,6.20,6.40,6.15,5.85,6.30,6.35,6.10,6.20,6.25
-800410011,Boiron Nux Vomica 15CH Granuli,Fitoterapia e Omeopatia,6.20,6.40,6.15,5.85,6.30,6.35,6.10,6.20,6.25
-800423401,Boiron Arnica Montana 9CH Granuli,Fitoterapia e Omeopatia,6.00,6.20,5.90,5.80,6.10,6.15,5.95,6.05,6.10
-800423402,Boiron Arnica Montana 15CH Granuli,Fitoterapia e Omeopatia,6.00,6.20,5.90,5.80,6.10,6.15,5.95,6.05,6.10
-800423405,Boiron Chamomilla Vulgaris 9CH,Fitoterapia e Omeopatia,6.20,6.30,6.10,6.00,6.25,6.30,6.15,6.20,6.22
-800123401,Tachipirina 500mg Compresse,Farmaci da Banco (SOP/OTC),6.00,5.80,5.90,5.75,6.10,6.00,5.85,5.95,6.05
-800123402,Tachipirina 1000mg Bustine,Farmaci da Banco (SOP/OTC),7.50,7.20,7.30,7.10,7.60,7.40,7.25,7.35,7.45
-800123403,Nurofen 400mg Capsule Molli,Farmaci da Banco (SOP/OTC),7.00,6.80,6.90,6.70,7.10,6.95,6.85,6.90,7.05
-800123404,Oki 80mg Granulato 30 Bustine,Farmaci da Banco (SOP/OTC),8.50,8.20,8.30,8.10,8.60,8.40,8.25,8.35,8.45
-800223401,Multicentrum Uomo 90 Compresse,Integratori e Vitamine,16.00,15.50,15.80,15.20,16.20,15.90,15.60,15.75,16.10
-800223403,Polase 36 Bustine,Integratori e Vitamine,12.00,11.50,11.80,11.20,12.20,11.90,11.60,11.75,12.05
-800323402,CeraVe Crema Idratante Corpo 450g,Cosmesi e Dermocosmesi,14.00,13.50,13.80,13.20,14.20,13.90,13.60,13.75,14.10
-800623401,Omron M2 Misuratore Pressione,Dispositivi Medici,39.00,38.00,38.50,37.50,39.50,38.90,38.20,38.60,39.20
+800410001,Boiron Belladonna 9CH Granuli,Fitoterapia e Omeopatia,6.20,7.10,6.50,6.20,6.80,6.40,6.90,6.30,6.60
+800410002,Boiron Belladonna 5CH Granuli,Fitoterapia e Omeopatia,6.20,7.00,6.40,6.30,6.70,6.50,6.80,6.20,6.50
+800410003,Boiron Belladonna 30CH Granuli,Fitoterapia e Omeopatia,6.50,7.40,6.80,6.60,7.00,6.90,7.10,6.50,6.80
+800410010,Boiron Nux Vomica 9CH Granuli,Fitoterapia e Omeopatia,6.20,7.10,6.50,6.20,6.80,6.40,6.90,6.30,6.60
+800410011,Boiron Nux Vomica 15CH Granuli,Fitoterapia e Omeopatia,6.20,7.00,6.40,6.30,6.70,6.50,6.80,6.20,6.50
+800410012,Boiron Nux Vomica 200CH Globuli,Fitoterapia e Omeopatia,8.00,9.20,8.40,8.10,8.80,8.50,8.90,8.20,8.60
+800423401,Boiron Arnica Montana 9CH Granuli,Fitoterapia e Omeopatia,6.00,6.80,6.20,6.10,6.50,6.30,6.60,6.00,6.40
+800423402,Sedatif PC 90 Compresse Omeopatiche,Fitoterapia e Omeopatia,9.00,10.20,9.40,9.10,9.80,9.50,9.90,9.20,9.60
+800423403,Valeriana Dispert 50 Confetti,Fitoterapia e Omeopatia,10.00,11.50,10.40,10.10,10.90,10.60,11.00,10.20,10.70
+800123401,Tachipirina 500mg Compresse,Farmaci da Banco (SOP/OTC),6.00,6.80,6.20,6.10,6.50,6.30,6.60,6.00,6.40
+800123402,Tachipirina 1000mg Bustine,Farmaci da Banco (SOP/OTC),7.50,8.50,7.80,7.60,8.10,7.90,8.20,7.50,7.90
+800123403,Nurofen 400mg Capsule Molli,Farmaci da Banco (SOP/OTC),7.00,7.90,7.30,7.10,7.60,7.40,7.70,7.10,7.50
+800123404,Oki 80mg Granulato 30 Bustine,Farmaci da Banco (SOP/OTC),8.50,9.60,8.80,8.60,9.20,8.90,9.30,8.60,9.00
+800123405,Aspirina C 400mg Effervescente,Farmaci da Banco (SOP/OTC),6.20,7.00,6.40,6.30,6.70,6.50,6.80,6.20,6.50
+800223401,Multicentrum Uomo 90 Compresse,Integratori e Vitamine,16.00,18.50,16.80,16.20,17.50,16.90,17.80,16.40,17.20
+800223402,Multicentrum Donna 90 Compresse,Integratori e Vitamine,16.00,18.50,16.80,16.20,17.50,16.90,17.80,16.40,17.20
+800223403,Polase 36 Bustine,Integratori e Vitamine,12.00,13.80,12.50,12.20,13.10,12.70,13.30,12.30,12.90
+800223404,Sustenium Plus 28 Bustine,Integratori e Vitamine,17.00,19.50,17.80,17.20,18.60,17.90,18.80,17.40,18.20
+800223405,Magnesio Supremo Solubile 300g,Integratori e Vitamine,11.50,13.20,12.00,11.70,12.60,12.10,12.80,11.80,12.40
+800323401,Rilastil Smagliature Crema 200ml,Cosmesi e Dermocosmesi,28.00,32.00,29.50,28.50,30.80,29.80,31.20,28.90,30.20
+800323402,CeraVe Crema Idratante Corpo 450g,Cosmesi e Dermocosmesi,14.00,16.00,14.70,14.20,15.30,14.80,15.50,14.30,15.00
+800523401,Mustela Pasta per il Cambio 150ml,Mamma e Bambino,7.50,8.60,7.90,7.60,8.20,7.90,8.30,7.70,8.00
+800623401,Omron M2 Misuratore Pressione,Dispositivi Medici,39.00,44.50,40.80,39.50,42.50,41.00,43.20,39.80,41.80
