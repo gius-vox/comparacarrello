@@ -5,8 +5,9 @@ from supabase import create_client, Client
 st.set_page_config(page_title="Comparacarrello", layout="wide")
 
 # Connessione a Supabase usando i Secret di Streamlit/Render
-SUPABASE_URL = st.secrets["SUPABASE_URL"]
-SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
+import os
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 
 @st.cache_resource
 def init_connection():
