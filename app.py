@@ -5,7 +5,6 @@ import urllib.parse
 import base64
 import io
 import qrcode
-import random
 
 # ---------------------------------------------------------
 # 1. CONFIGURAZIONE PAGINA
@@ -322,95 +321,17 @@ FARMACIE = {
 }
 
 # ---------------------------------------------------------
-# 5. DATABASE ESTESO CON OMEOPATIA REALE E MIGLIAIA DI PRODOTTI
+# 5. CARICAMENTO DATI DA CSV ESTERNO
 # ---------------------------------------------------------
 @st.cache_data
 def load_data():
-    cataloghi_base = [
-        # Omeopatia & Fitoterapia specifica richiesta
-        ("Boiron Belladonna 9CH Granuli", "Fitoterapia e Omeopatia", 6.20, 9.80, "800410001"),
-        ("Boiron Belladonna 5CH Granuli", "Fitoterapia e Omeopatia", 6.20, 9.80, "800410002"),
-        ("Boiron Belladonna 30CH Granuli", "Fitoterapia e Omeopatia", 6.50, 10.20, "800410003"),
-        ("Boiron Nux Vomica 9CH Granuli", "Fitoterapia e Omeopatia", 6.20, 9.80, "800410010"),
-        ("Boiron Nux Vomica 15CH Granuli", "Fitoterapia e Omeopatia", 6.20, 9.80, "800410011"),
-        ("Boiron Nux Vomica 200CH Globuli", "Fitoterapia e Omeopatia", 8.00, 13.00, "800410012"),
-        ("Boiron Arnica Montana 9CH Granuli", "Fitoterapia e Omeopatia", 6.00, 9.50, "800423401"),
-        ("Boiron Arnica Montana 15CH Granuli", "Fitoterapia e Omeopatia", 6.00, 9.50, "800423402"),
-        ("Boiron Chamomilla Vulgaris 9CH", "Fitoterapia e Omeopatia", 6.20, 9.80, "800423405"),
-        ("Boiron Pulsatilla 9CH Granuli", "Fitoterapia e Omeopatia", 6.20, 9.80, "800423408"),
-        ("Sedatif PC 90 Compresse Omeopatiche", "Fitoterapia e Omeopatia", 9.00, 14.50, "800423402"),
-        ("Valeriana Dispert 50 Confetti", "Fitoterapia e Omeopatia", 10.00, 16.00, "800423403"),
-        ("Artiglio del Diavolo Unguento Forte", "Fitoterapia e Omeopatia", 13.00, 21.00, "800423404"),
-
-        # Farmaci da Banco (SOP/OTC)
-        ("Tachipirina 500mg Compresse", "Farmaci da Banco (SOP/OTC)", 6.00, 9.50, "800123401"),
-        ("Tachipirina 1000mg Bustine", "Farmaci da Banco (SOP/OTC)", 7.50, 11.00, "800123402"),
-        ("Nurofen 400mg Capsule Molli", "Farmaci da Banco (SOP/OTC)", 7.00, 11.50, "800123403"),
-        ("Oki 80mg Granulato 30 Bustine", "Farmaci da Banco (SOP/OTC)", 8.50, 14.00, "800123404"),
-        ("Aspirina C 400mg Effervescente", "Farmaci da Banco (SOP/OTC)", 6.20, 9.90, "800123405"),
-        ("Moment 200mg 12 Compresse", "Farmaci da Banco (SOP/OTC)", 5.20, 8.50, "800123406"),
-        ("Zirtec 10mg Antistaminico", "Farmaci da Banco (SOP/OTC)", 9.00, 14.90, "800123407"),
-        ("Vicks VapoRub Unguento Balsamico", "Farmaci da Banco (SOP/OTC)", 7.50, 11.50, "800123408"),
-        ("Buscopan 10mg 30 Compresse", "Farmaci da Banco (SOP/OTC)", 6.80, 10.80, "800123409"),
-        ("Maalox Plus 50 Compresse Masticabili", "Farmaci da Banco (SOP/OTC)", 8.00, 12.90, "800123410"),
-        ("Gaviscon Advance 500ml", "Farmaci da Banco (SOP/OTC)", 9.50, 15.50, "800123411"),
-        ("Froben Gola Spray 0.25%", "Farmaci da Banco (SOP/OTC)", 8.50, 13.20, "800123412"),
-        ("Lasonil Antinfiammatorio Gel", "Farmaci da Banco (SOP/OTC)", 9.00, 14.50, "800123413"),
-        
-        # Integratori
-        ("Multicentrum Uomo 90 Compresse", "Integratori e Vitamine", 16.00, 25.00, "800223401"),
-        ("Multicentrum Donna 90 Compresse", "Integratori e Vitamine", 16.00, 25.00, "800223402"),
-        ("Polase 36 Bustine", "Integratori e Vitamine", 12.00, 18.90, "800223403"),
-        ("Sustenium Plus 28 Bustine", "Integratori e Vitamine", 17.00, 27.00, "800223404"),
-        ("Berocca Plus 30 Compresse Effervescenti", "Integratori e Vitamine", 13.50, 21.00, "800223405"),
-        ("Vitamina D3 2000 UI 120 Perle", "Integratori e Vitamine", 12.00, 19.50, "800223406"),
-        ("Magnesio Supremo Solubile 300g", "Integratori e Vitamine", 11.50, 18.00, "800223407"),
-        ("Omega 3 Puro ad Alta Concentrazione", "Integratori e Vitamine", 19.00, 32.00, "800223408"),
-        ("Melatonina Pura 1mg 60 Compresse", "Integratori e Vitamine", 7.50, 12.50, "800223409"),
-        ("Fermenti Lattici Vivi VSL#3", "Integratori e Vitamine", 20.00, 33.00, "800223410"),
-        ("Kijimea Colon Irritabile", "Integratori e Vitamine", 22.00, 36.00, "800223411"),
-        
-        # Cosmesi
-        ("Rilastil Smagliature Crema 200ml", "Cosmesi e Dermocosmesi", 28.00, 46.00, "800323401"),
-        ("CeraVe Crema Idratante Corpo 450g", "Cosmesi e Dermocosmesi", 14.00, 22.00, "800323402"),
-        ("La Roche-Posay Effaclar Duo+", "Cosmesi e Dermocosmesi", 15.50, 23.50, "800323403"),
-        ("Bioderma Sensibio H2O Acqua Micellare", "Cosmesi e Dermocosmesi", 13.50, 20.00, "800323404"),
-        ("Avene Acqua Termale Spray 300ml", "Cosmesi e Dermocosmesi", 8.50, 13.50, "800323405"),
-        ("Bionike Defence Sun SPF 50+", "Cosmesi e Dermocosmesi", 17.00, 26.00, "800323406"),
-        ("Eucerin Urea Repair Plus 10%", "Cosmesi e Dermocosmesi", 16.50, 25.50, "800323407"),
-        ("Vichy Liftactiv Supreme Anti-Rughe", "Cosmesi e Dermocosmesi", 25.00, 39.00, "800323408"),
-        
-        # Mamma e Bambino & Dispositivi
-        ("Mustela Pasta per il Cambio 150ml", "Mamma e Bambino", 7.50, 12.50, "800523401"),
-        ("Aptamil 2 Latte di Seguito 800g", "Mamma e Bambino", 19.50, 28.00, "800523402"),
-        ("Humana 1 Polvere Neonati 800g", "Mamma e Bambino", 19.00, 27.50, "800523403"),
-        ("Pampers Progressi Misura 3", "Mamma e Bambino", 14.00, 21.00, "800523404"),
-        ("Omron M2 Misuratore Pressione", "Dispositivi Medici", 39.00, 60.00, "800623401"),
-        ("Termometro Digitale Infrarossi", "Dispositivi Medici", 32.00, 49.00, "800623402"),
-        ("Hansaplast Cerotti Assortiti 40pz", "Dispositivi Medici", 4.00, 7.20, "800623403"),
-        ("Ghiaccio Istantaneo Monouso 5 Pezzi", "Dispositivi Medici", 3.50, 6.00, "800623404")
-    ]
-
-    righe = []
-    for base_nome, cat, pmin, pmax, base_minsan in cataloghi_base:
-        for i in range(25): # Generazione varianti scalabili
-            suf = "" if i == 0 else f" - Formato #{i+1}"
-            nome = f"{base_nome}{suf}" if i == 0 else f"{base_nome} Confezione {i+1}"
-            minsan = str(int(base_minsan) + i)
-            prezzo_base = round(random.uniform(pmin, pmax), 2)
-            
-            row = {
-                "MINSAN": minsan,
-                "Prodotto": nome,
-                "Categoria": cat,
-                "Immagine_URL": ""
-            }
-            for farmacia in FARMACIE.keys():
-                coeff = random.uniform(0.88, 1.14)
-                row[farmacia] = f"{round(prezzo_base * coeff, 2):.2f}"
-            righe.append(row)
-
-    return pd.DataFrame(righe)
+    csv_path = "prodotti_farmacia.csv"
+    if os.path.exists(csv_path):
+        df = pd.read_csv(csv_path, dtype=str)
+        return df
+    else:
+        # Fallback di sicurezza nel caso il file non venga trovato subito
+        return pd.DataFrame(columns=["MINSAN", "Prodotto", "Categoria"] + list(FARMACIE.keys()))
 
 df_prodotti = load_data()
 
@@ -425,7 +346,7 @@ st.markdown(f"""
             {logo_html}
             <h1 class="brand-hero-title">Compara<span>carrello.it</span></h1>
         </div>
-        <div class="brand-hero-tagline">Compara i prezzi di oltre 10.000 farmaci e prodotti da banco nelle migliori farmacie online</div>
+        <div class="brand-hero-tagline">Compara i prezzi dei tuoi farmaci e prodotti da banco nelle migliori farmacie online</div>
         <div class="brand-hero-subtagline">Calcoliamo in tempo reale il totale del tuo carrello incluse le spese di spedizione</div>
     </div>
 """, unsafe_allow_html=True)
@@ -460,15 +381,19 @@ if 'categoria_selezionata' not in st.session_state:
 st.markdown('<div class="search-hero-card">', unsafe_allow_html=True)
 st.markdown('<div style="color: #047857; font-size: 1.35rem; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 16px;">Cerca e aggiungi un prodotto</div>', unsafe_allow_html=True)
 
-cat_presenti = sorted(list(df_prodotti['Categoria'].dropna().unique()))
+if not df_prodotti.empty and 'Categoria' in df_prodotti.columns:
+    cat_presenti = sorted(list(df_prodotti['Categoria'].dropna().unique()))
+else:
+    cat_presenti = []
+
 cat_lista = ["Tutte le Categorie"] + cat_presenti
 
-cols_chips = st.columns(min(len(cat_lista), 7))
+cols_chips = st.columns(min(len(cat_lista), 7)) if len(cat_lista) > 0 else [st.container()]
 for idx, cat in enumerate(cat_lista[:7]):
     is_active = (st.session_state.categoria_selezionata == cat)
     btn_type = "primary" if is_active else "secondary"
     
-    with cols_chips[idx % 7]:
+    with cols_chips[idx % len(cols_chips)]:
         if st.button(cat, key=f"pill_{idx}", type=btn_type, use_container_width=True):
             st.session_state.categoria_selezionata = cat
             st.rerun()
@@ -477,43 +402,45 @@ st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
 
 query_testo = st.text_input("🔍 Cerca per nome farmaco (es. Belladonna, Nux Vomica, Tachipirina) o codice MINSAN:", placeholder="Digita un termine (es. belladonna, nux vomica)...")
 
-# MODIFICA CHIAVE: Se l'utente digita qualcosa, cerchiamo SEMPRE su tutto il database a prescindere dalla categoria selezionata per evitare blocchi!
-if query_testo and len(query_testo.strip()) >= 1:
-    q_lower = query_testo.lower()
-    df_risultati_ricerca = df_prodotti[df_prodotti['Prodotto'].str.lower().str.contains(q_lower) | df_prodotti['MINSAN'].str.contains(q_lower)]
-else:
-    cat_attuale = st.session_state.categoria_selezionata
-    df_filtrato = df_prodotti if cat_attuale == "Tutte le Categorie" else df_prodotti[df_prodotti['Categoria'] == cat_attuale]
-    df_risultati_ricerca = df_filtrato.head(15)
+if not df_prodotti.empty:
+    if query_testo and len(query_testo.strip()) >= 1:
+        q_lower = query_testo.lower()
+        df_risultati_ricerca = df_prodotti[df_prodotti['Prodotto'].str.lower().str.contains(q_lower, na=False) | df_prodotti['MINSAN'].str.contains(q_lower, na=False)]
+    else:
+        cat_attuale = st.session_state.categoria_selezionata
+        df_filtrato = df_prodotti if cat_attuale == "Tutte le Categorie" else df_prodotti[df_prodotti['Categoria'] == cat_attuale]
+        df_risultati_ricerca = df_filtrato.head(15)
 
-if not df_risultati_ricerca.empty:
-    opzioni_prodotti = [f"{row['Prodotto']} | Categoria: {row['Categoria']} (MINSAN: {row['MINSAN']})" for _, row in df_risultati_ricerca.iterrows()]
-    
-    prod_scelto = st.selectbox("Seleziona il prodotto trovato:", options=opzioni_prodotti, index=0, label_visibility="collapsed")
-    
-    if prod_scelto:
-        minsan_selezionato = prod_scelto.split("MINSAN: ")[-1].replace(")", "").strip()
-        riga_Q = df_prodotti[df_prodotti['MINSAN'] == minsan_selezionato]
+    if not df_risultati_ricerca.empty:
+        opzioni_prodotti = [f"{row['Prodotto']} | Categoria: {row['Categoria']} (MINSAN: {row['MINSAN']})" for _, row in df_risultati_ricerca.iterrows()]
         
-        if not riga_Q.empty:
-            row_prod = riga_Q.iloc[0]
-            img_url = DEFAULT_SVG_IMG
+        prod_scelto = st.selectbox("Seleziona il prodotto trovato:", options=opzioni_prodotti, index=0, label_visibility="collapsed")
+        
+        if prod_scelto:
+            minsan_selezionato = prod_scelto.split("MINSAN: ")[-1].replace(")", "").strip()
+            riga_Q = df_prodotti[df_prodotti['MINSAN'] == minsan_selezionato]
             
-            st.markdown('<div class="product-preview-card">', unsafe_allow_html=True)
-            c_p_img, c_p_info, c_p_btn = st.columns([0.8, 3.2, 1.2], vertical_alignment="center")
-            with c_p_img:
-                st.markdown(f'<div class="product-img-frame"><img src="{img_url}"></div>', unsafe_allow_html=True)
-            with c_p_info:
-                st.markdown(f"<h4 style='margin:0; font-weight:800; color:#0f172a;'>{row_prod['Prodotto']}</h4>", unsafe_allow_html=True)
-                st.markdown(f"<div style='margin-top:4px; color:#475569; font-size:0.88rem;'>Codice MINSAN: <span class='minsan-tag'>{row_prod['MINSAN']}</span> | Categoria: <b style='color:#047857;'>{row_prod['Categoria']}</b></div>", unsafe_allow_html=True)
-            with c_p_btn:
-                if st.button("Aggiungi al Carrello", type="primary", use_container_width=True):
-                    st.session_state.carrello.append(row_prod.to_dict())
-                    st.success("Prodotto aggiunto!")
-                    st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
+            if not riga_Q.empty:
+                row_prod = riga_Q.iloc[0]
+                img_url = DEFAULT_SVG_IMG
+                
+                st.markdown('<div class="product-preview-card">', unsafe_allow_html=True)
+                c_p_img, c_p_info, c_p_btn = st.columns([0.8, 3.2, 1.2], vertical_alignment="center")
+                with c_p_img:
+                    st.markdown(f'<div class="product-img-frame"><img src="{img_url}"></div>', unsafe_allow_html=True)
+                with c_p_info:
+                    st.markdown(f"<h4 style='margin:0; font-weight:800; color:#0f172a;'>{row_prod['Prodotto']}</h4>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='margin-top:4px; color:#475569; font-size:0.88rem;'>Codice MINSAN: <span class='minsan-tag'>{row_prod['MINSAN']}</span> | Categoria: <b style='color:#047857;'>{row_prod['Categoria']}</b></div>", unsafe_allow_html=True)
+                with c_p_btn:
+                    if st.button("Aggiungi al Carrello", type="primary", use_container_width=True):
+                        st.session_state.carrello.append(row_prod.to_dict())
+                        st.success("Prodotto aggiunto!")
+                        st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
+    else:
+        st.warning("Nessun prodotto trovato. Prova a digitare 'belladonna', 'nux vomica', 'arnica' o 'tachipirina'.")
 else:
-    st.warning("Nessun prodotto trovato. Prova a digitare 'belladonna', 'nux vomica', 'arnica' o 'tachipirina'.")
+    st.error("File prodotti_farmacia.csv non trovato o vuoto.")
 
 st.markdown('</div>', unsafe_allow_html=True)
 
@@ -659,7 +586,7 @@ if st.session_state.carrello:
                     </button>
                 </a>
                 <a href="{telegram_url}" target="_blank" style="text-decoration:none;">
-                    <button style="width:100% background-color:#0088cc; color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; cursor:pointer; box-shadow:0 4px 10px rgba(0, 136, 204, 0.15);">
+                    <button style="width:100%; background-color:#0088cc; color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; cursor:pointer; box-shadow:0 4px 10px rgba(0, 136, 204, 0.15);">
                         Condividi Carrello su Telegram
                     </button>
                 </a>
