@@ -22,8 +22,21 @@ st.set_page_config(
 # ---------------------------------------------------------
 @st.cache_resource
 def init_supabase() -> Client:
-    url = st.secrets["SUPABASE_URL"]
-    key = st.secrets["SUPABASE_KEY"]
+    # Legge le variabili d'ambiente impostate su Render
+    url = os.environ.get("SUPABASE_URL")
+    key = os.environ.get("SUPABASE_KEY")
+
+    if not url or not key:
+        try:
+            url = st.secrets["SUPABASE_URL"]
+            key = st.secrets["SUPABASE_KEY"]
+        except Exception:
+            pass
+
+    if not url or not key:
+        st.error("⚠️ Credenziali di Supabase non trovate! Controlla le variabili d'ambiente su Render.")
+        st.stop()
+
     return create_client(url, key)
 
 supabase = init_supabase()
