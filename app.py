@@ -5,7 +5,6 @@ import urllib.parse
 import base64
 import io
 import qrcode
-import random
 from supabase import create_client, Client
 
 # ---------------------------------------------------------
@@ -346,47 +345,19 @@ FARMACIE = {
 }
 
 # ---------------------------------------------------------
-# 6. CARICAMENTO CATALOGO IMMEDIATO (GARANTITO 5000+ PRODOTTI)
+# 6. LETTURA PURA DA SUPABASE (SENZA SPORCIRE L'APP)
 # ---------------------------------------------------------
-def load_data():
-    nomi_farmacie_lista = list(FARMACIE.keys())
-    cataloghi_base = [
-        ("Boiron Belladonna Granuli", "Fitoterapia e Omeopatia", 6.00, 10.00, 800410000),
-        ("Boiron Nux Vomica Granuli", "Fitoterapia e Omeopatia", 6.00, 10.00, 800410100),
-        ("Boiron Arnica Montana Granuli", "Fitoterapia e Omeopatia", 6.00, 9.50, 800423400),
-        ("Sedatif PC Compresse Omeopatiche", "Fitoterapia e Omeopatia", 9.00, 14.50, 800423600),
-        ("Tachipirina Compresse", "Farmaci da Banco (SOP/OTC)", 6.00, 9.50, 800123400),
-        ("Nurofen Capsule Molli", "Farmaci da Banco (SOP/OTC)", 7.00, 11.50, 800123600),
-        ("Oki Granulato Bustine", "Farmaci da Banco (SOP/OTC)", 8.50, 14.00, 800123700),
-        ("Aspirina C Effervescente", "Farmaci da Banco (SOP/OTC)", 6.20, 9.90, 800123800),
-        ("Moment Compresse", "Farmaci da Banco (SOP/OTC)", 5.20, 8.50, 800123900),
-        ("Multicentrum Uomo Compresse", "Integratori e Vitamine", 16.00, 25.00, 800223400),
-        ("Polase Bustine", "Integratori e Vitamine", 12.00, 18.90, 800223600),
-        ("Sustenium Plus Bustine", "Integratori e Vitamine", 17.00, 27.00, 800223700),
-        ("Magnesio Supremo Solubile", "Integratori e Vitamine", 11.50, 18.00, 800224000),
-        ("Rilastil Smagliature Crema", "Cosmesi e Dermocosmesi", 28.00, 46.00, 800323400),
-        ("CeraVe Crema Idratante Corpo", "Cosmesi e Dermocosmesi", 14.00, 22.00, 800323500),
-        ("Mustela Pasta Cambio", "Mamma e Bambino", 7.50, 12.50, 800523400),
-        ("Omron Misuratore Pressione", "Dispositivi Medici", 39.00, 60.00, 800623400)
-    ]
-    
-    righe = []
-    counter = 1
-    for base_nome, cat, pmin, pmax, base_minsan in cataloghi_base:
-        for i in range(350): # Oltre 5500 prodotti generati all'istante
-            suf = f" - Conf. {i+1}" if i > 0 else ""
-            nome = f"{base_nome}{suf}"
-            minsan = str(base_minsan + counter)
-            prezzo_base = round(random.uniform(pmin, pmax), 2)
-            row = {"MINSAN": minsan, "Prodotto": nome, "Categoria": cat, "Immagine_URL": ""}
-            for farmacia in nomi_farmacie_lista:
-                row[farmacia] = round(prezzo_base * random.uniform(0.85, 1.15), 2)
-            righe.append(row)
-            counter += 1
-            
-    return pd.DataFrame(righe)
+@st.cache_data(ttl=600)
+def load_data_from_supabase():
+    try:
+        response = supabase.table("prodotti_farmacia").select("*").execute()
+        if response.data:
+            return pd.DataFrame(response.data)
+    except Exception as e:
+        st.error(f"Errore di connessione a Supabase: {e}")
+    return pd.DataFrame()
 
-df_prodotti = load_data()
+df_prodotti = load_data_from_supabase()
 
 # ---------------------------------------------------------
 # 7. HEADER & BRAND
@@ -426,13 +397,13 @@ if 'carrello' not in st.session_state:
     st.session_state.carrello = []
 
 # ---------------------------------------------------------
-# 10. MOTORE DI RICERCA LIBERO (SENZA CATEGORIE)
+# 10. MOTORE DI RICERCA LIBERO
 # ---------------------------------------------------------
 st.markdown('<div class="search-hero-card">', unsafe_allow_html=True)
 st.markdown('<div style="color: #047857; font-size: 1.35rem; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 16px;">Cerca e aggiungi un prodotto</div>', unsafe_allow_html=True)
 
 if not df_prodotti.empty:
-    query_testo = st.text_input("🔍 Cerca per nome farmaco o codice MINSAN:", placeholder="Digita un termine (es. Tachipirina, Arnica, Belladonna, Polase)...")
+    query_testo = st.text_input("🔍 Cerca per nome farmaco o codice MINSAN:", placeholder="Digita un termine (es. Tachipirina, Polase, Rilastil)...")
 
     if query_testo and len(query_testo.strip()) >= 1:
         q_lower = query_testo.lower()
@@ -467,9 +438,9 @@ if not df_prodotti.empty:
                         st.rerun()
                 st.markdown('</div>', unsafe_allow_html=True)
     else:
-        st.warning("Nessun prodotto trovato.")
+        st.warning("Nessun prodotto trovato nel database.")
 else:
-    st.error("Nessun dato disponibile.")
+    st.error("Il database di Supabase è vuoto. Carica il catalogo dei prodotti su Supabase per iniziare.")
 
 st.markdown('</div>', unsafe_allow_html=True)
 
