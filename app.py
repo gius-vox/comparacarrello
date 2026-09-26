@@ -5,6 +5,7 @@ import urllib.parse
 import base64
 import io
 import qrcode
+import random
 from supabase import create_client, Client
 
 # ---------------------------------------------------------
@@ -345,14 +346,55 @@ FARMACIE = {
 }
 
 # ---------------------------------------------------------
-# 6. CARICAMENTO DATI DA SUPABASE
+# 6. CARICAMENTO DATI DA SUPABASE (CON AUTO-POPOLAMENTO)
 # ---------------------------------------------------------
 @st.cache_data(ttl=600)
 def load_data_from_supabase():
     try:
         response = supabase.table("prodotti_farmacia").select("*").execute()
-        if response.data:
-            return pd.DataFrame(response.data)
+        df = pd.DataFrame(response.data) if response.data else pd.DataFrame()
+        
+        # Se il database ha meno di 50 prodotti, auto-popola direttamente da qui!
+        if df.empty or len(df) < 50:
+            nomi_farmacie_lista = list(FARMACIE.keys())
+            cataloghi_base = [
+                ("Boiron Belladonna Granuli", "Fitoterapia e Omeopatia", 6.00, 10.00, 800410000),
+                ("Boiron Nux Vomica Granuli", "Fitoterapia e Omeopatia", 6.00, 10.00, 800410100),
+                ("Boiron Arnica Montana Granuli", "Fitoterapia e Omeopatia", 6.00, 9.50, 800423400),
+                ("Sedatif PC Compresse Omeopatiche", "Fitoterapia e Omeopatia", 9.00, 14.50, 800423600),
+                ("Tachipirina Compresse", "Farmaci da Banco (SOP/OTC)", 6.00, 9.50, 800123400),
+                ("Nurofen Capsule Molli", "Farmaci da Banco (SOP/OTC)", 7.00, 11.50, 800123600),
+                ("Oki Granulato Bustine", "Farmaci da Banco (SOP/OTC)", 8.50, 14.00, 800123700),
+                ("Aspirina C Effervescente", "Farmaci da Banco (SOP/OTC)", 6.20, 9.90, 800123800),
+                ("Moment Compresse", "Farmaci da Banco (SOP/OTC)", 5.20, 8.50, 800123900),
+                ("Multicentrum Uomo Compresse", "Integratori e Vitamine", 16.00, 25.00, 800223400),
+                ("Polase Bustine", "Integratori e Vitamine", 12.00, 18.90, 800223600),
+                ("Sustenium Plus Bustine", "Integratori e Vitamine", 17.00, 27.00, 800223700),
+                ("Magnesio Supremo Solubile", "Integratori e Vitamine", 11.50, 18.00, 800224000),
+                ("Rilastil Smagliature Crema", "Cosmesi e Dermocosmesi", 28.00, 46.00, 800323400),
+                ("CeraVe Crema Idratante Corpo", "Cosmesi e Dermocosmesi", 14.00, 22.00, 800323500),
+                ("Mustela Pasta Cambio", "Mamma e Bambino", 7.50, 12.50, 800523400),
+                ("Omron Misuratore Pressione", "Dispositivi Medici", 39.00, 60.00, 800623400)
+            ]
+            righe = []
+            counter = 1
+            for base_nome, cat, pmin, pmax, base_minsan in cataloghi_base:
+                for i in range(250):
+                    suf = f" - Confezione {i+1}" if i > 0 else ""
+                    nome = f"{base_nome}{suf}"
+                    minsan = str(base_minsan + counter)
+                    prezzo_base = round(random.uniform(pmin, pmax), 2)
+                    row = {"MINSAN": minsan, "Prodotto": nome, "Categoria": cat, "Immagine_URL": ""}
+                    for farmacia in nomi_farmacie_lista:
+                        row[farmacia] = round(prezzo_base * random.uniform(0.85, 1.15), 2)
+                    righe.append(row)
+                    counter += 1
+            df_nuovo = pd.DataFrame(righe)
+            # Carica su Supabase in background
+            for i in range(0, len(df_nuovo), 500):
+                supabase.table("prodotti_farmacia").upsert(df_nuovo.iloc[i:i+500].to_dict(orient="records")).execute()
+            return df_nuovo
+        return df
     except Exception as e:
         st.error(f"Errore di connessione a Supabase: {e}")
     return pd.DataFrame()
@@ -587,7 +629,7 @@ if st.session_state.carrello:
                     </button>
                 </a>
                 <a href="{telegram_url}" target="_blank" style="text-decoration:none;">
-                    <button style="width:100%; background-color:#0088cc; color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; cursor:pointer; box-shadow:0 4px 10px rgba(0, 136, 204, 0.15);">
+                    <button style="width:100%; and color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; cursor:pointer; box-shadow:0 4px 10px rgba(0, 136, 204, 0.15);">
                         Condividi Carrello su Telegram
                     </button>
                 </a>
