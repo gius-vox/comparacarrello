@@ -395,19 +395,37 @@ st.markdown(f"""
 # ---------------------------------------------------------
 if 'carrello' not in st.session_state:
     st.session_state.carrello = []
-
 # ---------------------------------------------------------
-# 10. MOTORE DI RICERCA LIBERO
+# 10. MOTORE DI RICERCA INTELLIGENTE & IMMAGINI
 # ---------------------------------------------------------
 st.markdown('<div class="search-hero-card">', unsafe_allow_html=True)
 st.markdown('<div style="color: #047857; font-size: 1.35rem; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 16px;">Cerca e aggiungi un prodotto</div>', unsafe_allow_html=True)
 
+# Icone tematiche sicure e garantite per ogni categoria
+ICONE_CATEGORIE = {
+    "Omeopatia e Granuli": "https://cdn-icons-png.flaticon.com/128/3076/3076129.png",
+    "Fitoterapia e Tinture Madri": "https://cdn-icons-png.flaticon.com/128/2965/2965567.png",
+    "Sali di Schüssler": "https://cdn-icons-png.flaticon.com/128/883/883395.png",
+    "Cosmesi e Bellezza": "https://cdn-icons-png.flaticon.com/128/1940/1940925.png",
+    "Farmaci da banco (SOP/OTC)": "https://cdn-icons-png.flaticon.com/128/822/822143.png",
+    "default": "https://cdn-icons-png.flaticon.com/128/883/883041.png"
+}
+
 if not df_prodotti.empty:
-    query_testo = st.text_input("🔍 Cerca per nome farmaco o codice MINSAN:", placeholder="Digita un termine (es. Tachipirina, Polase, Rilastil)...")
+    query_testo = st.text_input("🔍 Cerca per nome farmaco o codice MINSAN (es. 'belladonna boiron', 'tachipirina'):", placeholder="Digita anche parole parziali...")
 
     if query_testo and len(query_testo.strip()) >= 1:
-        q_lower = query_testo.lower()
-        df_risultati_ricerca = df_prodotti[df_prodotti['Prodotto'].str.lower().str.contains(q_lower) | df_prodotti['MINSAN'].astype(str).str.contains(q_lower)]
+        # Ricerca intelligente: divide le parole e le cerca tutte (anche in ordine sparso)
+        parole = query_testo.strip().lower().split()
+        df_risultati_ricerca = df_prodotti.copy()
+        
+        for parola in parole:
+            mask = (
+                df_risultati_ricerca['Prodotto'].str.lower().str.contains(parola, na=False) |
+                df_risultati_ricerca['MINSAN'].astype(str).str.contains(parola, na=False) |
+                df_risultati_ricerca['Categoria'].str.lower().str.contains(parola, na=False)
+            )
+            df_risultati_ricerca = df_risultati_ricerca[mask]
     else:
         df_risultati_ricerca = df_prodotti.head(15)
 
@@ -422,12 +440,15 @@ if not df_prodotti.empty:
             
             if not riga_Q.empty:
                 row_prod = riga_Q.iloc[0]
-                img_url = row_prod.get('Immagine_URL', '') if pd.notna(row_prod.get('Immagine_URL')) and str(row_prod.get('Immagine_URL')).strip() != '' else DEFAULT_SVG_IMG
+                
+                # Assegnazione dell'icona pulita in base alla categoria del prodotto
+                cat = str(row_prod.get('Categoria', 'default')).strip()
+                img_url = ICONE_CATEGORIE.get(cat, ICONE_CATEGORIE["default"])
                 
                 st.markdown('<div class="product-preview-card">', unsafe_allow_html=True)
                 c_p_img, c_p_info, c_p_btn = st.columns([0.8, 3.2, 1.2], vertical_alignment="center")
                 with c_p_img:
-                    st.markdown(f'<div class="product-img-frame"><img src="{img_url}"></div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="product-img-frame"><img src="{img_url}" style="max-width:100%; max-height:100%; object-fit:contain;"></div>', unsafe_allow_html=True)
                 with c_p_info:
                     st.markdown(f"<h4 style='margin:0; font-weight:800; color:#0f172a;'>{row_prod['Prodotto']}</h4>", unsafe_allow_html=True)
                     st.markdown(f"<div style='margin-top:4px; color:#475569; font-size:0.88rem;'>Codice MINSAN: <span class='minsan-tag'>{row_prod['MINSAN']}</span> | Categoria: <b style='color:#047857;'>{row_prod['Categoria']}</b></div>", unsafe_allow_html=True)
@@ -438,12 +459,11 @@ if not df_prodotti.empty:
                         st.rerun()
                 st.markdown('</div>', unsafe_allow_html=True)
     else:
-        st.warning("Nessun prodotto trovato nel database.")
+        st.warning("Nessun prodotto trovato con questa ricerca. Prova a digitare parole più brevi.")
 else:
     st.error("Il database di Supabase è vuoto. Carica il catalogo dei prodotti su Supabase per iniziare.")
 
 st.markdown('</div>', unsafe_allow_html=True)
-
 # ---------------------------------------------------------
 # 11. CARRELLO UTENTE
 # ---------------------------------------------------------
