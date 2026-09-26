@@ -1,104 +1,74 @@
+import os
 import random
 import pandas as pd
+from supabase import create_client
 
-# Configurazioni di base per la generazione pulita e diversificata
-num_prodotti_target = 10000
+# Credenziali Supabase
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "IL_TUO_SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "LA_TUA_SUPABASE_KEY")
 
-farmacie = [
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+FARMACIE = [
     "Farmacia Igea", "Farmaè", "Dr Max", "RedCare", 
     "Farmacia Loreto", "1000Farmacie", "Top Farmacia", "eFarma", "Farmacosmo"
 ]
 
-# Categorie e dizionari di prodotti reali diversificati per evitare doppioni inutili
-CATEGORIE_DATI = {
-    "Farmaci da Banco (SOP/OTC)": [
-        ("Tachipirina", [("20 Compresse 500mg", 5.50, 7.50), ("Sirupo Bambini 120ml", 6.00, 8.50), ("10 Supposte 1000mg", 6.50, 9.00)]),
-        ("Moment", [("12 Compresse Rivestite 200mg", 4.80, 6.50), ("24 Compresse 200mg", 8.50, 11.00), ("Act 12 Bustine", 7.00, 9.50)]),
-        ("Oki", [("20 Bustine Granulato", 9.00, 13.00), ("Gola Spray 15ml", 8.00, 11.00), ("Sciroppo Flкона 150ml", 8.50, 12.00)]),
-        ("Vics VapoRub", [("Unguento 50g", 6.00, 8.50), ("Unguento 100g", 10.00, 14.00)]),
-        ("Aspirina", [("20 Compresse Effervescenti", 6.00, 8.20), ("C 20 Compresse", 7.50, 10.00)]),
-        ("Maalox", [("40 Compresse Masticabili", 8.00, 11.00), ("Sospensione Orale 200ml", 7.50, 10.50)]),
-        ("Polase", [("36 Bustine", 13.00, 17.50), ("Advanced 28 Bustine", 14.00, 18.50), ("Extra 20 Bustine", 11.00, 15.00)]),
-        ("Buscopan", [("20 Compresse Rivestite", 8.50, 11.50), ("Antispastico 30 Compresse", 12.00, 15.55)])
-    ],
-    "Integratori e Vitamine": [
-        ("Multicentrum", [("Uomo 90 Compresse", 22.00, 29.00), ("Donna 90 Compresse", 22.00, 29.00), ("Junior 30 Compresse", 12.00, 16.00), ("Select 50+ 60 Compresse", 20.00, 26.00)]),
-        ("Berocca", [("Plus 30 Compresse Effervescenti", 13.00, 17.50), ("Boost 14 Bustine", 11.00, 15.00)]),
-        ("Supradyn", [("Energia 35 Compresse", 14.00, 19.00), ("Ricarica 60 Compresse", 21.00, 28.00), ("Gummy 50 Caramelle", 12.00, 16.50)]),
-        ("Magnesio Supremo", [("Polvere 300g", 15.00, 20.00), ("Natural 150g", 9.00, 12.50), ("Cartine 32 Bustine", 10.00, 14.00)]),
-        ("Redoxon", [("Immuno 30 Compresse", 10.00, 14.00), ("Tripla Azione 60 Compresse", 16.00, 22.00)]),
-        ("Carnidyn", [("Plus 20 Bustine", 15.00, 20.50), ("Fast 18 Compresse", 12.00, 16.00)]),
-        ("Sustenium", [("Plus 22 Bustine", 12.00, 16.50), ("Bioritmo 30 Compresse", 11.00, 15.00)]
-    ],
-    "Fitoterapia e Omeopatia": [
-        ("Boiron Arnica Montana", [("5 CH Granuli", 6.00, 8.50), ("9 CH Granuli", 6.00, 8.50), ("Gel 70g", 11.00, 15.50), ("Fiale Orali 20 Pezzi", 14.00, 19.00)]),
-        ("Oscillococconum", [("30 Dosi Omeopatiche", 25.00, 33.00), ("6 Dosi Omeopatiche", 7.00, 10.00)]),
-        ("Sedatif PC", [("60 Compresse", 10.00, 14.00)]),
-        ("Homeodent", [("Dentifricio Care 75ml", 4.50, 6.50), ("Dentifricio Limone 75ml", 4.50, 6.50)]),
-        ("Melatonina Pura", [("1 mg 120 Omeopatiche", 12.00, 17.00), ("Riposa 60 Compresse", 14.00, 19.00)])
-    ],
-    "Cosmesi e Dermocosmesi": [
-        ("Rilastil", [("Aqua Crema Idratante 50ml", 24.00, 32.00),("Stretch Marks Crema 200ml", 30.00, 42.00), ("Progression HD Crema", 35.00, 48.00)]),
-        ("CeraVe", [("Crema Idratante 345ml", 12.00, 16.50), ("Emulsione Idratante 473ml", 15.00, 20.00), ("Schiuma Detergente 236ml", 10.00, 14.00)]),
-        ("La Roche-Posay", [("Effaclar Duo+ 40ml", 15.00, 21.00), ("Anthelios SPF50+ 50ml", 16.00, 22.50), ("Cicaplast B5+ 40ml", 11.00, 15.50)]),
-        ("Bionike", [("Defence Sun SPF50+ 50ml", 18.00, 24.00), ("Triderm Docciascia 500ml", 12.00, 16.00)]),
-        ("Avene", [("Crema Idratante Tolérance 50ml", 19.00, 26.00), ("Acqua Termale Spray 300ml", 9.00, 13.00)])
-    ],
-    "Mamma e Bambino": [
-        ("Avent", [("Biberon Natural 260ml", 9.00, 13.00), ("Ciuccio Ultra Soft 0-6M", 7.00, 10.00)]),
-        ("Mustela", [("Pasta Protettiva Cambio 100ml", 7.50, 10.50), ("Detergente Delicato 500ml", 10.00, 14.00), ("Salviettine Detergenti 70Pz", 3.50, 5.50)]),
-        ("Humana", [("Latte 1 Polvere 800g", 18.00, 24.00), ("Latte 2 Polvere 800g", 17.00, 23.00)]),
-        ("Plasmon", [("Omogeneizzato Frutta Mista 6x80g", 5.00, 7.50),("Biscotto Plasmon 720g", 6.50, 9.00)])
-    ],
-    "Dispositivi Medici": [
-        ("Accu-Chek", [("Strisce Reattive Active 50Pz", 25.00, 34.00), ("Puntaffe Lancing 200Pz", 15.00, 21.00)]),
-        ("Aerosol", [("Piston Nebulizzatore", 35.00, 55.00)]),
-        ("Durex", [("Preservativi Mutual Pleasure 12Pz", 11.00, 15.00), ("Profilattici Extra Safe 12Pz", 10.00, 14.00)]),
-        ("Kijimea", [("Kijimea Regularis 28 Bustine", 18.00, 25.00), ("Procto 80ml", 14.00, 19.00)])
-    ]
-}
+cataloghi_base = [
+    ("Boiron Belladonna Granuli", "Fitoterapia e Omeopatia", 6.00, 10.00, 800410000),
+    ("Boiron Nux Vomica Granuli", "Fitoterapia e Omeopatia", 6.00, 10.00, 800410100),
+    ("Boiron Arnica Montana Granuli", "Fitoterapia e Omeopatia", 6.00, 9.50, 800423400),
+    ("Sedatif PC Compresse Omeopatiche", "Fitoterapia e Omeopatia", 9.00, 14.50, 800423600),
+    ("Tachipirina Compresse", "Farmaci da Banco (SOP/OTC)", 6.00, 9.50, 800123400),
+    ("Nurofen Capsule Molli", "Farmaci da Banco (SOP/OTC)", 7.00, 11.50, 800123600),
+    ("Oki Granulato Bustine", "Farmaci da Banco (SOP/OTC)", 8.50, 14.00, 800123700),
+    ("Aspirina C Effervescente", "Farmaci da Banco (SOP/OTC)", 6.20, 9.90, 800123800),
+    ("Moment Compresse", "Farmaci da Banco (SOP/OTC)", 5.20, 8.50, 800123900),
+    ("Multicentrum Uomo Compresse", "Integratori e Vitamine", 16.00, 25.00, 800223400),
+    ("Polase Bustine", "Integratori e Vitamine", 12.00, 18.90, 800223600),
+    ("Sustenium Plus Bustine", "Integratori e Vitamine", 17.00, 27.00, 800223700),
+    ("Magnesio Supremo Solubile", "Integratori e Vitamine", 11.50, 18.00, 800224000),
+    ("Rilastil Smagliature Crema", "Cosmesi e Dermocosmesi", 28.00, 46.00, 800323400),
+    ("CeraVe Crema Idratante Corpo", "Cosmesi e Dermocosmesi", 14.00, 22.00, 800323500),
+    ("Mustela Pasta Cambio", "Mamma e Bambino", 7.50, 12.50, 800523400),
+    ("Omron Misuratore Pressione", "Dispositivi Medici", 39.00, 60.00, 800623400)
+]
 
-print("Generazione del database pulito e diversificato di 10.000 prodotti in corso...")
+print("Generazione del catalogo in corso...")
+righe = []
+counter = 1
 
-righe_generate = []
-minsan_counter = 100000001 # Partiamo da un MINSAN valido a 9 cifre
-
-# Generiamo combinazioni logiche finché non arriviamo a 10.000
-while len(righe_generate) < num_prodotti_target:
-    cat = random.choice(list(CATEGORIE_DATI.keys()))
-    brand, varianti = random.choice(CATEGORIE_DATI[cat])
-    var_nome, p_min, p_max = random.choice(varianti)
-    
-    # Creiamo un nome pulito, univoco e professionale
-    nome_prodotto = f"{brand.upper()} {var_nome.upper()}"
-    
-    # Evitiamo duplicati esatti nel set
-    if any(r['Prodotto'] == nome_prodotto for r in righe_generate):
-        # Aggiungiamo una piccola variante numerica o lotto se esiste già
-        nome_prodotto = f"{brand.upper()} {var_nome.upper()} - CONF. {random.choice(['speciale', 'risparmio', '2026', 'PROMO'])}"
-
-    minsan_str = str(minsan_counter)
-    minsan_counter += 1
-    
-    # Generiamo i prezzi coerenti per ciascuna delle 9 farmacie attorno al range base
-    prezzo_base = round(random.uniform(p_min, p_max), 2)
-    
-    row_data = {
-        "MINSAN": minsan_str,
-        "Prodotto": nome_prodotto,
-        "Categoria": cat,
-        "Immagine_URL": ""
-    }
-    
-    for farmacia in farmacie:
-        # Ogni farmacia applica una piccola variazione casuale (-15% / +15%) rispetto al prezzo base
-        coeff_farmacia = random.uniform(0.85, 1.18)
-        prezzo_farma = round(prezzo_base * coeff_farmacia, 2)
-        row_data[farmacia] = f"{prezzo_farma:.2f}"
+for base_nome, cat, pmin, pmax, base_minsan in cataloghi_base:
+    for i in range(300): # Genera varianti per arrivare a migliaia di prodotti
+        suf = f" - Confezione {i+1}" if i > 0 else ""
+        nome = f"{base_nome}{suf}"
+        minsan = str(base_minsan + counter)
+        prezzo_base = round(random.uniform(pmin, pmax), 2)
         
-    righe_generate.append(row_data)
+        row = {
+            "MINSAN": minsan,
+            "Prodotto": nome,
+            "Categoria": cat,
+            "Immagine_URL": ""
+        }
+        
+        for farmacia in FARMACIE:
+            coeff = random.uniform(0.85, 1.15)
+            row[farmacia] = round(prezzo_base * coeff, 2)
+            
+        righe.append(row)
+        counter += 1
 
-# Creazione del DataFrame e salvataggio in CSV
-df_finale = pd.DataFrame(righe_generate)
-df_finale.to_csv("prodotti_10000_ufficiale.csv", index=False)
-print(f"Fatto! Generati con successo {len(df_finale)} prodotti puliti e salvati in 'prodotti_10000_ufficiale.csv'.")
+df_totale = pd.DataFrame(righe)
+print(f"Totale prodotti generati: {len(df_totale)}. Inserimento su Supabase...")
+
+batch_size = 500
+for i in range(0, len(df_totale), batch_size):
+    batch = df_totale.iloc[i:i+batch_size].to_dict(orient="records")
+    try:
+        supabase.table("prodotti_farmacia").upsert(batch).execute()
+        print(f"Caricati blocchi da {i} a {i+len(batch)}")
+    except Exception as e:
+        print(f"Errore nel blocco {i}: {e}")
+
+print("Finito!")
