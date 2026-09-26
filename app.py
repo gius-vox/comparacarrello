@@ -22,7 +22,6 @@ st.set_page_config(
 # ---------------------------------------------------------
 @st.cache_resource
 def init_supabase() -> Client:
-    # Legge le variabili d'ambiente impostate su Render
     url = os.environ.get("SUPABASE_URL")
     key = os.environ.get("SUPABASE_KEY")
 
@@ -397,40 +396,20 @@ st.markdown(f"""
 if 'carrello' not in st.session_state:
     st.session_state.carrello = []
 
-if 'categoria_selezionata' not in st.session_state:
-    st.session_state.categoria_selezionata = "Tutte le Categorie"
-
 # ---------------------------------------------------------
-# 10. MOTORE DI RICERCA INTELLIGENTE (SUPABASE)
+# 10. MOTORE DI RICERCA LIBERO (SENZA CATEGORIE)
 # ---------------------------------------------------------
 st.markdown('<div class="search-hero-card">', unsafe_allow_html=True)
 st.markdown('<div style="color: #047857; font-size: 1.35rem; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 16px;">Cerca e aggiungi un prodotto</div>', unsafe_allow_html=True)
 
 if not df_prodotti.empty:
-    cat_presenti = sorted(list(df_prodotti['Categoria'].dropna().unique()))
-    cat_lista = ["Tutte le Categorie"] + cat_presenti
-
-    cols_chips = st.columns(min(len(cat_lista), 7))
-    for idx, cat in enumerate(cat_lista[:7]):
-        is_active = (st.session_state.categoria_selezionata == cat)
-        btn_type = "primary" if is_active else "secondary"
-        
-        with cols_chips[idx % 7]:
-            if st.button(cat, key=f"pill_{idx}", type=btn_type, use_container_width=True):
-                st.session_state.categoria_selezionata = cat
-                st.rerun()
-
-    st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
-
-    query_testo = st.text_input("🔍 Cerca per nome farmaco o codice MINSAN:", placeholder="Digita un termine (es. Tachipirina, Oki, Voltaren)...")
+    query_testo = st.text_input("🔍 Cerca per nome farmaco o codice MINSAN:", placeholder="Digita un termine (es. Tachipirina, Arnica, Belladonna)...")
 
     if query_testo and len(query_testo.strip()) >= 1:
         q_lower = query_testo.lower()
         df_risultati_ricerca = df_prodotti[df_prodotti['Prodotto'].str.lower().str.contains(q_lower) | df_prodotti['MINSAN'].astype(str).str.contains(q_lower)]
     else:
-        cat_attuale = st.session_state.categoria_selezionata
-        df_filtrato = df_prodotti if cat_attuale == "Tutte le Categorie" else df_prodotti[df_prodotti['Categoria'] == cat_attuale]
-        df_risultati_ricerca = df_filtrato.head(15)
+        df_risultati_ricerca = df_prodotti.head(15)
 
     if not df_risultati_ricerca.empty:
         opzioni_prodotti = [f"{row['Prodotto']} | Categoria: {row['Categoria']} (MINSAN: {row['MINSAN']})" for _, row in df_risultati_ricerca.iterrows()]
