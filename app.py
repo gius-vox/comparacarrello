@@ -326,6 +326,17 @@ st.markdown("""
         font-family: monospace;
         font-weight: 700;
     }
+
+    .footer-container {
+        margin-top: 50px;
+        padding: 25px 20px;
+        background-color: #f1f5f9;
+        border-top: 1px solid #cbd5e1;
+        border-radius: 12px;
+        text-align: center;
+        color: #475569;
+        font-size: 0.85rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -345,7 +356,7 @@ FARMACIE = {
 }
 
 # ---------------------------------------------------------
-# 6. LETTURA PURA DA SUPABASE (SENZA SPORCIRE L'APP)
+# 6. LETTURA PURA DA SUPABASE
 # ---------------------------------------------------------
 @st.cache_data(ttl=600)
 def load_data_from_supabase():
@@ -360,8 +371,10 @@ def load_data_from_supabase():
 df_prodotti = load_data_from_supabase()
 
 # ---------------------------------------------------------
-# 7. HEADER & BRAND
+# 7. CORPO PRINCIPALE (COMPARACARRELLO.IT)
 # ---------------------------------------------------------
+
+# HEADER & BRAND
 logo_html = f'<img src="{logo_src}" class="brand-hero-img">' if logo_src else '<div style="font-size:2.5rem;">🛒</div>'
 
 st.markdown(f"""
@@ -375,9 +388,7 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# ---------------------------------------------------------
-# 8. STRISCIA FARMACIE MONITORATE
-# ---------------------------------------------------------
+# STRISCIA FARMACIE MONITORATE
 chips = "".join([
     f'<div class="pharmacy-chip"><img src="https://www.google.com/s2/favicons?domain={info["domain"]}&sz=32"><span>{nome}</span></div>'
     for nome, info in FARMACIE.items()
@@ -390,18 +401,14 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# ---------------------------------------------------------
-# 9. STATE GESTIONE SESSIONE
-# ---------------------------------------------------------
+# STATE GESTIONE SESSIONE
 if 'carrello' not in st.session_state:
     st.session_state.carrello = []
-# ---------------------------------------------------------
-# 10. MOTORE DI RICERCA INTELLIGENTE & IMMAGINI
-# ---------------------------------------------------------
+
+# MOTORE DI RICERCA INTELLIGENTE & IMMAGINI
 st.markdown('<div class="search-hero-card">', unsafe_allow_html=True)
 st.markdown('<div style="color: #047857; font-size: 1.35rem; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 16px;">Cerca e aggiungi un prodotto</div>', unsafe_allow_html=True)
 
-# Icone tematiche sicure e garantite per ogni categoria
 ICONE_CATEGORIE = {
     "Omeopatia e Granuli": "https://cdn-icons-png.flaticon.com/128/3076/3076129.png",
     "Fitoterapia e Tinture Madri": "https://cdn-icons-png.flaticon.com/128/2965/2965567.png",
@@ -415,7 +422,6 @@ if not df_prodotti.empty:
     query_testo = st.text_input("🔍 Cerca per nome farmaco o codice MINSAN (es. 'belladonna boiron', 'tachipirina'):", placeholder="Digita anche parole parziali...")
 
     if query_testo and len(query_testo.strip()) >= 1:
-        # Ricerca intelligente: divide le parole e le cerca tutte (anche in ordine sparso)
         parole = query_testo.strip().lower().split()
         df_risultati_ricerca = df_prodotti.copy()
         
@@ -440,8 +446,6 @@ if not df_prodotti.empty:
             
             if not riga_Q.empty:
                 row_prod = riga_Q.iloc[0]
-                
-                # Assegnazione dell'icona pulita in base alla categoria del prodotto
                 cat = str(row_prod.get('Categoria', 'default')).strip()
                 img_url = ICONE_CATEGORIE.get(cat, ICONE_CATEGORIE["default"])
                 
@@ -464,9 +468,8 @@ else:
     st.error("Il database di Supabase è vuoto. Carica il catalogo dei prodotti su Supabase per iniziare.")
 
 st.markdown('</div>', unsafe_allow_html=True)
-# ---------------------------------------------------------
-# 11. CARRELLO UTENTE
-# ---------------------------------------------------------
+
+# CARRELLO UTENTE
 st.markdown("---")
 st.markdown("### Il tuo Carrello")
 
@@ -490,9 +493,7 @@ if st.session_state.carrello:
 else:
     st.info("Il carrello è vuoto. Cerca un prodotto qui sopra per iniziare il confronto.")
 
-# ---------------------------------------------------------
-# 12. RISULTATI COMPARAZIONE & SPEDIZIONI
-# ---------------------------------------------------------
+# RISULTATI COMPARAZIONE & SPEDIZIONI
 if st.session_state.carrello:
     st.markdown("---")
     st.markdown("### Risultato Comparazione Spesa Completa")
@@ -574,9 +575,7 @@ if st.session_state.carrello:
             df_res.columns = ['Farmacia', 'Totale Prodotti (€)', 'Spedizioni (€)', 'Soglia Gratis (€)', 'Totale Carrello (€)']
             st.dataframe(df_res.style.format({'Totale Prodotti (€)': '{:.2f}', 'Spedizioni (€)': '{:.2f}', 'Soglia Gratis (€)': '{:.2f}', 'Totale Carrello (€)': '{:.2f}'}), use_container_width=True)
 
-    # ---------------------------------------------------------
-    # 13. CONDIVISIONE E QR CODE
-    # ---------------------------------------------------------
+    # CONDIVISIONE E QR CODE
     st.markdown("---")
     st.markdown("### Condividi Carrello o Salvalo sul Cellulare")
     
@@ -613,3 +612,42 @@ if st.session_state.carrello:
                 </a>
             </div>
         """, unsafe_allow_html=True)
+
+# ---------------------------------------------------------
+# 8. FOOTER IN FONDO ALLA PAGINA (CON CHI SIAMO, PRIVACY, CONTATTI)
+# ---------------------------------------------------------
+st.markdown("""
+<div class="footer-container">
+    <b>Comparacarrello.it</b> è un motore di ricerca indipendente per farmacie online.<br>
+    I prezzi e le disponibilità dei prodotti possono variare in tempo reale sui siti dei partner affiliati.<br>
+    © 2026 Comparacarrello.it - Tutti i diritti riservati.
+</div>
+""", unsafe_allow_html=True)
+
+# Sezioni informative a scomparsa nel footer
+with st.expander("ℹ️ Chi Siamo"):
+    st.markdown("""
+    **Comparacarrello.it** è un progetto ideato e sviluppato da **Giuseppe Voci**. 
+    
+    Nasce prima di tutto da un'esigenza personale come fruitore di prodotti farmaceutici e parafarmaceutici. Da padre di due bambini, alla continua ricerca del risparmio, mi sono spesso trovato in difficoltà a conciliare il minor prezzo con le spese di spedizione: a volte il prezzo più basso di un farmaco era in una farmacia e quello di un altro in un'altra, e in mezzo c'era sempre l'incognita variabile della spedizione.
+    
+    Da questa frustrazione quotidiana è nata l'idea di creare questo strumento indipendente, per aiutare tutti i consumatori a orientarsi in modo semplice, trasparente e veloce nel mondo delle farmacie online italiane.
+    """)
+
+with st.expander("⚖️ Privacy & Cookie Policy"):
+    st.markdown("""
+    La presente informativa descrive le modalità di gestione di **Comparacarrello.it** in riferimento al trattamento dei dati personali degli utenti che consultano il portale.
+    
+    * **Trattamento dei dati:** Il nostro sito utilizza cookie tecnici e di analisi anonima per ottimizzare l'esperienza di navigazione. Non raccogliamo dati di profilazione invasivi.
+    * **Trasparenza dell'Affiliazione:** Cliccando sui pulsanti di acquisto verrai reindirizzato sui siti ufficiali dei nostri partner commerciali. Durante l'acquisto sul loro portale si applicheranno le rispettive normative e condizioni di vendita della singola farmacia online.
+    """)
+
+with st.expander("✉️ Contatti"):
+    st.markdown("""
+    Hai domande, suggerimenti o desideri metterti in contatto con me? 
+    Puoi scrivermi direttamente all'indirizzo email dedicato:
+    
+    📧 **info@comparacarrello.it**
+    
+    Risponderò nel più breve tempo possibile!
+    """)
