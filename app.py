@@ -126,7 +126,7 @@ if 'carrello' not in st.session_state:
 st.markdown("### 🔍 Cerca e aggiungi un prodotto")
 search_query = st.text_input("Cerca per nome farmaco o codice MINSAN (es. 'tachipirina', 'boiron'):", "")
 
-prodotti_filtrati = df_proddotti_filtrati = df_prodotti if not search_query else df_prodotti[
+prodotti_filtrati = df_prodotti if not search_query else df_prodotti[
     df_prodotti['Prodotto'].str.contains(search_query, case=False, na=False) | 
     df_prodotti['MINSAN'].str.contains(search_query, case=False, na=False)
 ]
@@ -163,7 +163,6 @@ st.markdown("### 🛍️ Il tuo carrello")
 if not st.session_state.carrello:
     st.info("Il tuo carrello è vuoto. Cerca un prodotto qui sopra per iniziare il confronto prezzi tra le farmacie partner.")
 else:
-    # Mostriamo la lista degli elementi nel carrello
     carrello_df_display = pd.DataFrame([{
         "Prodotto": item["Prodotto"],
         "Quantità": item["Quantita"]
@@ -183,9 +182,8 @@ else:
         totale_prodotti = 0
         disponibile_per_tutti = True
 
-        for item in toutefois := st.session_state.carrello:
+        for item in st.session_state.carrello:
             row_dict = item["dati"]._asdict()
-            # Controlla se la colonna della farmacia esiste nel record e ha un prezzo valido
             prezzo = row_dict.get(farmacia)
             if prezzo is not None and pd.notna(prezzo):
                 totale_prodotti += float(prezzo) * item["Quantita"]
