@@ -72,19 +72,14 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- CONNESSIONE A SUPABASE ---
-import os
-
-SUPABASE_URL = os.getenv("SUPABASE_URL", "")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
+# --- CONNESSIONE A SUPABASE (UTILIZZA I SEGRETI ORIGINALI DI STREAMLIT) ---
+SUPABASE_URL = st.secrets.get("SUPABASE_URL", "")
+SUPABASE_KEY = st.secrets.get("SUPABASE_KEY", "")
 
 @st.cache_resource
 def init_connection():
     if SUPABASE_URL and SUPABASE_KEY:
         return create_client(SUPABASE_URL, SUPABASE_KEY)
-    return None
-
-supabase = init_connection()        return create_client(SUPABASE_URL, SUPABASE_KEY)
     return None
 
 supabase = init_connection()
