@@ -73,13 +73,18 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- CONNESSIONE A SUPABASE ---
-SUPABASE_URL = st.secrets.get("SUPABASE_URL", "")
-SUPABASE_KEY = st.secrets.get("SUPABASE_KEY", "")
+import os
+
+SUPABASE_URL = os.getenv("SUPABASE_URL", "")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
 
 @st.cache_resource
 def init_connection():
     if SUPABASE_URL and SUPABASE_KEY:
         return create_client(SUPABASE_URL, SUPABASE_KEY)
+    return None
+
+supabase = init_connection()        return create_client(SUPABASE_URL, SUPABASE_KEY)
     return None
 
 supabase = init_connection()
