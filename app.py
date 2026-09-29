@@ -118,6 +118,18 @@ st.markdown("""
         object-fit: contain;
         display: block;
     }
+    
+    .brand-icon-fallback {
+        background: #ffffff;
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
 
     .brand-hero-title {
         font-size: clamp(2rem, 5vw, 2.8rem) !important;
@@ -366,7 +378,7 @@ df_prodotti = load_data_from_supabase()
 # 7. CORPO PRINCIPALE (COMPARACARRELLO.IT)
 # ---------------------------------------------------------
 
-logo_html = f'<img src="{logo_src}" class="brand-hero-img">' if logo_src else '<div style="font-size:2.5rem;">🛒</div>'
+logo_html = f'<img src="{logo_src}" class="brand-hero-img">' if logo_src else '<div class="brand-icon-fallback">🛒</div>'
 
 st.markdown(f"""
     <div class="brand-hero-card">
@@ -606,7 +618,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-with st.expander("ℹ️️ Chi Siamo"):
+with st.expander("ℹ Chi Siamo"):
     st.markdown("""
     **Comparacarrello.it** è un progetto ideato e sviluppato da **Giuseppe Voci**. 
     
