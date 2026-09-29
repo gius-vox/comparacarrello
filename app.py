@@ -185,14 +185,21 @@ st.markdown("""
         gap: 6px;
         background: #f8fafc;
         border: 1px solid #cbd5e1;
-        padding: 5px 12px;
+        padding: 6px 14px;
         border-radius: 20px;
-        font-weight: 600;
-        font-size: 0.78rem;
+        font-weight: 700;
+        font-size: 0.8rem;
         color: #334155;
     }
 
-    .pharmacy-chip img { width: 14px; height: 14px; border-radius: 50%; }
+    .search-section-title {
+        text-align: center;
+        color: #047857;
+        font-weight: 800;
+        font-size: 1.5rem;
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
 
     .product-preview-card {
         background: #f8fafc;
@@ -201,18 +208,6 @@ st.markdown("""
         border-radius: 12px;
         padding: 14px 18px;
         margin-top: 12px;
-    }
-
-    .product-img-frame {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 60px;
-        height: 60px;
     }
 
     .result-card {
@@ -342,14 +337,14 @@ st.markdown("""
 # 5. CONFIGURAZIONE FARMACIE PARTNER
 # ---------------------------------------------------------
 FARMACIE = {
-    "Farmaè": {"domain": "farmae.it", "spedizione_base": 3.90, "soglia_gratis": 19.90, "search_url": "https://www.farmae.it/catalogsearch/result/?q="},
-    "Farmacia Igea": {"domain": "farmaciaigea.com", "spedizione_base": 4.90, "soglia_gratis": 29.00, "search_url": "https://www.farmaciaigea.com/ricerca?search_query="},
-    "1000Farmacie": {"domain": "1000farmacie.it", "spedizione_base": 2.90, "soglia_gratis": 29.00, "search_url": "https://www.1000farmacie.it/search?q="},
-    "Top Farmacia": {"domain": "topfarmacia.it", "spedizione_base": 4.90, "soglia_gratis": 19.90, "search_url": "https://www.topfarmacia.it/catalogsearch/result/?q="},
-    "eFarma": {"domain": "efarma.com", "spedizione_base": 4.90, "soglia_gratis": 29.90, "search_url": "https://www.efarma.com/catalogsearch/result/?q="},
-    "Farmacosmo": {"domain": "farmacosmo.it", "spedizione_base": 3.90, "soglia_gratis": 29.90, "search_url": "https://www.farmacosmo.it/ricerca?controller=search&s="},
-    "Farmacia Loreto": {"domain": "farmacialoreto.it", "spedizione_base": 4.90, "soglia_gratis": 29.90, "search_url": "https://farmacialoreto.it/catalogsearch/result/?q="},
-    "Antica Farmacia Orlandi": {"domain": "farma.it", "spedizione_base": 3.90, "soglia_gratis": 24.90, "search_url": "https://www.farma.it/catalogsearch/result/?q="}
+    "Farmaè": {"spedizione_base": 3.90, "soglia_gratis": 19.90, "search_url": "https://www.farmae.it/catalogsearch/result/?q="},
+    "Farmacia Igea": {"spedizione_base": 4.90, "soglia_gratis": 29.00, "search_url": "https://www.farmaciaigea.com/ricerca?search_query="},
+    "1000Farmacie": {"spedizione_base": 2.90, "soglia_gratis": 29.00, "search_url": "https://www.1000farmacie.it/search?q="},
+    "Top Farmacia": {"spedizione_base": 4.90, "soglia_gratis": 19.90, "search_url": "https://www.topfarmacia.it/catalogsearch/result/?q="},
+    "eFarma": {"spedizione_base": 4.90, "soglia_gratis": 29.90, "search_url": "https://www.efarma.com/catalogsearch/result/?q="},
+    "Farmacosmo": {"spedizione_base": 3.90, "soglia_gratis": 29.90, "search_url": "https://www.farmacosmo.it/ricerca?controller=search&s="},
+    "Farmacia Loreto": {"spedizione_base": 4.90, "soglia_gratis": 29.90, "search_url": "https://farmacialoreto.it/catalogsearch/result/?q="},
+    "Antica Farmacia Orlandi": {"spedizione_base": 3.90, "soglia_gratis": 24.90, "search_url": "https://www.farma.it/catalogsearch/result/?q="}
 }
 
 # ---------------------------------------------------------
@@ -384,9 +379,10 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
+# Chips farmacie con loghi testuali/puliti
 chips = "".join([
-    f'<div class="pharmacy-chip"><img src="https://www.google.com/s2/favicons?domain={info["domain"]}&sz=32"><span>{nome}</span></div>'
-    for nome, info in FARMACIE.items()
+    f'<div class="pharmacy-chip"><span>🏥 {nome}</span></div>'
+    for nome in FARMACIE.keys()
 ])
 
 st.markdown(f"""
@@ -399,29 +395,27 @@ st.markdown(f"""
 if 'carrello' not in st.session_state:
     st.session_state.carrello = []
 
-st.markdown("<h3 style='color: #047857; font-weight: 800; margin-top: 10px; margin-bottom: 15px;'>🔍 Cerca e aggiungi un prodotto</h3>", unsafe_allow_html=True)
+st.markdown('<div class="search-section-title">Cerca e aggiungi un prodotto</div>', unsafe_allow_html=True)
 
 if not df_prodotti.empty:
-    query_testo = st.text_input("Cerca per nome farmaco o codice MINSAN (es. 'belladonna boiron', 'tachipirina'):", placeholder="Digita anche parole parziali...")
+    query_testo = st.text_input("Inserisci il nome del farmaco o il codice MINSAN:", placeholder="Es. Tachipirina, 34947019...")
 
     if query_testo and len(query_testo.strip()) >= 1:
-        parole = query_testo.strip().lower().split()
-        df_risultati_ricerca = df_prodotti.copy()
-        
-        for parola in parole:
-            mask = (
-                df_risultati_ricerca['Prodotto'].str.lower().str.contains(parola, na=False) |
-                df_risultati_ricerca['MINSAN'].astype(str).str.contains(parola, na=False) |
-                df_risultati_ricerca['Categoria'].str.lower().str.contains(parola, na=False)
-            )
-            df_risultati_ricerca = df_risultati_ricerca[mask]
+        parola = query_testo.strip().lower()
+        df_risultati_ricerca = df_prodotti[
+            df_prodotti['Prodotto'].str.lower().str.contains(parola, na=False) |
+            df_risultati_ricerca['MINSAN'].astype(str).str.contains(parola, na=False)
+        ] if 'df_risultati_ricerca' in locals() else df_prodotti[
+            df_prodotti['Prodotto'].str.lower().str.contains(parola, na=False) |
+            df_prodotti['MINSAN'].astype(str).str.contains(parola, na=False)
+        ]
     else:
         df_risultati_ricerca = df_prodotti.head(15)
 
     if not df_risultati_ricerca.empty:
-        opzioni_prodotti = [f"{row['Prodotto']} | Categoria: {row['Categoria']} (MINSAN: {row['MINSAN']})" for _, row in df_risultati_ricerca.iterrows()]
+        opzioni_prodotti = [f"{row['Prodotto']} (MINSAN: {row['MINSAN']})" for _, row in df_risultati_ricerca.iterrows()]
         
-        prod_scelto = st.selectbox("Seleziona il prodotto trovato:", options=opzioni_prodotti, index=0, label_visibility="collapsed")
+        prod_scelto = st.selectbox("Seleziona il prodotto dai risultati:", options=opzioni_prodotti, index=0, label_visibility="collapsed")
         
         if prod_scelto:
             minsan_selezionato = prod_scelto.split("MINSAN: ")[-1].replace(")", "").strip()
@@ -429,24 +423,20 @@ if not df_prodotti.empty:
             
             if not riga_Q.empty:
                 row_prod = riga_Q.iloc[0]
-                cat = str(row_prod.get('Categoria', 'default')).strip()
-                img_url = ICONE_CATEGORIE.get(cat, ICONE_CATEGORIE["default"]) if 'ICONE_CATEGORIE' in globals() else "https://cdn-icons-png.flaticon.com/128/883/883041.png"
                 
                 st.markdown('<div class="product-preview-card">', unsafe_allow_html=True)
-                c_p_img, c_p_info, c_p_btn = st.columns([0.8, 3.2, 1.2], vertical_alignment="center")
-                with c_p_img:
-                    st.markdown(f'<div class="product-img-frame"><img src="{img_url}" style="max-width:100%; max-height:100%; object-fit:contain;"></div>', unsafe_allow_html=True)
+                c_p_info, c_p_btn = st.columns([4, 1.2], vertical_alignment="center")
                 with c_p_info:
                     st.markdown(f"<h4 style='margin:0; font-weight:800; color:#0f172a;'>{row_prod['Prodotto']}</h4>", unsafe_allow_html=True)
                     st.markdown(f"<div style='margin-top:4px; color:#475569; font-size:0.88rem;'>Codice MINSAN: <span class='minsan-tag'>{row_prod['MINSAN']}</span> | Categoria: <b style='color:#047857;'>{row_prod['Categoria']}</b></div>", unsafe_allow_html=True)
                 with c_p_btn:
-                    if st.button("Aggiungi al Carrello", type="primary", use_container_width=True):
+                    if st.button("Aggiungi", type="primary", use_container_width=True):
                         st.session_state.carrello.append(row_prod.to_dict())
-                        st.success("Prodotto aggiunto!")
+                        st.success("Aggiunto!")
                         st.rerun()
                 st.markdown('</div>', unsafe_allow_html=True)
     else:
-        st.warning("Nessun prodotto trovato con questa ricerca. Prova a digitare parole più brevi.")
+        st.warning("Nessun prodotto trovato con questo nome o codice MINSAN.")
 else:
     st.error("Il database di Supabase è vuoto. Carica il catalogo dei prodotti su Supabase per iniziare.")
 
@@ -455,10 +445,7 @@ st.markdown("### Il tuo Carrello")
 
 if st.session_state.carrello:
     for idx, item in enumerate(st.session_state.carrello):
-        c_img, c_desc, c_del = st.columns([0.6, 4, 1], vertical_alignment="center")
-        with c_img:
-            img_item = item.get('Immagine_URL', '') if pd.notna(item.get('Immagine_URL')) and str(item.get('Immagine_URL')).strip() != '' else DEFAULT_SVG_IMG
-            st.markdown(f'<div class="product-img-frame" style="padding: 2px;"><img src="{img_item}"></div>', unsafe_allow_html=True)
+        c_desc, c_del = st.columns([4, 1], vertical_alignment="center")
         with c_desc:
             st.markdown(f"**{item['Prodotto']}** &nbsp; <span class='minsan-tag'>MINSAN: {item['MINSAN']}</span>", unsafe_allow_html=True)
         with c_del:
