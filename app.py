@@ -106,8 +106,8 @@ st.markdown("""
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 14px;
-        margin-bottom: 10px;
+        gap: 16px;
+        margin-bottom: 12px;
         width: 100%;
         flex-wrap: wrap;
     }
@@ -117,18 +117,6 @@ st.markdown("""
         width: auto;
         object-fit: contain;
         display: block;
-    }
-    
-    .brand-icon-fallback {
-        background: #ffffff;
-        width: 50px;
-        height: 50px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.8rem;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
 
     .brand-hero-title {
@@ -378,7 +366,11 @@ df_prodotti = load_data_from_supabase()
 # 7. CORPO PRINCIPALE (COMPARACARRELLO.IT)
 # ---------------------------------------------------------
 
-logo_html = f'<img src="{logo_src}" class="brand-hero-img">' if logo_src else '<div class="brand-icon-fallback">🛒</div>'
+logo_html = f'<img src="{logo_src}" class="brand-hero-img">' if logo_src else '''
+    <div style="background: #ffffff; width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.3); border: 2px solid #38bdf8;">
+        <span style="font-size: 28px; line-height: 1;">🛒</span>
+    </div>
+'''
 
 st.markdown(f"""
     <div class="brand-hero-card">
@@ -512,7 +504,6 @@ if st.session_state.carrello:
     risultati = sorted(risultati, key=lambda x: x['totale_complessivo'])
     
     if risultati:
-        # Griglia flessibile a 2 colonne per tutte le farmacie disponibili
         cols_per_row = 2
         for i in range(0, len(risultati), cols_per_row):
             batch_cols = st.columns(cols_per_row)
