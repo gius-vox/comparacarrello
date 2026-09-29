@@ -185,12 +185,14 @@ st.markdown("""
         gap: 6px;
         background: #f8fafc;
         border: 1px solid #cbd5e1;
-        padding: 6px 14px;
+        padding: 5px 12px;
         border-radius: 20px;
-        font-weight: 700;
-        font-size: 0.8rem;
+        font-weight: 600;
+        font-size: 0.78rem;
         color: #334155;
     }
+
+    .pharmacy-chip img { width: 14px; height: 14px; border-radius: 50%; }
 
     .search-section-title {
         text-align: center;
@@ -337,14 +339,14 @@ st.markdown("""
 # 5. CONFIGURAZIONE FARMACIE PARTNER
 # ---------------------------------------------------------
 FARMACIE = {
-    "Farmaè": {"spedizione_base": 3.90, "soglia_gratis": 19.90, "search_url": "https://www.farmae.it/catalogsearch/result/?q="},
-    "Farmacia Igea": {"spedizione_base": 4.90, "soglia_gratis": 29.00, "search_url": "https://www.farmaciaigea.com/ricerca?search_query="},
-    "1000Farmacie": {"spedizione_base": 2.90, "soglia_gratis": 29.00, "search_url": "https://www.1000farmacie.it/search?q="},
-    "Top Farmacia": {"spedizione_base": 4.90, "soglia_gratis": 19.90, "search_url": "https://www.topfarmacia.it/catalogsearch/result/?q="},
-    "eFarma": {"spedizione_base": 4.90, "soglia_gratis": 29.90, "search_url": "https://www.efarma.com/catalogsearch/result/?q="},
-    "Farmacosmo": {"spedizione_base": 3.90, "soglia_gratis": 29.90, "search_url": "https://www.farmacosmo.it/ricerca?controller=search&s="},
-    "Farmacia Loreto": {"spedizione_base": 4.90, "soglia_gratis": 29.90, "search_url": "https://farmacialoreto.it/catalogsearch/result/?q="},
-    "Antica Farmacia Orlandi": {"spedizione_base": 3.90, "soglia_gratis": 24.90, "search_url": "https://www.farma.it/catalogsearch/result/?q="}
+    "Farmaè": {"domain": "farmae.it", "spedizione_base": 3.90, "soglia_gratis": 19.90, "search_url": "https://www.farmae.it/catalogsearch/result/?q="},
+    "Farmacia Igea": {"domain": "farmaciaigea.com", "spedizione_base": 4.90, "soglia_gratis": 29.00, "search_url": "https://www.farmaciaigea.com/ricerca?search_query="},
+    "1000Farmacie": {"domain": "1000farmacie.it", "spedizione_base": 2.90, "soglia_gratis": 29.00, "search_url": "https://www.1000farmacie.it/search?q="},
+    "Top Farmacia": {"domain": "topfarmacia.it", "spedizione_base": 4.90, "soglia_gratis": 19.90, "search_url": "https://www.topfarmacia.it/catalogsearch/result/?q="},
+    "eFarma": {"domain": "efarma.com", "spedizione_base": 4.90, "soglia_gratis": 29.90, "search_url": "https://www.efarma.com/catalogsearch/result/?q="},
+    "Farmacosmo": {"domain": "farmacosmo.it", "spedizione_base": 3.90, "soglia_gratis": 29.90, "search_url": "https://www.farmacosmo.it/ricerca?controller=search&s="},
+    "Farmacia Loreto": {"domain": "farmacialoreto.it", "spedizione_base": 4.90, "soglia_gratis": 29.90, "search_url": "https://farmacialoreto.it/catalogsearch/result/?q="},
+    "Antica Farmacia Orlandi": {"domain": "farma.it", "spedizione_base": 3.90, "soglia_gratis": 24.90, "search_url": "https://www.farma.it/catalogsearch/result/?q="}
 }
 
 # ---------------------------------------------------------
@@ -379,10 +381,10 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# Chips farmacie con loghi testuali/puliti
+# Chips farmacie con loghi puliti ripristinati
 chips = "".join([
-    f'<div class="pharmacy-chip"><span>🏥 {nome}</span></div>'
-    for nome in FARMACIE.keys()
+    f'<div class="pharmacy-chip"><img src="https://www.google.com/s2/favicons?domain={info["domain"]}&sz=32"><span>{nome}</span></div>'
+    for nome, info in FARMACIE.items()
 ])
 
 st.markdown(f"""
@@ -403,9 +405,6 @@ if not df_prodotti.empty:
     if query_testo and len(query_testo.strip()) >= 1:
         parola = query_testo.strip().lower()
         df_risultati_ricerca = df_prodotti[
-            df_prodotti['Prodotto'].str.lower().str.contains(parola, na=False) |
-            df_risultati_ricerca['MINSAN'].astype(str).str.contains(parola, na=False)
-        ] if 'df_risultati_ricerca' in locals() else df_prodotti[
             df_prodotti['Prodotto'].str.lower().str.contains(parola, na=False) |
             df_prodotti['MINSAN'].astype(str).str.contains(parola, na=False)
         ]
