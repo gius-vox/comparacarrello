@@ -154,7 +154,7 @@ st.markdown("""
         text-align: center;
     }
 
-    /* Striscia Farmacie Monitorate (Esclusivo Network Awin) */
+    /* Striscia Farmacie Monitorate ( Pubblica ) */
     .pharmacy-bar {
         background: #ffffff;
         border: 1px solid #e2e8f0;
@@ -350,7 +350,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 5. CONFIGURAZIONE FARMACIE PARTNER (ESCLUSIVO NETWORK AWIN)
+# 5. CONFIGURAZIONE FARMACIE PARTNER
 # ---------------------------------------------------------
 FARMACIE = {
     "Farmaè": {"domain": "farmae.it", "spedizione_base": 3.90, "soglia_gratis": 19.90, "search_url": "https://www.farmae.it/catalogsearch/result/?q="},
@@ -396,7 +396,7 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# STRISCIA FARMACIE MONITORATE (SOLO AWIN)
+# STRISCIA FARMACIE MONITORATE (ETICHETTA PUBBLICA)
 chips = "".join([
     f'<div class="pharmacy-chip"><img src="https://www.google.com/s2/favicons?domain={info["domain"]}&sz=32"><span>{nome}</span></div>'
     for nome, info in FARMACIE.items()
@@ -404,7 +404,7 @@ chips = "".join([
 
 st.markdown(f"""
     <div class="pharmacy-bar">
-        <div class="pharmacy-bar-title">Farmacie Partner Awin Monitorate in Tempo Reale</div>
+        <div class="pharmacy-bar-title">Migliori Farmacie Online Monitorate in Tempo Reale</div>
         <div class="pharmacy-grid">{chips}</div>
     </div>
 """, unsafe_allow_html=True)
