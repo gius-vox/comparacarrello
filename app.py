@@ -95,7 +95,6 @@ st.markdown("""
         margin: 0 auto;
     }
     
-    /* Hero Section Perfettamente Centrata */
     .brand-hero-card {
         background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
         border: 1px solid #cbd5e1;
@@ -154,7 +153,6 @@ st.markdown("""
         text-align: center;
     }
 
-    /* Striscia Farmacie Monitorate */
     .pharmacy-bar {
         background: #ffffff;
         border: 1px solid #e2e8f0;
@@ -373,7 +371,6 @@ df_prodotti = load_data_from_supabase()
 # 7. CORPO PRINCIPALE (COMPARACARRELLO.IT)
 # ---------------------------------------------------------
 
-# HEADER & BRAND CENTRATO
 logo_html = f'<img src="{logo_src}" class="brand-hero-img">' if logo_src else '<div style="font-size:2.5rem;">🛒</div>'
 
 st.markdown(f"""
@@ -387,7 +384,6 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# STRISCIA FARMACIE MONITORATE
 chips = "".join([
     f'<div class="pharmacy-chip"><img src="https://www.google.com/s2/favicons?domain={info["domain"]}&sz=32"><span>{nome}</span></div>'
     for nome, info in FARMACIE.items()
@@ -400,11 +396,9 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# STATE GESTIONE SESSIONE
 if 'carrello' not in st.session_state:
     st.session_state.carrello = []
 
-# MOTORE DI RICERCA PULITO
 st.markdown("<h3 style='color: #047857; font-weight: 800; margin-top: 10px; margin-bottom: 15px;'>🔍 Cerca e aggiungi un prodotto</h3>", unsafe_allow_html=True)
 
 if not df_prodotti.empty:
@@ -436,7 +430,7 @@ if not df_prodotti.empty:
             if not riga_Q.empty:
                 row_prod = riga_Q.iloc[0]
                 cat = str(row_prod.get('Categoria', 'default')).strip()
-                img_url = ICONE_CATEGORIE.get(cat, ICONE_CATEGORIE["default"])
+                img_url = ICONE_CATEGORIE.get(cat, ICONE_CATEGORIE["default"]) if 'ICONE_CATEGORIE' in globals() else "https://cdn-icons-png.flaticon.com/128/883/883041.png"
                 
                 st.markdown('<div class="product-preview-card">', unsafe_allow_html=True)
                 c_p_img, c_p_info, c_p_btn = st.columns([0.8, 3.2, 1.2], vertical_alignment="center")
@@ -456,7 +450,6 @@ if not df_prodotti.empty:
 else:
     st.error("Il database di Supabase è vuoto. Carica il catalogo dei prodotti su Supabase per iniziare.")
 
-# CARRELLO UTENTE
 st.markdown("---")
 st.markdown("### Il tuo Carrello")
 
@@ -480,7 +473,6 @@ if st.session_state.carrello:
 else:
     st.info("Il carrello è vuoto. Cerca un prodotto qui sopra per iniziare il confronto.")
 
-# RISULTATI COMPARAZIONE & SPEDIZIONI
 if st.session_state.carrello:
     st.markdown("---")
     st.markdown("### Risultato Comparazione Spesa Completa")
@@ -534,25 +526,36 @@ if st.session_state.carrello:
                 info_ship_box = '<div class="shipping-info-box free"><b>Spedizione gratuita sbloccata!</b> Hai superato la soglia minima.</div>'
             else:
                 sped_str = f"+ € {res['spese_spedizione']:.2f}"
-                info_ship_box = f'<div class="shipping-info-box"><b>Vuoi azzerare la spedizione?</b><br>Aggiungi altri <b>€ {res["mancante_gratis"]:.2f}</b> di prodotti su {res["farmacia"]} per sbloccare la spedizione GRATIS (soglia a € {res["soglia_gratis"]:.2f}).</div>'
+                mancante_fmt = f"{res['mancante_gratis']:.2f}"
+                soglia_fmt = f"{res['soglia_gratis']:.2f}"
+                farmacia_nome = res['farmacia']
+                info_ship_box = (
+                    f'<div class="shipping-info-box">'
+                    f'<b>Vuoi azzerare la spedizione?</b><br>'
+                    f'Aggiungi altri <b>€ {mancante_fmt}</b> di prodotti su {farmacia_nome} '
+                    f'per sbloccare la spedizione GRATIS (soglia a € {soglia_fmt}).'
+                    f'</div>'
+                )
 
-            html_card = f'''<div class="result-card {card_class}">
-<span class="badge-rank {badge_color}">{rank_label}</span>
-<div class="farmacia-name">{res["farmacia"]}</div>
-<div class="calculation-receipt-box">
-<div class="calc-row"><span>Prezzo prodotti</span><span>€ {res["totale_prodotti"]:.2f}</span></div>
-<div class="calc-row"><span>Spese di spedizione</span><span>{sped_str}</span></div>
-<div class="calc-divider"></div>
-<div class="calc-total-row"><span>TOTALE SPESA</span><span class="calc-total-amount">€ {res["totale_complessivo"]:.2f}</span></div>
-</div>
-{info_ship_box}
-<div style="margin-top: 10px;">
-<a href="{res["url"]}" target="_blank" style="text-decoration:none;">
-<button style="width:100%; background-color:#ea580c; color:white; border:none; padding:11px 14px; border-radius:10px; font-weight:800; cursor:pointer; font-size:0.9rem; box-shadow:0 4px 10px rgba(234, 88, 12, 0.2);">Acquista su {res["farmacia"]}</button>
-</a>
-<div class="redirect-disclaimer">Verrai reindirizzato sul sito ufficiale della farmacia per selezionare e acquistare i tuoi prodotti.</div>
-</div>
-</div>'''
+            html_card = (
+                f'<div class="result-card {card_class}">'
+                f'<span class="badge-rank {badge_color}">{rank_label}</span>'
+                f'<div class="farmacia-name">{res["farmacia"]}</div>'
+                f'<div class="calculation-receipt-box">'
+                f'<div class="calc-row"><span>Prezzo prodotti</span><span>€ {res["totale_prodotti"]:.2f}</span></div>'
+                f'<div class="calc-row"><span>Spese di spedizione</span><span>{sped_str}</span></div>'
+                f'<div class="calc-divider"></div>'
+                f'<div class="calc-total-row"><span>TOTALE SPESA</span><span class="calc-total-amount">€ {res["totale_complessivo"]:.2f}</span></div>'
+                f'</div>'
+                f'{info_ship_box}'
+                f'<div style="margin-top: 10px;">'
+                f'<a href="{res["url"]}" target="_blank" style="text-decoration:none;">'
+                f'<button style="width:100%; background-color:#ea580c; color:white; border:none; padding:11px 14px; border-radius:10px; font-weight:800; cursor:pointer; font-size:0.9rem; box-shadow:0 4px 10px rgba(234, 88, 12, 0.2);">Acquista su {res["farmacia"]}</button>'
+                f'</a>'
+                f'<div class="redirect-disclaimer">Verrai reindirizzato sul sito ufficiale della farmacia per selezionare e acquistare i tuoi prodotti.</div>'
+                f'</div>'
+                f'</div>'
+            )
 
             with cols_podium[i]:
                 st.markdown(html_card, unsafe_allow_html=True)
@@ -562,7 +565,6 @@ if st.session_state.carrello:
             df_res.columns = ['Farmacia', 'Totale Prodotti (€)', 'Spedizioni (€)', 'Soglia Gratis (€)', 'Totale Carrello (€)']
             st.dataframe(df_res.style.format({'Totale Prodotti (€)': '{:.2f}', 'Spedizioni (€)': '{:.2f}', 'Soglia Gratis (€)': '{:.2f}', 'Totale Carrello (€)': '{:.2f}'}), use_container_width=True)
 
-    # CONDIVISIONE E QR CODE
     st.markdown("---")
     st.markdown("### Condividi Carrello o Salvalo sul Cellulare")
     
@@ -600,9 +602,6 @@ if st.session_state.carrello:
             </div>
         """, unsafe_allow_html=True)
 
-# ---------------------------------------------------------
-# 8. FOOTER IN FONDO ALLA PAGINA (CON CHI SIAMO, PRIVACY, CONTATTI)
-# ---------------------------------------------------------
 st.markdown("""
 <div class="footer-container">
     <b>Comparacarrello.it</b> è un motore di ricerca indipendente per farmacie online.<br>
@@ -611,7 +610,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Sezioni informative a scomparsa nel footer
 with st.expander("ℹ️ Chi Siamo"):
     st.markdown("""
     **Comparacarrello.it** è un progetto ideato e sviluppato da **Giuseppe Voci**. 
