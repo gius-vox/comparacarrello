@@ -75,7 +75,7 @@ DEFAULT_SVG_IMG = (
 )
 
 # ---------------------------------------------------------
-# 4. DESIGN SYSTEM & STYLE CUSTOM (HEADER PERFETTAMENTE CENTRATO)
+# 4. DESIGN SYSTEM & STYLE CUSTOM (PULIZIA TOTALE SPAZI VUOTI)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -154,13 +154,13 @@ st.markdown("""
         text-align: center;
     }
 
-    /* Striscia Farmacie Monitorate ( Pubblica ) */
+    /* Striscia Farmacie Monitorate */
     .pharmacy-bar {
         background: #ffffff;
         border: 1px solid #e2e8f0;
         border-radius: 12px;
-        padding: 12px 16px;
-        margin-bottom: 25px;
+        padding: 14px 16px;
+        margin-bottom: 20px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
     
@@ -170,7 +170,7 @@ st.markdown("""
         color: #64748b;
         font-weight: 800;
         letter-spacing: 0.5px;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
         text-align: center;
     }
 
@@ -195,15 +195,6 @@ st.markdown("""
     }
 
     .pharmacy-chip img { width: 14px; height: 14px; border-radius: 50%; }
-
-    .search-hero-card {
-        background: #ffffff;
-        border-radius: 16px;
-        padding: 22px;
-        border: 1px solid #cbd5e1;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
-        margin-bottom: 25px;
-    }
 
     .product-preview-card {
         background: #f8fafc;
@@ -396,7 +387,7 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# STRISCIA FARMACIE MONITORATE (ETICHETTA PUBBLICA)
+# STRISCIA FARMACIE MONITORATE
 chips = "".join([
     f'<div class="pharmacy-chip"><img src="https://www.google.com/s2/favicons?domain={info["domain"]}&sz=32"><span>{nome}</span></div>'
     for nome, info in FARMACIE.items()
@@ -413,21 +404,11 @@ st.markdown(f"""
 if 'carrello' not in st.session_state:
     st.session_state.carrello = []
 
-# MOTORE DI RICERCA INTELLIGENTE & IMMAGINI
-st.markdown('<div class="search-hero-card">', unsafe_allow_html=True)
-st.markdown('<div style="color: #047857; font-size: 1.35rem; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 16px;">Cerca e aggiungi un prodotto</div>', unsafe_allow_html=True)
-
-ICONE_CATEGORIE = {
-    "Omeopatia e Granuli": "https://cdn-icons-png.flaticon.com/128/3076/3076129.png",
-    "Fitoterapia e Tinture Madri": "https://cdn-icons-png.flaticon.com/128/2965/2965567.png",
-    "Sali di Schüssler": "https://cdn-icons-png.flaticon.com/128/883/883395.png",
-    "Cosmesi e Bellezza": "https://cdn-icons-png.flaticon.com/128/1940/1940925.png",
-    "Farmaci da banco (SOP/OTC)": "https://cdn-icons-png.flaticon.com/128/822/822143.png",
-    "default": "https://cdn-icons-png.flaticon.com/128/883/883041.png"
-}
+# MOTORE DI RICERCA PULITO (SENZA BOX SUPERFLUO)
+st.markdown("<h3 style='color: #047857; font-weight: 800; margin-top: 10px; margin-bottom: 15px;'>🔍 Cerca e aggiungi un prodotto</h3>", unsafe_icon=None, unsafe_allow_html=True)
 
 if not df_prodotti.empty:
-    query_testo = st.text_input("🔍 Cerca per nome farmaco o codice MINSAN (es. 'belladonna boiron', 'tachipirina'):", placeholder="Digita anche parole parziali...")
+    query_testo = st.text_input("Cerca per nome farmaco o codice MINSAN (es. 'belladonna boiron', 'tachipirina'):", placeholder="Digita anche parole parziali...")
 
     if query_testo and len(query_testo.strip()) >= 1:
         parole = query_testo.strip().lower().split()
@@ -474,8 +455,6 @@ if not df_prodotti.empty:
         st.warning("Nessun prodotto trovato con questa ricerca. Prova a digitare parole più brevi.")
 else:
     st.error("Il database di Supabase è vuoto. Carica il catalogo dei prodotti su Supabase per iniziare.")
-
-st.markdown('</div>', unsafe_allow_html=True)
 
 # CARRELLO UTENTE
 st.markdown("---")
