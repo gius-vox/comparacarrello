@@ -404,8 +404,8 @@ st.markdown(f"""
 if 'carrello' not in st.session_state:
     st.session_state.carrello = []
 
-# MOTORE DI RICERCA PULITO (SENZA BOX SUPERFLUO)
-st.markdown("<h3 style='color: #047857; font-weight: 800; margin-top: 10px; margin-bottom: 15px;'>🔍 Cerca e aggiungi un prodotto</h3>", unsafe_icon=None, unsafe_allow_html=True)
+# MOTORE DI RICERCA PULITO (SENZA SPAZI VUOTI)
+st.markdown("<h3 style='color: #047857; font-weight: 800; margin-top: 10px; margin-bottom: 15px;'>🔍 Cerca e aggiungi un prodotto</h3>", unsafe_allow_html=True)
 
 if not df_prodotti.empty:
     query_testo = st.text_input("Cerca per nome farmaco o codice MINSAN (es. 'belladonna boiron', 'tachipirina'):", placeholder="Digita anche parole parziali...")
@@ -534,7 +534,7 @@ if st.session_state.carrello:
                 info_ship_box = f'<div class="shipping-info-box free"><b>Spedizione gratuita sbloccata!</b> Hai superato la soglia minima.</div>'
             else:
                 sped_str = f"+ € {res['spese_spedizione']:.2f}"
-                info_ship_box = f'<div class="shipping-info-box"><b>Vuoi azzerare la spedizione?</b><br>Aggiungi altri <b>€ {res["mancante_gratis"]:.2f}</b> di prodotti su {res["farmacia"]} per sbloccare la spedizione GRATIS (soglia a € {res["soglia_gratis"]:.2f}).</div>'
+                info_ship_box = f'<div class="shipping-info-box"><b>Vuoi azzerare la spedizione?</b><br>Aggiungi altri <b>€ {res["mancante_gratis"]:.2f}</b> di prodotti su {res["farmacia"]} per sbloccare la spedizione GRATIS (soglia a € {res["soglia_gratis']:.2f}).</div>'
 
             html_card = f'''<div class="result-card {card_class}">
 <span class="badge-rank {badge_color}">{rank_label}</span>
