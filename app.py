@@ -67,7 +67,7 @@ for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
         break
 
 # ---------------------------------------------------------
-# 4. DESIGN SYSTEM (NUOVA PALETTE: BLU PIÙ CALDO & ARANCIONE ACCENTO)
+# 4. DESIGN SYSTEM (BLU PIÙ CALDO & ARANCIONE ACCENTO)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -88,7 +88,6 @@ st.markdown("""
         margin: 0 auto;
     }
     
-    /* Header rinnovato: blu oceano più luminoso e accogliente */
     .brand-hero-card {
         background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
         border: none;
@@ -133,7 +132,7 @@ st.markdown("""
         line-height: 1.1;
     }
 
-    .brand-hero-title span { color: #fed7aa; /* Tonalità calda che richiama l'arancione */ }
+    .brand-hero-title span { color: #fed7aa; }
 
     .brand-hero-tagline {
         color: #f8fafc;
@@ -204,7 +203,7 @@ st.markdown("""
     .product-preview-card {
         background: #ffffff;
         border: 1px solid #cbd5e1;
-        border-left: 5px solid #f97316; /* Arancione ripreso dal logo */
+        border-left: 5px solid #f97316;
         border-radius: 12px;
         padding: 16px 20px;
         margin-top: 12px;
@@ -222,7 +221,7 @@ st.markdown("""
     }
     
     .result-card.first {
-        border: 2px solid #f97316; /* Evidenziato in arancione coordinato col logo */
+        border: 2px solid #f97316;
         background: #ffffff;
         box-shadow: 0 10px 25px rgba(249, 115, 22, 0.12);
     }
@@ -240,6 +239,7 @@ st.markdown("""
     .badge-rank.gold { background-color: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
     .badge-rank.silver { background-color: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
     .badge-rank.standard { background-color: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
+    .badge-rank.partial { background-color: #fef2f2; color: #991b1b; border: 1px solid #fee2e2; }
 
     .farmacia-name {
         font-size: 1.25rem;
@@ -284,7 +284,7 @@ st.markdown("""
     .calc-total-amount {
         font-size: 1.6rem;
         font-weight: 800;
-        color: #f97316; /* Prezzo totale in arancione brand */
+        color: #f97316;
     }
 
     .shipping-info-box {
@@ -303,6 +303,13 @@ st.markdown("""
         background-color: #fff7ed;
         border: 1px solid #ffedd5;
         color: #c2410c;
+        font-weight: 700;
+    }
+
+    .shipping-info-box.partial-warning {
+        background-color: #fffbeb;
+        border: 1px solid #fef3c7;
+        color: #b45309;
         font-weight: 700;
     }
 
@@ -392,7 +399,7 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# Chips farmacie con loghi originali
+# Chips farmacie
 chips = "".join([
     f'<div class="pharmacy-chip"><img src="https://www.google.com/s2/favicons?domain={info["domain"]}&sz=32"><span>{nome}</span></div>'
     for nome, info in FARMACIE.items()
@@ -476,7 +483,9 @@ if st.session_state.carrello:
     st.markdown("---")
     st.markdown("### Risultato Comparazione Spesa Completa")
     
-    risultati = []
+    risultati_completi = []
+    risultati_parziali = []
+    totale_prodotti_carrello = len(st.session_state.carrello)
     lista_minsan = [str(item['MINSAN']) for item in st.session_state.carrello]
     
     for farmacia, info in FARMACIE.items():
@@ -492,7 +501,7 @@ if st.session_state.carrello:
                 except ValueError:
                     pass
                 
-        if disponibili == len(st.session_state.carrello):
+        if disponibili > 0:
             spese_spedizione = 0.0 if totale_prodotti >= info['soglia_gratis'] else info['spedizione_base']
             mancante_gratis = max(0.0, info['soglia_gratis'] - totale_prodotti)
             totale_complessivo = totale_prodotti + spese_spedizione
@@ -500,38 +509,50 @@ if st.session_state.carrello:
             primo_minsan = st.session_state.carrello[0]['MINSAN']
             target_url = f"{info['search_url']}{urllib.parse.quote(str(primo_minsan))}"
             
-            risultati.append({
+            diz_risultato = {
                 "farmacia": farmacia,
                 "totale_prodotti": totale_prodotti,
                 "spese_spedizione": spese_spedizione,
                 "soglia_gratis": info['soglia_gratis'],
                 "totale_complessivo": totale_complessivo,
                 "mancante_gratis": mancante_gratis,
+                "disponibili": disponibili,
+                "totale_richiesti": totale_prodotti_carrello,
                 "url": target_url
-            })
+            }
             
-    risultati = sorted(risultati, key=lambda x: x['totale_complessivo'])
+            if disponibili == totale_prodotti_carrello:
+                risultati_completi.append(diz_risultato)
+            else:
+                risultati_parziali.append(diz_risultato)
+            
+    # Ordiniamo prima per totale economico le complete, poi le parziali
+    risultati_completi = sorted(risultati_completi, key=lambda x: x['totale_complessivo'])
+    risultati_parziali = sorted(risultati_parziali, key=lambda x: (-x['disponibili'], x['totale_complessivo']))
     
-    if risultati:
+    tutti_i_risultati = risultati_completi + risultati_parziali
+    
+    if tutti_i_risultati:
         cols_per_row = 2
-        for i in range(0, len(risultati), cols_per_row):
+        for i in range(0, len(tutti_i_risultati), cols_per_row):
             batch_cols = st.columns(cols_per_row)
             for j in range(cols_per_row):
                 idx = i + j
-                if idx < len(risultati):
-                    res = risultati[idx]
+                if idx < len(tutti_i_risultati):
+                    res = tutti_i_risultati[idx]
+                    is_completo = res['disponibili'] == res['totale_richiesti']
                     
-                    if idx == 0:
+                    if is_completo and idx == 0:
                         rank_label = "1° Posto - Più Economico"
                         badge_color = "gold"
                         card_class = "first"
-                    elif idx == 1:
-                        rank_label = "2° Posto"
-                        badge_color = "silver"
+                    elif is_completo:
+                        rank_label = f"{idx + 1}° Posto"
+                        badge_color = "silver" if idx == 1 else "standard"
                         card_class = ""
                     else:
-                        rank_label = f"{idx + 1}° Posto"
-                        badge_color = "standard"
+                        rank_label = f"Disponibili {res['disponibili']} su {res['totale_richiesti']} prodotti"
+                        badge_color = "partial"
                         card_class = ""
                     
                     if res['spese_spedizione'] == 0:
@@ -542,13 +563,21 @@ if st.session_state.carrello:
                         mancante_fmt = f"{res['mancante_gratis']:.2f}"
                         soglia_fmt = f"{res['soglia_gratis']:.2f}"
                         farmacia_nome = res['farmacia']
-                        info_ship_box = (
-                            f'<div class="shipping-info-box">'
-                            f'<b>Azzera la spedizione:</b><br>'
-                            f'Aggiungi altri <b>€ {mancante_fmt}</b> su {farmacia_nome} '
-                            f'(soglia a € {soglia_fmt}).'
-                            f'</div>'
-                        )
+                        if is_completo:
+                            info_ship_box = (
+                                f'<div class="shipping-info-box">'
+                                f'<b>Azzera la spedizione:</b><br>'
+                                f'Aggiungi altri <b>€ {mancante_fmt}</b> su {farmacia_nome} '
+                                f'(soglia a € {soglia_fmt}).'
+                                f'</div>'
+                            )
+                        else:
+                            info_ship_box = (
+                                f'<div class="shipping-info-box partial-warning">'
+                                f'⚠️ <b>Disponibilità parziale:</b><br>'
+                                f'Questa farmacia non ha tutti i prodotti in catalogo.'
+                                f'</div>'
+                            )
 
                     html_card = (
                         f'<div class="result-card {card_class}">'
@@ -563,7 +592,7 @@ if st.session_state.carrello:
                         f'{info_ship_box}'
                         f'<div style="margin-top: 8px;">'
                         f'<a href="{res["url"]}" target="_blank" style="text-decoration:none;">'
-                        f'<button style="width:100%; background-color:#f97316; color:white; border:none; padding:11px 14px; border-radius:10px; font-weight:800; cursor:pointer; font-size:0.88rem; box-shadow:0 4px 12px rgba(249, 115, 22, 0.25);">Acquista su {res["farmacia"]}</button>'
+                        f'<button style="width:100%; background-color:#f97316; color:white; border:none; padding:11px 14px; border-radius:10px; font-weight:800; cursor:pointer; font-size:0.88rem; box-shadow:0 4px 12px rgba(249, 115, 22, 0.25);">Vai su {res["farmacia"]}</button>'
                         f'</a>'
                         f'<div class="redirect-disclaimer">Reindirizzamento al sito ufficiale della farmacia partner.</div>'
                         f'</div>'
