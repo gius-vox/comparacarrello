@@ -112,11 +112,16 @@ st.markdown("""
         flex-wrap: wrap;
     }
 
+    /* MODIFICA PER FAR RISALTARE IL LOGO SULLO SFONDO SCURO */
     .brand-hero-img {
-        max-height: 60px !important;
+        max-height: 54px !important;
         width: auto;
         object-fit: contain;
         display: block;
+        background: #ffffff; /* Sfondo bianco per isolare il logo */
+        padding: 8px 14px;   /* Spaziatura interna */
+        border-radius: 12px; /* Angoli arrotondati */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); /* Ombra per staccarlo dall'header */
     }
 
     .brand-hero-title {
@@ -334,7 +339,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 5. CONFIGURAZIONE FARMACIE PARTNER (Struttura pronta per Awin)
+# 5. CONFIGURAZIONE FARMACIE PARTNER
 # ---------------------------------------------------------
 FARMACIE = {
     "Farmaè": {"domain": "farmae.it", "spedizione_base": 3.90, "soglia_gratis": 19.90, "search_url": "https://www.farmae.it/catalogsearch/result/?q="},
