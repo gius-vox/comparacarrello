@@ -11,7 +11,7 @@ from supabase import create_client, Client
 # 1. CONFIGURAZIONE PAGINA
 # ---------------------------------------------------------
 st.set_page_config(
-    page_title="Comparacarrello.it - Il tuo Carrello Farmacia al Miglior Prezzo",
+    page_title="Comparacarrello.it - Il tuo Carrello al Prezzo Reale",
     page_icon="🛒",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -67,7 +67,7 @@ for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
         break
 
 # ---------------------------------------------------------
-# 4. DESIGN SYSTEM (MODERNO, MEDICAL-TECH & HIGH-IMPACT)
+# 4. DESIGN SYSTEM (MINIMAL, VERDE SALVIA & ELEGANTE)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -75,27 +75,28 @@ st.markdown("""
     
     html, body, [class*="css"] {
         font-family: 'Plus Jakarta Sans', sans-serif;
-        background-color: #f8fafc;
-        color: #0f172a;
+        background-color: #fcfcfc;
+        color: #111827;
     }
 
     .block-container {
-        padding-top: 1.5rem !important;
-        padding-bottom: 3rem !important;
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
-        max-width: 1100px !important;
+        padding-top: 2rem !important;
+        padding-bottom: 4rem !important;
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+        max-width: 1150px !important;
         margin: 0 auto;
     }
     
+    /* Hero Section Elegante */
     .brand-hero-card {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        border: 1px solid #334155;
-        border-radius: 20px;
-        padding: 32px 24px;
+        background: linear-gradient(135deg, #f0fdf4 0%, #f3f4f6 100%);
+        border: 1px solid #e5e7eb;
+        border-radius: 24px;
+        padding: 40px 24px;
         text-align: center;
-        margin-bottom: 24px;
-        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15);
+        margin-bottom: 32px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -106,62 +107,64 @@ st.markdown("""
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 16px;
-        margin-bottom: 12px;
+        gap: 14px;
+        margin-bottom: 14px;
         width: 100%;
         flex-wrap: wrap;
     }
 
     .brand-hero-img {
-        max-height: 60px !important;
+        max-height: 52px !important;
         width: auto;
         object-fit: contain;
         display: block;
     }
 
     .brand-hero-title {
-        font-size: clamp(2rem, 5vw, 2.8rem) !important;
+        font-size: clamp(2.2rem, 5vw, 3rem) !important;
         font-weight: 800;
-        color: #ffffff;
+        color: #111827;
         margin: 0;
-        letter-spacing: -0.5px;
+        letter-spacing: -0.8px;
         line-height: 1.1;
     }
 
-    .brand-hero-title span { color: #38bdf8; }
+    .brand-hero-title span { color: #065f46; }
 
     .brand-hero-tagline {
-        color: #cbd5e1;
-        font-size: clamp(0.95rem, 2.5vw, 1.12rem);
+        color: #4b5563;
+        font-size: clamp(1rem, 2.5vw, 1.15rem);
         font-weight: 600;
-        margin-top: 8px;
+        margin-top: 10px;
         text-align: center;
+        max-width: 700px;
     }
 
     .brand-hero-subtagline {
-        color: #94a3b8;
-        font-size: clamp(0.82rem, 2vw, 0.92rem);
+        color: #6b7280;
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
         font-weight: 500;
-        margin-top: 4px;
+        margin-top: 6px;
         text-align: center;
     }
 
+    /* Barra Farmacie Partner */
     .pharmacy-bar {
         background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 14px;
-        padding: 16px;
-        margin-bottom: 24px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        padding: 18px;
+        margin-bottom: 32px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.01);
     }
     
     .pharmacy-bar-title {
         font-size: 0.75rem;
         text-transform: uppercase;
-        color: #64748b;
+        color: #6b7280;
         font-weight: 800;
-        letter-spacing: 0.8px;
-        margin-bottom: 12px;
+        letter-spacing: 1px;
+        margin-bottom: 14px;
         text-align: center;
     }
 
@@ -169,166 +172,167 @@ st.markdown("""
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 8px;
+        gap: 10px;
     }
 
     .pharmacy-chip {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        background: #f1f5f9;
-        border: 1px solid #e2e8f0;
+        gap: 8px;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
         padding: 6px 14px;
         border-radius: 20px;
         font-weight: 700;
-        font-size: 0.78rem;
-        color: #334155;
+        font-size: 0.8rem;
+        color: #374155;
     }
 
-    .pharmacy-chip img { width: 15px; height: 15px; border-radius: 50%; }
+    .pharmacy-chip img { width: 16px; height: 16px; border-radius: 50%; }
 
     .search-section-title {
         text-align: center;
-        color: #0f172a;
+        color: #111827;
         font-weight: 800;
-        font-size: 1.35rem;
-        margin-top: 20px;
-        margin-bottom: 14px;
+        font-size: 1.4rem;
+        margin-top: 24px;
+        margin-bottom: 16px;
     }
 
     .product-preview-card {
         background: #ffffff;
-        border: 1px solid #cbd5e1;
-        border-left: 5px solid #0f766e;
-        border-radius: 12px;
-        padding: 16px 20px;
-        margin-top: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        border: 1px solid #e5e7eb;
+        border-left: 5px solid #065f46;
+        border-radius: 14px;
+        padding: 18px 22px;
+        margin-top: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
     }
 
+    /* Card Risultati */
     .result-card {
         background: #ffffff;
-        border-radius: 16px;
-        padding: 20px 16px;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        border-radius: 18px;
+        padding: 22px 18px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.02);
         text-align: center;
-        margin-bottom: 16px;
+        margin-bottom: 20px;
     }
     
     .result-card.first {
-        border: 2px solid #0f766e;
+        border: 2px solid #065f46;
         background: #ffffff;
-        box-shadow: 0 10px 25px rgba(15, 118, 110, 0.12);
+        box-shadow: 0 10px 30px rgba(6, 95, 70, 0.08);
     }
 
     .badge-rank {
         display: inline-block;
-        padding: 4px 12px;
+        padding: 5px 14px;
         border-radius: 20px;
         font-size: 0.75rem;
         font-weight: 800;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
-    .badge-rank.gold { background-color: #f0fdf4; color: #047857; border: 1px solid #dcfce7; }
-    .badge-rank.silver { background-color: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
-    .badge-rank.standard { background-color: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
+    .badge-rank.gold { background-color: #f0fdf4; color: #065f46; border: 1px solid #dcfce7; }
+    .badge-rank.silver { background-color: #f3f4f6; color: #374155; border: 1px solid #e5e7eb; }
+    .badge-rank.standard { background-color: #f9fafb; color: #4b5563; border: 1px solid #e5e7eb; }
 
     .farmacia-name {
-        font-size: 1.25rem;
+        font-size: 1.3rem;
         font-weight: 800;
-        color: #0f172a;
-        margin: 2px 0 12px 0;
+        color: #111827;
+        margin: 4px 0 14px 0;
     }
 
     .calculation-receipt-box {
-        background-color: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 12px 14px;
+        background-color: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 14px 16px;
         text-align: left;
-        margin-bottom: 12px;
+        margin-bottom: 14px;
     }
 
     .calc-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 0.85rem;
-        color: #475569;
-        margin-bottom: 6px;
+        font-size: 0.88rem;
+        color: #4b5563;
+        margin-bottom: 8px;
         font-weight: 600;
     }
 
     .calc-divider {
-        border-top: 1px dashed #cbd5e1;
-        margin: 8px 0;
+        border-top: 1px dashed #d1d5db;
+        margin: 10px 0;
     }
 
     .calc-total-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 1rem;
+        font-size: 1.05rem;
         font-weight: 800;
-        color: #0f172a;
+        color: #111827;
     }
 
     .calc-total-amount {
-        font-size: 1.6rem;
+        font-size: 1.7rem;
         font-weight: 800;
-        color: #0f766e;
+        color: #065f46;
     }
 
     .shipping-info-box {
-        background-color: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 8px 10px;
-        font-size: 0.76rem;
-        color: #334155;
-        text-align: left;
-        line-height: 1.35;
-        margin-bottom: 12px;
-    }
-
-    .shipping-info-box.free {
         background-color: #f0fdf4;
         border: 1px solid #dcfce7;
-        color: #166534;
-        font-weight: 700;
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 0.78rem;
+        color: #065f46;
+        text-align: left;
+        line-height: 1.4;
+        margin-bottom: 14px;
+        font-weight: 600;
+    }
+
+    .shipping-info-box.not-free {
+        background-color: #f9fafb;
+        border: 1px solid #e5e7eb;
+        color: #374155;
     }
 
     .redirect-disclaimer {
-        font-size: 0.7rem;
-        color: #94a3b8;
-        margin-top: 6px;
-        line-height: 1.25;
+        font-size: 0.72rem;
+        color: #9ca3af;
+        margin-top: 8px;
+        line-height: 1.3;
     }
 
     .minsan-tag {
-        background-color: #f1f5f9;
-        color: #0f766e;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 0.75rem;
+        background-color: #f3f4f6;
+        color: #065f46;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-size: 0.78rem;
         font-family: monospace;
         font-weight: 700;
-        border: 1px solid #e2e8f0;
+        border: 1px solid #e5e7eb;
     }
 
     .footer-container {
-        margin-top: 50px;
-        padding: 25px 20px;
+        margin-top: 60px;
+        padding: 30px 20px;
         background-color: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 16px;
+        border: 1px solid #e5e7eb;
+        border-radius: 18px;
         text-align: center;
-        color: #64748b;
-        font-size: 0.82rem;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        color: #6b7280;
+        font-size: 0.85rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.01);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -355,7 +359,6 @@ def load_data_from_supabase():
     try:
         response = supabase.table("prodotti_farmacia").select("*").execute()
         
-        # Gestione compatibile dei formati di risposta Supabase
         data = getattr(response, "data", None)
         if data is None and isinstance(response, tuple):
             data = response[1]
@@ -375,8 +378,8 @@ df_prodotti = load_data_from_supabase()
 # ---------------------------------------------------------
 
 logo_html = f'<img src="{logo_src}" class="brand-hero-img">' if logo_src else '''
-    <div style="background: #ffffff; width: 52px; height: 52px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 2px solid #38bdf8;">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <div style="background: #ffffff; width: 48px; height: 48px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #d1d5db;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#065f46" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="9" cy="21" r="1"></circle>
             <circle cx="20" cy="21" r="1"></circle>
             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
@@ -390,12 +393,12 @@ st.markdown(f"""
             {logo_html}
             <h1 class="brand-hero-title">Compara<span>carrello.it</span></h1>
         </div>
-        <div class="brand-hero-tagline">Compara i prezzi dei farmaci e prodotti da banco nelle migliori farmacie online</div>
-        <div class="brand-hero-subtagline">Calcoliamo in tempo reale il totale del tuo carrello incluse le spese di spedizione</div>
+        <div class="brand-hero-tagline">Il tuo carrello farmacia, al prezzo reale.</div>
+        <div class="brand-hero-subtagline">Confrontiamo i prezzi calcolando il costo totale con spedizione inclusa. Senza sorprese.</div>
     </div>
 """, unsafe_allow_html=True)
 
-# Chips farmacie con loghi originali
+# Chips farmacie
 chips = "".join([
     f'<div class="pharmacy-chip"><img src="https://www.google.com/s2/favicons?domain={info["domain"]}&sz=32"><span>{nome}</span></div>'
     for nome, info in FARMACIE.items()
@@ -440,8 +443,8 @@ if not df_prodotti.empty:
                 st.markdown('<div class="product-preview-card">', unsafe_allow_html=True)
                 c_p_info, c_p_btn = st.columns([4, 1.2], vertical_alignment="center")
                 with c_p_info:
-                    st.markdown(f"<h4 style='margin:0; font-weight:800; color:#0f172a;'>{row_prod['Prodotto']}</h4>", unsafe_allow_html=True)
-                    st.markdown(f"<div style='margin-top:4px; color:#475569; font-size:0.85rem;'>Codice MINSAN: <span class='minsan-tag'>{row_prod['MINSAN']}</span> | Categoria: <b style='color:#0f766e;'>{row_prod['Categoria']}</b></div>", unsafe_allow_html=True)
+                    st.markdown(f"<h4 style='margin:0; font-weight:800; color:#111827;'>{row_prod['Prodotto']}</h4>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='margin-top:6px; color:#4b5563; font-size:0.85rem;'>Codice MINSAN: <span class='minsan-tag'>{row_prod['MINSAN']}</span> | Categoria: <b style='color:#065f46;'>{row_prod['Categoria']}</b></div>", unsafe_allow_html=True)
                 with c_p_btn:
                     if st.button("Aggiungi", type="primary", use_container_width=True):
                         st.session_state.carrello.append(row_prod.to_dict())
@@ -538,16 +541,16 @@ if st.session_state.carrello:
                         card_class = ""
                     
                     if res['spese_spedizione'] == 0:
-                        sped_str = "<span style='color:#0f766e; font-weight:800;'>GRATIS</span>"
-                        info_ship_box = '<div class="shipping-info-box free"><b>Spedizione gratuita sbloccata!</b> Soglia minima superata.</div>'
+                        sped_str = "<span style='color:#065f46; font-weight:800;'>GRATIS</span>"
+                        info_ship_box = '<div class="shipping-info-box"><b>✨ Spedizione gratuita sbloccata!</b> Soglia minima superata.</div>'
                     else:
                         sped_str = f"+ € {res['spese_spedizione']:.2f}"
                         mancante_fmt = f"{res['mancante_gratis']:.2f}"
                         soglia_fmt = f"{res['soglia_gratis']:.2f}"
                         farmacia_nome = res['farmacia']
                         info_ship_box = (
-                            f'<div class="shipping-info-box">'
-                            f'<b>Azzera la spedizione:</b><br>'
+                            f'<div class="shipping-info-box not-free">'
+                            f'<b>📦 Azzera la spedizione:</b><br>'
                             f'Aggiungi altri <b>€ {mancante_fmt}</b> su {farmacia_nome} '
                             f'(soglia a € {soglia_fmt}).'
                             f'</div>'
@@ -564,9 +567,9 @@ if st.session_state.carrello:
                         f'<div class="calc-total-row"><span>TOTALE SPESA</span><span class="calc-total-amount">€ {res["totale_complessivo"]:.2f}</span></div>'
                         f'</div>'
                         f'{info_ship_box}'
-                        f'<div style="margin-top: 8px;">'
+                        f'<div style="margin-top: 10px;">'
                         f'<a href="{res["url"]}" target="_blank" style="text-decoration:none;">'
-                        f'<button style="width:100%; background-color:#0f766e; color:white; border:none; padding:11px 14px; border-radius:10px; font-weight:800; cursor:pointer; font-size:0.88rem; box-shadow:0 4px 12px rgba(15, 118, 110, 0.2);">Acquista su {res["farmacia"]}</button>'
+                        f'<button style="width:100%; background-color:#065f46; color:white; border:none; padding:12px 16px; border-radius:12px; font-weight:800; cursor:pointer; font-size:0.9rem; box-shadow:0 4px 12px rgba(6, 95, 70, 0.2);">Acquista su {res["farmacia"]}</button>'
                         f'</a>'
                         f'<div class="redirect-disclaimer">Reindirizzamento al sito ufficiale della farmacia.</div>'
                         f'</div>'
@@ -591,23 +594,23 @@ if st.session_state.carrello:
     
     with col_qr:
         st.markdown(f"""
-            <div style="text-align: center; background: white; padding: 12px; border-radius: 14px; border: 1px solid #e2e8f0; box-shadow:0 4px 12px rgba(0,0,0,0.02);">
+            <div style="text-align: center; background: white; padding: 14px; border-radius: 16px; border: 1px solid #e5e7eb; box-shadow:0 4px 12px rgba(0,0,0,0.01);">
                 <img src="{qr_code_img}" style="width: 110px; height: 110px;"><br>
-                <small style="color: #64748b; font-weight: 700;">Inquadra per aprire sul telefono</small>
+                <small style="color: #6b7280; font-weight: 700;">Inquadra per aprire sul telefono</small>
             </div>
         """, unsafe_allow_html=True)
         
     with col_social:
         st.markdown(f"""
-            <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
                 <a href="{whatsapp_url}" target="_blank" style="text-decoration:none;">
-                    <button style="width:100%; background-color:#25D366; color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(37, 211, 102, 0.15);">
-                        Condividi Carrello su WhatsApp
+                    <button style="width:100%; background-color:#10b981; color:white; border:none; padding:13px 18px; border-radius:12px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(16, 185, 129, 0.15);">
+                        📲 Condividi Carrello su WhatsApp
                     </button>
                 </a>
                 <a href="{telegram_url}" target="_blank" style="text-decoration:none;">
-                    <button style="width:100%; background-color:#0088cc; color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(0, 136, 204, 0.15);">
-                        Condividi Carrello su Telegram
+                    <button style="width:100%; background-color:#0ea5e9; color:white; border:none; padding:13px 18px; border-radius:12px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(14, 165, 233, 0.15);">
+                        ✈️ Condividi Carrello su Telegram
                     </button>
                 </a>
             </div>
