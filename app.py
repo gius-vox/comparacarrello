@@ -360,14 +360,22 @@ FARMACIE = {
 }
 
 # ---------------------------------------------------------
-# 6. LETTURA PURA DA SUPABASE
+# 6. LETTURA PURA DA SUPABASE (ROBUSTA)
 # ---------------------------------------------------------
 @st.cache_data(ttl=600)
 def load_data_from_supabase():
     try:
         response = supabase.table("prodotti_farmacia").select("*").execute()
-        if response.data:
-            return pd.DataFrame(response.data)
+        
+        # Gestione compatibile dei formati di risposta Supabase
+        data = getattr(response, "data", None)
+        if data is None and isinstance(response, tuple):
+            data = response[1]
+            
+        if data:
+            return pd.DataFrame(data)
+        else:
+            return pd.DataFrame()
     except Exception as e:
         st.error(f"Errore di connessione a Supabase: {e}")
     return pd.DataFrame()
