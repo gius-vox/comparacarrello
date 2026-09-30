@@ -67,7 +67,7 @@ for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
         break
 
 # ---------------------------------------------------------
-# 4. DESIGN SYSTEM (MODERNO, MEDICAL-TECH & HIGH-IMPACT)
+# 4. DESIGN SYSTEM (NUOVA PALETTE: BLU PIÙ CALDO & ARANCIONE ACCENTO)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -88,14 +88,15 @@ st.markdown("""
         margin: 0 auto;
     }
     
+    /* Header rinnovato: blu oceano più luminoso e accogliente */
     .brand-hero-card {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        border: 1px solid #334155;
+        background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
+        border: none;
         border-radius: 20px;
         padding: 32px 24px;
         text-align: center;
         margin-bottom: 24px;
-        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15);
+        box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.2);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -112,16 +113,15 @@ st.markdown("""
         flex-wrap: wrap;
     }
 
-    /* MODIFICA PER FAR RISALTARE IL LOGO SULLO SFONDO SCURO */
     .brand-hero-img {
         max-height: 54px !important;
         width: auto;
         object-fit: contain;
         display: block;
-        background: #ffffff; /* Sfondo bianco per isolare il logo */
-        padding: 8px 14px;   /* Spaziatura interna */
-        border-radius: 12px; /* Angoli arrotondati */
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); /* Ombra per staccarlo dall'header */
+        background: #ffffff;
+        padding: 8px 14px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     .brand-hero-title {
@@ -133,10 +133,10 @@ st.markdown("""
         line-height: 1.1;
     }
 
-    .brand-hero-title span { color: #38bdf8; }
+    .brand-hero-title span { color: #fed7aa; /* Tonalità calda che richiama l'arancione */ }
 
     .brand-hero-tagline {
-        color: #cbd5e1;
+        color: #f8fafc;
         font-size: clamp(0.95rem, 2.5vw, 1.12rem);
         font-weight: 600;
         margin-top: 8px;
@@ -144,7 +144,7 @@ st.markdown("""
     }
 
     .brand-hero-subtagline {
-        color: #94a3b8;
+        color: #e0f2fe;
         font-size: clamp(0.82rem, 2vw, 0.92rem);
         font-weight: 500;
         margin-top: 4px;
@@ -204,7 +204,7 @@ st.markdown("""
     .product-preview-card {
         background: #ffffff;
         border: 1px solid #cbd5e1;
-        border-left: 5px solid #0f766e;
+        border-left: 5px solid #f97316; /* Arancione ripreso dal logo */
         border-radius: 12px;
         padding: 16px 20px;
         margin-top: 12px;
@@ -222,9 +222,9 @@ st.markdown("""
     }
     
     .result-card.first {
-        border: 2px solid #0f766e;
+        border: 2px solid #f97316; /* Evidenziato in arancione coordinato col logo */
         background: #ffffff;
-        box-shadow: 0 10px 25px rgba(15, 118, 110, 0.12);
+        box-shadow: 0 10px 25px rgba(249, 115, 22, 0.12);
     }
 
     .badge-rank {
@@ -237,7 +237,7 @@ st.markdown("""
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
-    .badge-rank.gold { background-color: #f0fdf4; color: #047857; border: 1px solid #dcfce7; }
+    .badge-rank.gold { background-color: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
     .badge-rank.silver { background-color: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
     .badge-rank.standard { background-color: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
 
@@ -284,7 +284,7 @@ st.markdown("""
     .calc-total-amount {
         font-size: 1.6rem;
         font-weight: 800;
-        color: #0f766e;
+        color: #f97316; /* Prezzo totale in arancione brand */
     }
 
     .shipping-info-box {
@@ -300,9 +300,9 @@ st.markdown("""
     }
 
     .shipping-info-box.free {
-        background-color: #f0fdf4;
-        border: 1px solid #dcfce7;
-        color: #166534;
+        background-color: #fff7ed;
+        border: 1px solid #ffedd5;
+        color: #c2410c;
         font-weight: 700;
     }
 
@@ -315,7 +315,7 @@ st.markdown("""
 
     .minsan-tag {
         background-color: #f1f5f9;
-        color: #0f766e;
+        color: #0284c7;
         padding: 2px 6px;
         border-radius: 4px;
         font-size: 0.75rem;
@@ -372,7 +372,7 @@ df_prodotti = load_data_from_supabase()
 # ---------------------------------------------------------
 
 logo_html = f'<img src="{logo_src}" class="brand-hero-img">' if logo_src else '''
-    <div style="background: #ffffff; width: 52px; height: 52px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 2px solid #38bdf8;">
+    <div style="background: #ffffff; width: 52px; height: 52px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 2px solid #0284c7;">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="9" cy="21" r="1"></circle>
             <circle cx="20" cy="21" r="1"></circle>
@@ -438,7 +438,7 @@ if not df_prodotti.empty:
                 c_p_info, c_p_btn = st.columns([4, 1.2], vertical_alignment="center")
                 with c_p_info:
                     st.markdown(f"<h4 style='margin:0; font-weight:800; color:#0f172a;'>{row_prod['Prodotto']}</h4>", unsafe_allow_html=True)
-                    st.markdown(f"<div style='margin-top:4px; color:#475569; font-size:0.85rem;'>Codice MINSAN: <span class='minsan-tag'>{row_prod['MINSAN']}</span> | Categoria: <b style='color:#0f766e;'>{row_prod['Categoria']}</b></div>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='margin-top:4px; color:#475569; font-size:0.85rem;'>Codice MINSAN: <span class='minsan-tag'>{row_prod['MINSAN']}</span> | Categoria: <b style='color:#0284c7;'>{row_prod['Categoria']}</b></div>", unsafe_allow_html=True)
                 with c_p_btn:
                     if st.button("Aggiungi", type="primary", use_container_width=True):
                         st.session_state.carrello.append(row_prod.to_dict())
@@ -535,7 +535,7 @@ if st.session_state.carrello:
                         card_class = ""
                     
                     if res['spese_spedizione'] == 0:
-                        sped_str = "<span style='color:#0f766e; font-weight:800;'>GRATIS</span>"
+                        sped_str = "<span style='color:#f97316; font-weight:800;'>GRATIS</span>"
                         info_ship_box = '<div class="shipping-info-box free"><b>Spedizione gratuita sbloccata!</b> Soglia minima superata.</div>'
                     else:
                         sped_str = f"+ € {res['spese_spedizione']:.2f}"
@@ -563,7 +563,7 @@ if st.session_state.carrello:
                         f'{info_ship_box}'
                         f'<div style="margin-top: 8px;">'
                         f'<a href="{res["url"]}" target="_blank" style="text-decoration:none;">'
-                        f'<button style="width:100%; background-color:#0f766e; color:white; border:none; padding:11px 14px; border-radius:10px; font-weight:800; cursor:pointer; font-size:0.88rem; box-shadow:0 4px 12px rgba(15, 118, 110, 0.2);">Acquista su {res["farmacia"]}</button>'
+                        f'<button style="width:100%; background-color:#f97316; color:white; border:none; padding:11px 14px; border-radius:10px; font-weight:800; cursor:pointer; font-size:0.88rem; box-shadow:0 4px 12px rgba(249, 115, 22, 0.25);">Acquista su {res["farmacia"]}</button>'
                         f'</a>'
                         f'<div class="redirect-disclaimer">Reindirizzamento al sito ufficiale della farmacia partner.</div>'
                         f'</div>'
@@ -622,7 +622,7 @@ with st.expander("ℹ Chi Siamo"):
     st.markdown("""
     **Comparacarrello.it** è un progetto ideato e sviluppato da **Giuseppe Voci**. 
     
-    Nasce prima di tutto da un'esigenza personale come fruitore di prodotti farmaceutici e parafarmaceutici. Da padre di due bambini, alla continua ricerca del risparmio, mi sono spesso trovato in difficoltà a conciliare il minor prezzo con le spese di spedizione: a volte il prezzo più basso di un farmaco era in una farmacia e quello di un altro in un'altra, e in mezzo c'era sempre l'incognita variabile della spedizione.
+    Nasce prima di tutto da un'esigenza personale come fruitore di prodotti farmaceutici e parafarmaceutici. Da padre di due bambini, alla continua ricerca del risparmio, mi sono spesso trovato in difficoltà a conciliare il minor prezzo con le spese di spedizione: a volte il prezzo più basso di un farmaco era in una farmacia e quello di un'altra in un'altra, e in mezzo c'era sempre l'incognita variabile della spedizione.
     
     Da questa frustrazione quotidiana è nata l'idea di creare questo strumento indipendente, per aiutare tutti i consumatori a orientarsi in modo semplice, trasparente e veloce nel mondo delle farmacie online italiane.
     """)
