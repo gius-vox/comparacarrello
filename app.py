@@ -41,16 +41,8 @@ def init_supabase() -> Client:
 supabase = init_supabase()
 
 # ---------------------------------------------------------
-# 3. HELPER ASSETS & LOGO
+# 3. HELPER QR CODE
 # ---------------------------------------------------------
-def get_image_base64(path):
-    if os.path.exists(path):
-        with open(path, "rb") as image_file:
-            encoded = base64.b64encode(image_file.read()).decode()
-            ext = path.split('.')[-1]
-            return f"data:image/{ext};base64,{encoded}"
-    return None
-
 def generate_qr_code_base64(data_string):
     qr = qrcode.QRCode(version=1, box_size=4, border=2)
     qr.add_data(data_string)
@@ -59,12 +51,6 @@ def generate_qr_code_base64(data_string):
     buffered = io.BytesIO()
     img.save(buffered, format="PNG")
     return f"data:image/png;base64,{base64.b64encode(buffered.getvalue()).decode()}"
-
-logo_src = None
-for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
-    logo_src = get_image_base64(name)
-    if logo_src:
-        break
 
 # ---------------------------------------------------------
 # 4. DESIGN SYSTEM (MODERNO, MEDICAL-TECH & HIGH-IMPACT)
@@ -110,13 +96,6 @@ st.markdown("""
         margin-bottom: 12px;
         width: 100%;
         flex-wrap: wrap;
-    }
-
-    .brand-hero-img {
-        max-height: 60px !important;
-        width: auto;
-        object-fit: contain;
-        display: block;
     }
 
     .brand-hero-title {
@@ -366,7 +345,8 @@ df_prodotti = load_data_from_supabase()
 # 7. CORPO PRINCIPALE (COMPARACARRELLO.IT)
 # ---------------------------------------------------------
 
-logo_html = f'<img src="{logo_src}" class="brand-hero-img">' if logo_src else '''
+# Icona SVG incorporata (senza dipendere da file esterni su GitHub)
+logo_html = '''
     <div style="background: #ffffff; width: 52px; height: 52px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 2px solid #38bdf8;">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="9" cy="21" r="1"></circle>
@@ -617,7 +597,7 @@ with st.expander("ℹ Chi Siamo"):
     st.markdown("""
     **Comparacarrello.it** è un progetto ideato e sviluppato da **Giuseppe Voci**. 
     
-    Nasce prima di tutto da un'esigenza personale come fruitore di prodotti farmaceutici e parafarmaceutici. Da padre di due bambini, alla continua ricerca del risparmio, mi sono spesso trovato in difficoltà a conciliare il minor prezzo con le spese di spedizione: a volte il prezzo più basso di un farmaco era in una farmacia e quello di un altro in un'altra, e in mezzo c'era sempre l'incognita variabile della spedizione.
+    Nasce prima di tutto da un'esigenza personale come fruitore di prodotti farmaceutici e parafarmaceutici. Da padre di due bambini, alla continua ricerca del risparmio, mi sono spesso trovato in difficoltà a conciliare il minor prezzo con le spese di spedizione: a volte il prezzo più basso di un farmaco era in una farmacia e quello di un'altra in un'altra, e in mezzo c'era sempre l'incognita variabile della spedizione.
     
     Da questa frustrazione quotidiana è nata l'idea di creare questo strumento indipendente, per aiutare tutti i consumatori a orientarsi in modo semplice, trasparente e veloce nel mondo delle farmacie online italiane.
     """)
