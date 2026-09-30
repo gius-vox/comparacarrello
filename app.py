@@ -67,7 +67,7 @@ for name in ["logo.png", "logo_comparacarrello.png", "logo.jpg"]:
         break
 
 # ---------------------------------------------------------
-# 4. DESIGN SYSTEM (BLU PIÙ CALDO & ARANCIONE ACCENTO)
+# 4. DESIGN SYSTEM (MODERNO, MEDICAL-TECH & HIGH-IMPACT)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -89,13 +89,13 @@ st.markdown("""
     }
     
     .brand-hero-card {
-        background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
-        border: none;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        border: 1px solid #334155;
         border-radius: 20px;
         padding: 32px 24px;
         text-align: center;
         margin-bottom: 24px;
-        box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.2);
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -113,14 +113,10 @@ st.markdown("""
     }
 
     .brand-hero-img {
-        max-height: 54px !important;
+        max-height: 60px !important;
         width: auto;
         object-fit: contain;
         display: block;
-        background: #ffffff;
-        padding: 8px 14px;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     .brand-hero-title {
@@ -132,10 +128,10 @@ st.markdown("""
         line-height: 1.1;
     }
 
-    .brand-hero-title span { color: #fed7aa; }
+    .brand-hero-title span { color: #38bdf8; }
 
     .brand-hero-tagline {
-        color: #f8fafc;
+        color: #cbd5e1;
         font-size: clamp(0.95rem, 2.5vw, 1.12rem);
         font-weight: 600;
         margin-top: 8px;
@@ -143,7 +139,7 @@ st.markdown("""
     }
 
     .brand-hero-subtagline {
-        color: #e0f2fe;
+        color: #94a3b8;
         font-size: clamp(0.82rem, 2vw, 0.92rem);
         font-weight: 500;
         margin-top: 4px;
@@ -203,7 +199,7 @@ st.markdown("""
     .product-preview-card {
         background: #ffffff;
         border: 1px solid #cbd5e1;
-        border-left: 5px solid #f97316;
+        border-left: 5px solid #0f766e;
         border-radius: 12px;
         padding: 16px 20px;
         margin-top: 12px;
@@ -221,9 +217,9 @@ st.markdown("""
     }
     
     .result-card.first {
-        border: 2px solid #f97316;
+        border: 2px solid #0f766e;
         background: #ffffff;
-        box-shadow: 0 10px 25px rgba(249, 115, 22, 0.12);
+        box-shadow: 0 10px 25px rgba(15, 118, 110, 0.12);
     }
 
     .badge-rank {
@@ -236,10 +232,9 @@ st.markdown("""
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
-    .badge-rank.gold { background-color: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
+    .badge-rank.gold { background-color: #f0fdf4; color: #047857; border: 1px solid #dcfce7; }
     .badge-rank.silver { background-color: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
     .badge-rank.standard { background-color: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
-    .badge-rank.partial { background-color: #fef2f2; color: #991b1b; border: 1px solid #fee2e2; }
 
     .farmacia-name {
         font-size: 1.25rem;
@@ -284,7 +279,7 @@ st.markdown("""
     .calc-total-amount {
         font-size: 1.6rem;
         font-weight: 800;
-        color: #f97316;
+        color: #0f766e;
     }
 
     .shipping-info-box {
@@ -300,16 +295,9 @@ st.markdown("""
     }
 
     .shipping-info-box.free {
-        background-color: #fff7ed;
-        border: 1px solid #ffedd5;
-        color: #c2410c;
-        font-weight: 700;
-    }
-
-    .shipping-info-box.partial-warning {
-        background-color: #fffbeb;
-        border: 1px solid #fef3c7;
-        color: #b45309;
+        background-color: #f0fdf4;
+        border: 1px solid #dcfce7;
+        color: #166534;
         font-weight: 700;
     }
 
@@ -322,7 +310,7 @@ st.markdown("""
 
     .minsan-tag {
         background-color: #f1f5f9;
-        color: #0284c7;
+        color: #0f766e;
         padding: 2px 6px;
         border-radius: 4px;
         font-size: 0.75rem;
@@ -362,7 +350,7 @@ FARMACIE = {
 # ---------------------------------------------------------
 # 6. LETTURA PURA DA SUPABASE (ROBUSTA)
 # ---------------------------------------------------------
-@st.cache_data(ttl=600)
+@st.cache_data(ttl=60)
 def load_data_from_supabase():
     try:
         response = supabase.table("prodotti_farmacia").select("*").execute()
@@ -378,7 +366,7 @@ def load_data_from_supabase():
             return pd.DataFrame()
     except Exception as e:
         st.error(f"Errore di connessione a Supabase: {e}")
-    return pd.DataFrame()
+        return pd.DataFrame()
 
 df_prodotti = load_data_from_supabase()
 
@@ -387,7 +375,7 @@ df_prodotti = load_data_from_supabase()
 # ---------------------------------------------------------
 
 logo_html = f'<img src="{logo_src}" class="brand-hero-img">' if logo_src else '''
-    <div style="background: #ffffff; width: 52px; height: 52px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 2px solid #0284c7;">
+    <div style="background: #ffffff; width: 52px; height: 52px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 2px solid #38bdf8;">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="9" cy="21" r="1"></circle>
             <circle cx="20" cy="21" r="1"></circle>
@@ -407,7 +395,7 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# Chips farmacie
+# Chips farmacie con loghi originali
 chips = "".join([
     f'<div class="pharmacy-chip"><img src="https://www.google.com/s2/favicons?domain={info["domain"]}&sz=32"><span>{nome}</span></div>'
     for nome, info in FARMACIE.items()
@@ -453,7 +441,7 @@ if not df_prodotti.empty:
                 c_p_info, c_p_btn = st.columns([4, 1.2], vertical_alignment="center")
                 with c_p_info:
                     st.markdown(f"<h4 style='margin:0; font-weight:800; color:#0f172a;'>{row_prod['Prodotto']}</h4>", unsafe_allow_html=True)
-                    st.markdown(f"<div style='margin-top:4px; color:#475569; font-size:0.85rem;'>Codice MINSAN: <span class='minsan-tag'>{row_prod['MINSAN']}</span> | Categoria: <b style='color:#0284c7;'>{row_prod['Categoria']}</b></div>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='margin-top:4px; color:#475569; font-size:0.85rem;'>Codice MINSAN: <span class='minsan-tag'>{row_prod['MINSAN']}</span> | Categoria: <b style='color:#0f766e;'>{row_prod['Categoria']}</b></div>", unsafe_allow_html=True)
                 with c_p_btn:
                     if st.button("Aggiungi", type="primary", use_container_width=True):
                         st.session_state.carrello.append(row_prod.to_dict())
@@ -491,9 +479,7 @@ if st.session_state.carrello:
     st.markdown("---")
     st.markdown("### Risultato Comparazione Spesa Completa")
     
-    risultati_completi = []
-    risultati_parziali = []
-    totale_prodotti_carrello = len(st.session_state.carrello)
+    risultati = []
     lista_minsan = [str(item['MINSAN']) for item in st.session_state.carrello]
     
     for farmacia, info in FARMACIE.items():
@@ -509,7 +495,7 @@ if st.session_state.carrello:
                 except ValueError:
                     pass
                 
-        if disponibili > 0:
+        if disponibili == len(st.session_state.carrello):
             spese_spedizione = 0.0 if totale_prodotti >= info['soglia_gratis'] else info['spedizione_base']
             mancante_gratis = max(0.0, info['soglia_gratis'] - totale_prodotti)
             totale_complessivo = totale_prodotti + spese_spedizione
@@ -517,75 +503,55 @@ if st.session_state.carrello:
             primo_minsan = st.session_state.carrello[0]['MINSAN']
             target_url = f"{info['search_url']}{urllib.parse.quote(str(primo_minsan))}"
             
-            diz_risultato = {
+            risultati.append({
                 "farmacia": farmacia,
                 "totale_prodotti": totale_prodotti,
                 "spese_spedizione": spese_spedizione,
                 "soglia_gratis": info['soglia_gratis'],
                 "totale_complessivo": totale_complessivo,
                 "mancante_gratis": mancante_gratis,
-                "disponibili": disponibili,
-                "totale_richiesti": totale_prodotti_carrello,
                 "url": target_url
-            }
+            })
             
-            if disponibili == totale_prodotti_carrello:
-                risultati_completi.append(diz_risultato)
-            else:
-                risultati_parziali.append(diz_risultato)
-            
-    # Ordiniamo prima per totale economico le complete, poi le parziali
-    risultati_completi = sorted(risultati_completi, key=lambda x: x['totale_complessivo'])
-    risultati_parziali = sorted(risultati_parziali, key=lambda x: (-x['disponibili'], x['totale_complessivo']))
+    risultati = sorted(risultati, key=lambda x: x['totale_complessivo'])
     
-    tutti_i_risultati = risultati_completi + risultati_parziali
-    
-    if tutti_i_risultati:
+    if risultati:
         cols_per_row = 2
-        for i in range(0, len(tutti_i_risultati), cols_per_row):
+        for i in range(0, len(risultati), cols_per_row):
             batch_cols = st.columns(cols_per_row)
             for j in range(cols_per_row):
                 idx = i + j
-                if idx < len(tutti_i_risultati):
-                    res = tutti_i_risultati[idx]
-                    is_completo = res['disponibili'] == res['totale_richiesti']
+                if idx < len(risultati):
+                    res = risultati[idx]
                     
-                    if is_completo and idx == 0:
+                    if idx == 0:
                         rank_label = "1° Posto - Più Economico"
                         badge_color = "gold"
                         card_class = "first"
-                    elif is_completo:
-                        rank_label = f"{idx + 1}° Posto"
-                        badge_color = "silver" if idx == 1 else "standard"
+                    elif idx == 1:
+                        rank_label = "2° Posto"
+                        badge_color = "silver"
                         card_class = ""
                     else:
-                        rank_label = f"Disponibili {res['disponibili']} su {res['totale_richiesti']} prodotti"
-                        badge_color = "partial"
+                        rank_label = f"{idx + 1}° Posto"
+                        badge_color = "standard"
                         card_class = ""
                     
                     if res['spese_spedizione'] == 0:
-                        sped_str = "<span style='color:#f97316; font-weight:800;'>GRATIS</span>"
+                        sped_str = "<span style='color:#0f766e; font-weight:800;'>GRATIS</span>"
                         info_ship_box = '<div class="shipping-info-box free"><b>Spedizione gratuita sbloccata!</b> Soglia minima superata.</div>'
                     else:
                         sped_str = f"+ € {res['spese_spedizione']:.2f}"
                         mancante_fmt = f"{res['mancante_gratis']:.2f}"
                         soglia_fmt = f"{res['soglia_gratis']:.2f}"
                         farmacia_nome = res['farmacia']
-                        if is_completo:
-                            info_ship_box = (
-                                f'<div class="shipping-info-box">'
-                                f'<b>Azzera la spedizione:</b><br>'
-                                f'Aggiungi altri <b>€ {mancante_fmt}</b> su {farmacia_nome} '
-                                f'(soglia a € {soglia_fmt}).'
-                                f'</div>'
-                            )
-                        else:
-                            info_ship_box = (
-                                f'<div class="shipping-info-box partial-warning">'
-                                f'⚠️ <b>Disponibilità parziale:</b><br>'
-                                f'Questa farmacia non ha tutti i prodotti in catalogo.'
-                                f'</div>'
-                            )
+                        info_ship_box = (
+                            f'<div class="shipping-info-box">'
+                            f'<b>Azzera la spedizione:</b><br>'
+                            f'Aggiungi altri <b>€ {mancante_fmt}</b> su {farmacia_nome} '
+                            f'(soglia a € {soglia_fmt}).'
+                            f'</div>'
+                        )
 
                     html_card = (
                         f'<div class="result-card {card_class}">'
@@ -600,9 +566,9 @@ if st.session_state.carrello:
                         f'{info_ship_box}'
                         f'<div style="margin-top: 8px;">'
                         f'<a href="{res["url"]}" target="_blank" style="text-decoration:none;">'
-                        f'<button style="width:100%; background-color:#f97316; color:white; border:none; padding:11px 14px; border-radius:10px; font-weight:800; cursor:pointer; font-size:0.88rem; box-shadow:0 4px 12px rgba(249, 115, 22, 0.25);">Vai su {res["farmacia"]}</button>'
+                        f'<button style="width:100%; background-color:#0f766e; color:white; border:none; padding:11px 14px; border-radius:10px; font-weight:800; cursor:pointer; font-size:0.88rem; box-shadow:0 4px 12px rgba(15, 118, 110, 0.2);">Acquista su {res["farmacia"]}</button>'
                         f'</a>'
-                        f'<div class="redirect-disclaimer">Reindirizzamento al sito ufficiale della farmacia partner.</div>'
+                        f'<div class="redirect-disclaimer">Reindirizzamento al sito ufficiale della farmacia.</div>'
                         f'</div>'
                         f'</div>'
                     )
@@ -659,17 +625,17 @@ with st.expander("ℹ Chi Siamo"):
     st.markdown("""
     **Comparacarrello.it** è un progetto ideato e sviluppato da **Giuseppe Voci**. 
     
-    Nasce prima di tutto da un'esigenza personale come fruitore di prodotti farmaceutici e parafarmaceutici. Da padre di due bambini, alla continua ricerca del risparmio, mi sono spesso trovato in difficoltà a conciliare il minor prezzo con le spese di spedizione: a volte il prezzo più basso di un farmaco era in una farmacia e quello di un'altra in un'altra, e in mezzo c'era sempre l'incognita variabile della spedizione.
+    Nasce prima di tutto da un'esigenza personale come fruitore di prodotti farmaceutici e parafarmaceutici. Da padre di due bambini, alla continua ricerca del risparmio, mi sono spesso trovato in difficoltà a conciliare il minor prezzo con le spese di spedizione: a volte il prezzo più basso di un farmaco era in una farmacia e quello di un altro in un'altra, e in mezzo c'era sempre l'incognita variabile della spedizione.
     
     Da questa frustrazione quotidiana è nata l'idea di creare questo strumento indipendente, per aiutare tutti i consumatori a orientarsi in modo semplice, trasparente e veloce nel mondo delle farmacie online italiane.
     """)
 
-with st.expander("⚖️ Privacy & Cookie Policy & Trasparenza Affiliazioni"):
+with st.expander("⚖️ Privacy & Cookie Policy"):
     st.markdown("""
-    La presente informativa descrive le modalità di gestione di **Comparacarrello.it** in riferimento al trattamento dei dati personali e alla trasparenza commerciale.
+    La presente informativa descrive le modalità di gestione di **Comparacarrello.it** in riferimento al trattamento dei dati personali degli utenti che consultano il portale.
     
     * **Trattamento dei dati:** Il nostro sito utilizza cookie tecnici e di analisi anonima per ottimizzare l'esperienza di navigazione. Non raccogliamo dati di profilazione invasivi.
-    * **Trasparenza dell'Affiliazione (Awin & Partner):** **Comparacarrello.it** partecipa a programmi di affiliazione commerciale (tra cui il network Awin) con le principali farmacie online italiane. Cliccando sui pulsanti di acquisto e finalizzando un ordine sui siti partner, il portale potrebbe percepire una piccola commissione di affiliazione, senza alcun costo aggiuntivo per l'utente. Questo ci aiuta a mantenere il servizio gratuito e costantemente aggiornato.
+    * **Trasparenza dell'Affiliazione:** Cliccando sui pulsanti di acquisto verrai reindirizzato sui siti ufficiali dei nostri partner commerciali. Durante l'acquisto sul loro portale si applicheranno le rispettive normative e condizioni di vendita della singola farmacia online.
     """)
 
 with st.expander("✉️ Contatti"):
